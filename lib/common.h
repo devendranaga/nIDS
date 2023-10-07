@@ -3,6 +3,8 @@
 
 namespace firewall {
 
+#define FW_MACADDR_LEN 6
+
 enum class fw_error_type {
 	eSerialize_Failure,
 	eDeserialize_Failure,

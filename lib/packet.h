@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements packet structure.
+ *
+ * @copyright - All rights reserved. Devendra Naga.
+ */
 #ifndef __FW_PACKET_H__
 #define __FW_PACKET_H__
 

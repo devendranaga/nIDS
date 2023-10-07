@@ -73,13 +73,13 @@ fw_error_type packet::serialize(uint32_t bytes)
 
 fw_error_type packet::serialize(uint8_t *mac)
 {
-    if (packet_assert_length(off + 6, buf_len)) {
+    if (packet_assert_length(off + FW_MACADDR_LEN, buf_len)) {
         return fw_error_type::eOut_Of_Bounds;
     }
 
-    memcpy(&buf[off], mac, 6);
+    memcpy(&buf[off], mac, FW_MACADDR_LEN);
 
-    off += 6;
+    off += FW_MACADDR_LEN;
 
     return fw_error_type::eNo_Error;
 }
@@ -125,12 +125,12 @@ fw_error_type packet::deserialize(uint32_t &bytes)
 
 fw_error_type packet::deserialize(uint8_t *mac)
 {
-    if (packet_assert_length(off + 6, buf_len)) {
+    if (packet_assert_length(off + FW_MACADDR_LEN, buf_len)) {
         return fw_error_type::eOut_Of_Bounds;
     }
 
-    memcpy(mac, &buf[off], 6);
-    off += 6;
+    memcpy(mac, &buf[off], FW_MACADDR_LEN);
+    off += FW_MACADDR_LEN;
 
     return fw_error_type::eNo_Error;
 }
