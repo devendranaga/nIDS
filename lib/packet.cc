@@ -31,7 +31,7 @@ static inline bool packet_assert_length(int in_bytes, int given_len)
 
 fw_error_type packet::serialize(uint8_t byte)
 {
-    if (packet_assert_length(1, buf_len)) {
+    if (packet_assert_length(off + 1, buf_len)) {
         return fw_error_type::eOut_Of_Bounds;
     }
 
@@ -43,7 +43,7 @@ fw_error_type packet::serialize(uint8_t byte)
 
 fw_error_type packet::serialize(uint16_t bytes)
 {
-    if (packet_assert_length(2, buf_len)) {
+    if (packet_assert_length(off + 2, buf_len)) {
         return fw_error_type::eOut_Of_Bounds;
     }
 
@@ -51,6 +51,86 @@ fw_error_type packet::serialize(uint16_t bytes)
     buf[off + 1] = (bytes & 0xFF00) >> 8;
 
     off += 2;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::serialize(uint32_t bytes)
+{
+    if (packet_assert_length(off + 4, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    buf[off] = (bytes & 0x000000FF);
+    buf[off + 1] = (bytes & 0x0000FF00) >> 8;
+    buf[off + 2] = (bytes & 0x00FF0000) >> 16;
+    buf[off + 3] = (bytes & 0xFF000000) >> 24;
+
+    off += 3;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::serialize(uint8_t *mac)
+{
+    if (packet_assert_length(off + 6, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    memcpy(&buf[off], mac, 6);
+
+    off += 6;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::deserialize(uint8_t &byte)
+{
+    if (packet_assert_length(off + 1, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    byte = buf[off];
+    off ++;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::deserialize(uint16_t &bytes)
+{
+    if (packet_assert_length(off + 2, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    bytes = (buf[off + 1] >> 8) | (buf[off]);
+    off += 2;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::deserialize(uint32_t &bytes)
+{
+    if (packet_assert_length(off + 4, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    bytes = ((buf[off + 3] >> 24) |
+             (buf[off + 2] >> 16) |
+             (buf[off + 1] >> 8) |
+             buf[off]);
+    off += 4;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::deserialize(uint8_t *mac)
+{
+    if (packet_assert_length(off + 6, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    memcpy(mac, &buf[off], 6);
+    off += 6;
 
     return fw_error_type::eNo_Error;
 }
