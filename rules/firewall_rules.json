@@ -1,0 +1,15 @@
+[
+	{
+		"rule_name": "allow_ipv4",
+		"rule_id": 1,
+		"rule_type": "allow",
+		"ethertype": "0x800"
+	},
+	{
+		"rule_name": "allow_vlan",
+		"rule_id": 2,
+		"rule_type": "deny",
+		"ethertype": "0x8100"
+	}
+]
+

@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements common definitions.
+ * 
+ * @copyright - 2023-present All rights reserved.
+*/
 #ifndef __FW_COMMON_H__
 #define __FW_COMMON_H__
 
@@ -10,6 +15,12 @@ enum class fw_error_type {
 	eDeserialize_Failure,
 	eOut_Of_Bounds,
 	eToo_Short,
+	eInvalid,
+
+	/* Configuration error. */
+	eConfig_Error,
+
+	/* Success. */
 	eNo_Error,
 };
 
