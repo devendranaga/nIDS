@@ -19,9 +19,6 @@ packet::packet(uint32_t pkt_len) : buf_len(pkt_len), off(0)
 
 packet::~packet()
 {
-    if (buf) {
-        free(buf);
-    }
 }
 
 static inline bool packet_assert_length(int in_bytes, int given_len)
@@ -133,6 +130,28 @@ fw_error_type packet::deserialize(uint8_t *mac)
     off += FW_MACADDR_LEN;
 
     return fw_error_type::eNo_Error;
+}
+
+int packet::create(uint8_t *pkt, uint32_t pkt_len)
+{
+    buf_len = pkt_len;
+
+    buf = (uint8_t *)calloc(1, pkt_len + 1);
+    if (!buf) {
+        return -1;
+    }
+
+    memcpy(buf, pkt, pkt_len);
+
+    return 0;
+}
+
+void packet::free_pkt()
+{
+    if (buf) {
+        free(buf);
+        buf = nullptr;
+    }
 }
 
 }

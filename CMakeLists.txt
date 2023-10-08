@@ -19,7 +19,7 @@ include_directories(
 	./lib/raw/
 	./src/)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter -g -ggdb")
 
 add_library(packet_core ${LIB_SOURCES})
 

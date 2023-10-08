@@ -71,6 +71,10 @@ fw_error_type firewall_intf::init(const std::string ifname,
     rx_thr_id_ = std::make_shared<std::thread>(&firewall_intf::rx_thread, this);
     rx_thr_id_->detach();
 
+    // Create filter thread
+    filt_thr_id_ = std::make_shared<std::thread>(&firewall_intf::filter_thread, this);
+    filt_thr_id_->detach();
+
     log_->info("create rx thread ok\n");
 
     return fw_error_type::eNo_Error;
@@ -78,22 +82,55 @@ fw_error_type firewall_intf::init(const std::string ifname,
 
 void firewall_intf::rx_thread()
 {
-    packet pkt(4096);
+    packet pkt;
     uint8_t mac[6];
+    uint8_t buf[4096];
     int ret;
 
     while (1) {
         // receive the frame
-        ret = raw_->recv_msg(mac, pkt.buf, pkt.buf_len);
+        ret = raw_->recv_msg(mac, buf, sizeof(buf));
         if (ret < 0) {
             return;
         }
 
         stats_.rx_count ++;
+        pkt.buf_len = ret;
+        pkt.create(buf, ret);
+
         log_->verbose("rx packet %d\n", stats_.rx_count);
 
-        // queue the frame
-        pkt_q_.push(pkt);
+        {
+            // queue the frame
+            std::unique_lock<std::mutex> lock(rx_thr_lock_);
+            rx_thr_cond_.notify_one();
+            pkt_q_.push(pkt);
+        }
+    }
+}
+
+void firewall_intf::filter_thread()
+{
+    while (1) {
+        packet pkt;
+        bool valid_pkt = false;
+
+        // retrieve one packet from the queue
+        {
+            std::unique_lock<std::mutex> lock(rx_thr_lock_);
+            rx_thr_cond_.wait(lock);
+            if (pkt_q_.size() > 0) {
+                pkt = pkt_q_.front();
+                valid_pkt = true;
+            }
+            pkt_q_.pop();
+        }
+
+        if (valid_pkt) {
+            log_->verbose("filter packet with size %d\n", pkt.buf_len);
+        }
+
+        pkt.free_pkt();
     }
 }
 

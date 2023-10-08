@@ -21,6 +21,8 @@ struct packet {
 
     explicit packet();
     explicit packet(uint32_t pkt_len);
+    int create(uint8_t *pkt, uint32_t buf_len);
+    void free_pkt();
     ~packet();
 
     fw_error_type serialize(uint8_t byte);

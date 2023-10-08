@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements Logger.
+ * 
+ * @copyright - 2023-present All rights reserved.
+*/
 #ifndef __FW_LOGGER_H__
 #define __FW_LOGGER_H__
 

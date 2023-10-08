@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements core packet receive and service
+ * 
+ * @copyright - 2023-present All rights reserved. Devendra Naga.
+*/
 #ifndef __FW_CORE_H__
 #define __FW_CORE_H__
 
@@ -13,9 +18,13 @@
 #include <logger.h>
 #include <raw_socket.h>
 #include <packet.h>
+#include <rule_parser.h>
 
 namespace firewall {
 
+/**
+ * @brief - defines packet statistics
+*/
 struct firewall_pkt_stats {
     uint64_t rx_count;
 };
@@ -37,6 +46,7 @@ class firewall_intf {
         void filter_thread();
         std::shared_ptr<std::thread> rx_thr_id_;
         std::condition_variable rx_thr_cond_;
+        std::shared_ptr<std::thread> filt_thr_id_;
         std::shared_ptr<raw_socket> raw_;
         std::queue<packet> pkt_q_;
         std::mutex rx_thr_lock_;
@@ -44,6 +54,9 @@ class firewall_intf {
         firewall_pkt_stats stats_;
 };
 
+/**
+ * @brief - Implements base service class
+*/
 class fw_core {
     public:
         explicit fw_core();

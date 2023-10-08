@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements firewall configuration.
+ * 
+ * @copyright - 2023-present All rights reserved. Devendra Naga.
+*/
 #ifndef __FW_CONFIG_H__
 #define __FW_CONFIG_H__
 
