@@ -104,7 +104,7 @@ fw_error_type packet::deserialize(uint16_t &bytes)
         return fw_error_type::eOut_Of_Bounds;
     }
 
-    bytes = (buf[off + 1] >> 8) | (buf[off]);
+    bytes = (buf[off + 1]) | (buf[off] << 8);
     off += 2;
 
     return fw_error_type::eNo_Error;

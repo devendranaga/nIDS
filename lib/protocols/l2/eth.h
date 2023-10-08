@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <common.h>
 #include <ether_types.h>
+#include <logger.h>
 #include <packet.h>
 
 namespace firewall {
@@ -18,8 +19,9 @@ struct eth_hdr {
 		return (ether_type)ethertype == ether_type::Ether_Type_IPv4;
 	}
 
-	void serialize(const packet &p);
+	void serialize(packet &p);
 	void deserialize(packet &p);
+	void print(logger *log);
 };
 
 };

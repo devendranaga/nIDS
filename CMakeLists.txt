@@ -4,21 +4,27 @@ cmake_minimum_required(VERSION 3.25)
 set(LIB_SOURCES
 	./lib/packet/packet.cc
 	./lib/protocols/l2/eth.cc
+	./lib/protocols/l2/arp.cc
 	./lib/raw/raw_socket.cc
+	./lib/parser/parser.cc
 	./lib/logging/logger.cc)
 
 set(SERVICE_SOURCES
 	./src/config.cc
 	./src/core.cc
-	./src/rule_parser.cc)
+	./src/rule_parser.cc
+	./src/filters/filter.cc)
 
 include_directories(
 	./lib
 	./lib/packet/
+	./lib/parser/
 	./lib/protocols/l2/
 	./lib/logging/
 	./lib/raw/
-	./src/)
+	./src/
+	./src/events/
+	./src/filters/)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -g -ggdb")
 

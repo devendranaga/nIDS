@@ -20,6 +20,7 @@
 #include <packet.h>
 #include <rule_parser.h>
 #include <packet_stats.h>
+#include <parser.h>
 
 namespace firewall {
 

@@ -150,9 +150,11 @@ void firewall_intf::filter_thread()
 
         if (valid_pkt) {
             log_->verbose("filter packet with size %d\n", pkt.buf_len);
-        }
+            parser p(log_);
 
-        pkt.free_pkt();
+            p.run(pkt);
+            pkt.free_pkt();
+        }
     }
 }
 
