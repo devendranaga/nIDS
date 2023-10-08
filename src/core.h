@@ -19,15 +19,9 @@
 #include <raw_socket.h>
 #include <packet.h>
 #include <rule_parser.h>
+#include <packet_stats.h>
 
 namespace firewall {
-
-/**
- * @brief - defines packet statistics
-*/
-struct firewall_pkt_stats {
-    uint64_t rx_count;
-};
 
 /**
  * @brief - Interface info
@@ -52,6 +46,7 @@ class firewall_intf {
         std::mutex rx_thr_lock_;
         logger *log_;
         firewall_pkt_stats stats_;
+        rule_config *rule_data_;
 };
 
 /**

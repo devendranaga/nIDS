@@ -9,7 +9,8 @@ set(LIB_SOURCES
 
 set(SERVICE_SOURCES
 	./src/config.cc
-	./src/core.cc)
+	./src/core.cc
+	./src/rule_parser.cc)
 
 include_directories(
 	./lib
@@ -19,7 +20,7 @@ include_directories(
 	./lib/raw/
 	./src/)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter -g -ggdb")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -g -ggdb")
 
 add_library(packet_core ${LIB_SOURCES})
 

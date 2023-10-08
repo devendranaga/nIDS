@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements logging. Currently logs to console.
+ * 
+ * @copyright - 2023-present All rights reserved.
+*/
 #include <stdio.h>
 #include <stdarg.h>
 #include <mutex>
@@ -17,6 +22,14 @@ static void log_msg(const char *fmt, const char *logger_msg, va_list ap)
     struct tm *t;
     struct timespec ts;
 
+    // if called in from many threads, the call might
+    // manipulate msg many times and results in a buffer with
+    // mixed text from various calls.
+    //
+    // thus, to make this function re-entrant, take a global lock and
+    // manipulate buffer contents.
+    logger_lock.lock();
+
     now = time(0);
     t = gmtime(&now);
     clock_gettime(CLOCK_REALTIME, &ts);
@@ -28,6 +41,8 @@ static void log_msg(const char *fmt, const char *logger_msg, va_list ap)
                                       ts.tv_nsec / 1000000ULL, logger_msg);
     vsnprintf(msg + len, sizeof(msg) - len, fmt, ap);
     fprintf(stderr, "%s", msg);
+
+    logger_lock.unlock();
 }
 
 void logger::info(const char *fmt, ...)

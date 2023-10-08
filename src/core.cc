@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements core service.
+ * 
+ * @copyright - 2023-present All rights reserved. Devendra Naga.
+*/
 #include <core.h>
 
 namespace firewall {
@@ -56,12 +61,29 @@ fw_error_type fw_core::init(int argc, char **argv)
     return fw_error_type::eNo_Error;
 }
 
-firewall_intf::firewall_intf(logger *log) : log_(log) { }
+firewall_intf::firewall_intf(logger *log) : log_(log)
+{
+    rule_data_ = rule_config::instance();
+}
+
 firewall_intf::~firewall_intf() { }
 
 fw_error_type firewall_intf::init(const std::string ifname,
                                   const std::string rule_file)
 {
+    fw_error_type ret;
+
+    // Parse rules file
+    ret = rule_data_->parse(rule_file);
+    if (ret != fw_error_type::eNo_Error) {
+        log_->error("failed to parse rules file %s\n", rule_file.c_str());
+        return ret;
+    }
+
+    log_->info("parse rules file %s for ifname %s ok\n",
+                            rule_file.c_str(),
+                            ifname.c_str());
+
     // Create raw socket
     raw_ = std::make_shared<raw_socket>(ifname, 0);
 
@@ -94,7 +116,7 @@ void firewall_intf::rx_thread()
             return;
         }
 
-        stats_.rx_count ++;
+        stats_.inc_rx_count();
         pkt.buf_len = ret;
         pkt.create(buf, ret);
 
