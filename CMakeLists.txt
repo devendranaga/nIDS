@@ -7,7 +7,9 @@ set(LIB_SOURCES
 	./lib/protocols/l2/arp.cc
 	./lib/raw/raw_socket.cc
 	./lib/parser/parser.cc
-	./lib/logging/logger.cc)
+	./lib/logging/logger.cc
+	./lib/pcap/pcap_intf.cc
+	./lib/pcap/pcap_replay.cc)
 
 set(SERVICE_SOURCES
 	./src/config.cc
@@ -22,6 +24,7 @@ include_directories(
 	./lib/protocols/l2/
 	./lib/logging/
 	./lib/raw/
+	./lib/pcap/
 	./src/
 	./src/events/
 	./src/filters/)
