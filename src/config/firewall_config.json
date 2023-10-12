@@ -1,0 +1,17 @@
+{
+	"interface_info": [
+			{
+				"interface": "dummy0",
+				"rule_file": "./firewall_rules.json"
+			}
+	],
+	"events": {
+		"event_file_path": "./events/",
+		"event_file_size_bytes": 1024,
+		"event_file_format": "json",
+		"encrypt_log_file": true,
+		"encryption_key": "./aes_key.bin",
+		"encryption_algorithm": "aes_gcm_128_with_sha256"
+	}
+}
+

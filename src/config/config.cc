@@ -28,11 +28,20 @@ fw_error_type firewall_config::parse(const std::string config_file)
         intf_list.emplace_back(ifinfo);
     }
 
-    evt_config.event_file_path = root["event_file_path"].asString();
-    evt_config.event_file_size_bytes = root["event_file_size_bytes"].asUInt();
-    auto evt_file_fmt = root["event_file_format"].asString();
+    evt_config.event_file_path = root["events"]["event_file_path"].asString();
+    evt_config.event_file_size_bytes = root["events"]["event_file_size_bytes"].asUInt();
+    auto evt_file_fmt = root["events"]["event_file_format"].asString();
     if (evt_file_fmt == "json") {
         evt_config.evt_file_format = event_file_format::Json;
+    } else {
+        return fw_error_type::eConfig_Error;
+    }
+    evt_config.encrypt_log_file = root["events"]["encrypt_log_file"].asBool();
+    evt_config.encryption_key = root["events"]["encryption_key"].asString();
+
+    auto enc_alg = root["events"]["encryption_algorithm"].asString();
+    if (enc_alg == "aes_gcm_128_with_sha256") {
+        evt_config.enc_alg = event_encryption_algorithm::AES_GCM_128_W_SHA256;
     } else {
         return fw_error_type::eConfig_Error;
     }

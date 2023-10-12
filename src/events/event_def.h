@@ -40,9 +40,15 @@ enum class event_type {
     Evt_Alert,
 };
 
+/**
+ * @brief - a detailed event information.
+ * 
+ * This is further used in storing an event temporarily.
+*/
 struct event {
     event_type evt_type;
     event_description evt_details;
+    // matched rule id
     uint32_t rule_id;
     uint8_t src_mac[6];
     uint8_t dst_mac[6];

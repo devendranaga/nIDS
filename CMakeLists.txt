@@ -14,9 +14,10 @@ set(LIB_SOURCES
 	./lib/common/common.cc)
 
 set(SERVICE_SOURCES
-	./src/config.cc
-	./src/core.cc
-	./src/rule_parser.cc
+	./src/config/config.cc
+	./src/core/core.cc
+	./src/core/rule_parser.cc
+	./src/events/event_mgr.cc
 	./src/filters/filter.cc)
 
 set(TOOL_PACKET_GEN_SOURCES
@@ -34,6 +35,8 @@ include_directories(
 	./lib/raw/
 	./lib/pcap/
 	./src/
+	./src/core/
+	./src/config/
 	./src/events/
 	./src/filters/
 	./tools/packet_gen/)
@@ -43,10 +46,10 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-fun
 add_library(packet_core ${LIB_SOURCES})
 
 add_executable(fwd ${SERVICE_SOURCES})
-target_link_libraries(fwd packet_core jsoncpp)
+target_link_libraries(fwd packet_core jsoncpp pthread)
 
 add_executable(packet_gen ${TOOL_PACKET_GEN_SOURCES})
-target_link_libraries(packet_gen packet_core jsoncpp)
+target_link_libraries(packet_gen packet_core jsoncpp pthread)
 
 
 

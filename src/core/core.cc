@@ -58,6 +58,14 @@ fw_error_type fw_core::init(int argc, char **argv)
         intf_list_.push_back(intf);
     }
 
+    evt_mgr_ = event_mgr::instance();
+    ret = evt_mgr_->init(log_);
+    if (ret != fw_error_type::eNo_Error) {
+        log_->error("failed to init event manager\n");
+    }
+
+    log_->info("event_mgr init ok\n");
+
     return fw_error_type::eNo_Error;
 }
 

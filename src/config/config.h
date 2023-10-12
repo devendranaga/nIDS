@@ -21,10 +21,17 @@ enum class event_file_format {
     Json,
 };
 
+enum class event_encryption_algorithm {
+    AES_GCM_128_W_SHA256,
+};
+
 struct firewall_event_info_config {
     std::string event_file_path;
     uint32_t event_file_size_bytes;
     event_file_format evt_file_format;
+    bool encrypt_log_file;
+    std::string encryption_key;
+    event_encryption_algorithm enc_alg;
 };
 
 /**

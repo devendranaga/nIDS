@@ -21,6 +21,7 @@
 #include <rule_parser.h>
 #include <packet_stats.h>
 #include <parser.h>
+#include <event_mgr.h>
 
 namespace firewall {
 
@@ -63,6 +64,7 @@ class fw_core {
     private:
         // List of firewall interface context
         std::vector<std::shared_ptr<firewall_intf>> intf_list_;
+        event_mgr *evt_mgr_;
         logger *log_;
 };
 
