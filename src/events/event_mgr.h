@@ -29,6 +29,7 @@ class event_mgr {
 
         std::shared_ptr<std::thread> storage_thr_id_;
         std::mutex storage_thr_lock_;
+        std::condition_variable storage_thr_cond_;
         std::queue<event> event_list_;
         logger *log_;
 };

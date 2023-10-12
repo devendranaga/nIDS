@@ -1,0 +1,16 @@
+{
+    "ifname": "dummy0",
+    "eth": {
+        "src_mac": "00:11:22:33:44:55",
+        "dst_mac": "00:11:22:11:11:22",
+        "ethertype": "0x0800",
+        "pkt_len": 100,
+        "repeat": true,
+        "count": 100
+    },
+    "pcap_replay": {
+        "filepath": "./pcap_file.pcap",
+        "intvl_us": 100,
+        "repeat": true
+    }
+}

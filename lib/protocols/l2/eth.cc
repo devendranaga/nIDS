@@ -1,4 +1,5 @@
 #include <eth.h>
+#include <rule_parser.h>
 
 namespace firewall {
 
@@ -9,11 +10,15 @@ void eth_hdr::serialize(packet &p)
 	p.serialize(ethertype);
 }
 
-void eth_hdr::deserialize(packet &p)
+void eth_hdr::deserialize(packet &p, logger *log, bool debug)
 {
 	p.deserialize(src_mac);
 	p.deserialize(dst_mac);
 	p.deserialize(ethertype);
+
+	if (debug) {
+		print(log);
+	}
 }
 
 void eth_hdr::print(logger *log)

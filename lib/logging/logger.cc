@@ -91,3 +91,4 @@ void logger::fatal(const char *fmt, ...)
 }
 
 }
+
