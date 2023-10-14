@@ -1,3 +1,8 @@
+/**
+ * @brief - implements ipv4 protocol serialize and deserialize.
+ * 
+ * @copyright - 2023-present All rights reserved.
+*/
 #include <ipv4.h>
 
 namespace firewall {
@@ -11,6 +16,8 @@ event_description ipv4_hdr::deserialize(packet &p)
 {
     uint8_t byte_1;
 
+    //
+    // check header length too small.
     if (p.remaining_len() < IPV4_HDR_NO_OPTIONS) {
         return event_description::Evt_IPV4_Hdrlen_Too_Small;
     }
@@ -20,7 +27,21 @@ event_description ipv4_hdr::deserialize(packet &p)
     p.deserialize(byte_1);
 
     version = (byte_1 & 0xF0) >> 4;
+    if (version != IPV4_VERSION) {
+        return event_description::Evt_IPV4_Version_Invalid;
+    }
+
     hdr_len = (byte_1 & 0x0F) * IPV4_IHL_LEN;
+
+    //
+    // header length is too small or too big.
+    if (hdr_len < IPV4_HDR_NO_OPTIONS) {
+        return event_description::Evt_IPV4_Hdrlen_Too_Small;
+    } else if (hdr_len > IPV4_HDR_LEN_MAX) {
+        return event_description::Evt_IPV4_Hdrlen_Too_Big;
+    } else if ((hdr_len % 4) != 0) {
+        return event_description::Evt_IPV4_Hdrlen_Inval;
+    }
 
     p.deserialize(byte_1);
 
@@ -34,6 +55,13 @@ event_description ipv4_hdr::deserialize(packet &p)
     reserved = !!(byte_1 & 0x80);
     dont_frag = !!(byte_1 & 0x40);
     more_frag = !!(byte_1 & 0x20);
+
+    //
+    // dont_fragment and more_fragment bits
+    // cannot be set to 1 at the same time.
+    if (!dont_frag && !more_frag) {
+        return event_description::Evt_IPV4_Flags_Invalid;
+    }
 
     frag_off = (byte_1 & 0x1F) << 8;
 

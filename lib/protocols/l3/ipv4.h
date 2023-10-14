@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <logger.h>
 #include <packet.h>
+#include <protocols_types.h>
 #include <event_def.h>
 
 namespace firewall {
@@ -16,6 +17,7 @@ namespace firewall {
 #define IPV4_VERSION 4
 #define IPV4_IHL_LEN 4
 #define IPV4_HDR_NO_OPTIONS 20
+#define IPV4_HDR_LEN_MAX 15
 
 struct ipv4_hdr {
     uint8_t version;

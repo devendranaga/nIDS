@@ -11,6 +11,7 @@ set(LIB_SOURCES
 	./lib/logging/logger.cc
 	./lib/pcap/pcap_intf.cc
 	./lib/pcap/pcap_replay.cc
+	./lib/crypto/crypto.cc
 	./lib/common/common.cc)
 
 set(SERVICE_SOURCES
@@ -31,9 +32,12 @@ include_directories(
 	./lib/parser/
 	./lib/protocols/l2/
 	./lib/protocols/l3/
+	./lib/protocols/common/
 	./lib/logging/
 	./lib/raw/
 	./lib/pcap/
+	./lib/crypto/
+	./lib/signatures/
 	./src/
 	./src/core/
 	./src/config/

@@ -1,3 +1,9 @@
+/**
+ * @brief - Implements ARP serialize and deserialize.
+ * 
+ * @copyright - 2023-present All rights reserved. Devendra Naga.
+*/
+#include <eth.h>
 #include <arp.h>
 
 namespace firewall {
@@ -24,6 +30,10 @@ event_description arp_hdr::deserialize(packet &p)
         return event_description::Evt_ARP_Protocol_Addr_Len_Inval;
     }
     p.deserialize(operation);
+    if ((operation < static_cast<uint16_t>(arp_operation::Request)) ||
+        (operation > static_cast<uint16_t>(arp_operation::InArp_Reply))) {
+        return event_description::Evt_ARP_Inval_Operation;
+    }
     p.deserialize(sender_hw_addr);
     p.deserialize(sender_proto_addr);
     p.deserialize(target_hw_addr);

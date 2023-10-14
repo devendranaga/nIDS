@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements ARP serialize and deserialize.
+ * 
+ * @copyright - 2023-present All rights reserved. Devendra Naga.
+*/
 #ifndef __FW_PROTOCOLS_ARP_H__
 #define __FW_PROTOCOLS_ARP_H__
 
@@ -13,6 +18,8 @@ namespace firewall {
 #define ARP_HW_ADDR_LEN 6
 #define ARP_PROTO_ADDR_LEN 4
 
+//
+// ARP operation
 enum class arp_operation {
     Request = 1,
     Reply,
@@ -25,9 +32,11 @@ enum class arp_operation {
 };
 
 enum class arp_hw_type {
-
+    Ethernet = 1,
 };
 
+//
+// Parses ARP header
 struct arp_hdr {
     uint16_t hw_type;
     uint16_t proto_type;
@@ -40,6 +49,12 @@ struct arp_hdr {
     uint32_t target_proto_addr;
 
     int serialize(packet &p);
+    /**
+     * @brief - implements ARP deserialization.
+     * 
+     * @param [in] p packet frame.
+     * @return returns event_description type.
+    */
     event_description deserialize(packet &p);
     void print(logger *log);
 

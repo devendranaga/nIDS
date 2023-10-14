@@ -14,12 +14,17 @@
 #include <ipv4.h>
 #include <packet.h>
 #include <rule_parser.h>
+#include <os_signatures.h>
 
 namespace firewall {
 
+/**
+ * @brief - defines which protocols are available.
+*/
 struct protocol_bits {
     uint32_t eth:1;
     uint32_t ipv4:1;
+    uint32_t arp:1;
 
     explicit protocol_bits() :
                         eth(0),
@@ -29,8 +34,10 @@ struct protocol_bits {
 
     void set_eth() { eth = 1; }
     void set_ipv4() { ipv4 = 1; }
+    void set_arp() { arp = 1; }
     bool has_eth() { return eth == 1; }
     bool has_ipv4() { return ipv4 == 1; }
+    bool has_arp() { return arp == 1; }
 };
 
 /**
@@ -44,15 +51,25 @@ struct parser {
         // ethernet header
         eth_hdr eh;
 
+        // ARP header
+        arp_hdr arp_h;
+
         // ipv4 header
         ipv4_hdr ipv4_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;
 
+        // OS type
+        os_type os_type_t;
+
+        uint32_t pkt_len;
+
         int run(packet &pkt);
 
     private:
+        void detect_os_signature();
+
         logger *log_;
 };
 
