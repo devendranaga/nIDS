@@ -5,6 +5,7 @@ set(LIB_SOURCES
 	./lib/packet/packet.cc
 	./lib/protocols/l2/eth.cc
 	./lib/protocols/l2/arp.cc
+	./lib/protocols/l2/vlan.cc
 	./lib/protocols/l3/ipv4.cc
 	./lib/raw/raw_socket.cc
 	./lib/parser/parser.cc

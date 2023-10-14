@@ -28,17 +28,17 @@ void eth_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void eth_hdr::print(logger *log)
 {
-	log->info("eth_hdr: {\n");
-	log->info("\tsrc_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
+	log->verbose("eth_hdr: {\n");
+	log->verbose("\tsrc_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
 					src_mac[0], src_mac[1],
 					src_mac[2], src_mac[3],
 					src_mac[4], src_mac[5]);
-	log->info("\tdst_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
+	log->verbose("\tdst_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
 					dst_mac[0], dst_mac[1],
 					dst_mac[2], dst_mac[3],
 					dst_mac[4], dst_mac[5]);
-	log->info("\tethertype: %04x\n", ethertype);
-	log->info("}\n");
+	log->verbose("\tethertype: %04x\n", ethertype);
+	log->verbose("}\n");
 }
 
 }

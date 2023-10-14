@@ -44,29 +44,34 @@ void parser::detect_os_signature()
 int parser::run(packet &pkt)
 {
     event_mgr *evt_mgr = event_mgr::instance();
-    ether_type ether = eh.get_ethertype();
+    ether_type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
+    bool pkt_dump = true;
 
     //
     // deserialize ethernet header
-    eh.deserialize(pkt, log_);
+    eh.deserialize(pkt, log_, pkt_dump);
     protocols_avail.set_eth();
+
+    ether = eh.get_ethertype();
 
     //
     // check if its vlan, parse it
     if (eh.has_ethertype_vlan()) {
-
+        vh.deserialize(pkt, log_, pkt_dump);
+        protocols_avail.set_vlan();
+        ether = eh.get_ethertype();
     }
 
     //
     // parse the rest of the l2 / l3 frames.
     switch (ether) {
         case ether_type::Ether_Type_ARP: {
-            evt_desc = arp_h.deserialize(pkt, log_);
+            evt_desc = arp_h.deserialize(pkt, log_, pkt_dump);
             protocols_avail.set_arp();
         } break;
         case ether_type::Ether_Type_IPv4: {
-            evt_desc = ipv4_h.deserialize(pkt);
+            evt_desc = ipv4_h.deserialize(pkt, log_, pkt_dump);
             protocols_avail.set_ipv4();
         } break;
         default:

@@ -12,7 +12,7 @@ int ipv4_hdr::serialize(packet &p)
     return -1;
 }
 
-event_description ipv4_hdr::deserialize(packet &p)
+event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
 {
     uint8_t byte_1;
 
@@ -24,14 +24,14 @@ event_description ipv4_hdr::deserialize(packet &p)
 
     start_off = p.off;
 
-    p.deserialize(byte_1);
-
-    version = (byte_1 & 0xF0) >> 4;
+    version = (p.buf[p.off] & 0xF0) >> 4;
     if (version != IPV4_VERSION) {
         return event_description::Evt_IPV4_Version_Invalid;
     }
 
-    hdr_len = (byte_1 & 0x0F) * IPV4_IHL_LEN;
+    hdr_len = (p.buf[p.off] & 0x0F) * IPV4_IHL_LEN;
+
+    p.off ++;
 
     //
     // header length is too small or too big.
@@ -39,8 +39,6 @@ event_description ipv4_hdr::deserialize(packet &p)
         return event_description::Evt_IPV4_Hdrlen_Too_Small;
     } else if (hdr_len > IPV4_HDR_LEN_MAX) {
         return event_description::Evt_IPV4_Hdrlen_Too_Big;
-    } else if ((hdr_len % 4) != 0) {
-        return event_description::Evt_IPV4_Hdrlen_Inval;
     }
 
     p.deserialize(byte_1);
@@ -59,7 +57,7 @@ event_description ipv4_hdr::deserialize(packet &p)
     //
     // dont_fragment and more_fragment bits
     // cannot be set to 1 at the same time.
-    if (!dont_frag && !more_frag) {
+    if (dont_frag && more_frag) {
         return event_description::Evt_IPV4_Flags_Invalid;
     }
 
@@ -77,12 +75,35 @@ event_description ipv4_hdr::deserialize(packet &p)
 
     end_off = p.off;
 
+    if (debug) {
+        print(log);
+    }
+
     return event_description::Evt_Parse_Ok;
 }
 
 void ipv4_hdr::print(logger *log)
 {
-
+    log->verbose("IPV4: {\n");
+    log->verbose("\t version: %d\n", version);
+    log->verbose("\t hdr_len: %d\n", hdr_len);
+    log->verbose("\t dscp: %d\n", dscp);
+    log->verbose("\t ecn: %d\n", ecn);
+    log->verbose("\t total_len: %d\n", total_len);
+    log->verbose("\t identification: 0x%04x\n", identification);
+    log->verbose("\t flags: {\n");
+    log->verbose("\t\t reserved: %d\n", reserved);
+    log->verbose("\t\t dont_fragment: %d\n", dont_frag);
+    log->verbose("\t\t more_fragment: %d\n", more_frag);
+    log->verbose("\t }\n");
+    log->verbose("\t frag_off: 0x%04x\n", frag_off);
+    log->verbose("\t ttl: %d\n", ttl);
+    log->verbose("\t protocol: %d\n", protocol);
+    log->verbose("\t hdr_checksum: 0x%04x\n", hdr_chksum);
+    log->verbose("\t src_addr: %u\n", src_addr);
+    log->verbose("\t dst_addr: %u\n", dst_addr);
+    log->verbose("}\n");
 }
 
 }
+

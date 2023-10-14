@@ -43,6 +43,7 @@ enum class event_description {
     Evt_ARP_HW_Addr_Len_Inval,
     Evt_ARP_Protocol_Addr_Len_Inval,
     Evt_ARP_Inval_Operation,
+    Evt_VLAN_Inval_VID,
     Evt_IPV4_Hdrlen_Too_Small,
     Evt_IPV4_Hdrlen_Too_Big,
     Evt_IPV4_Hdrlen_Inval,

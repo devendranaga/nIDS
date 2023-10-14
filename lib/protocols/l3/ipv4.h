@@ -11,13 +11,14 @@
 #include <packet.h>
 #include <protocols_types.h>
 #include <event_def.h>
+#include <logger.h>
 
 namespace firewall {
 
 #define IPV4_VERSION 4
 #define IPV4_IHL_LEN 4
 #define IPV4_HDR_NO_OPTIONS 20
-#define IPV4_HDR_LEN_MAX 15
+#define IPV4_HDR_LEN_MAX 60
 
 struct ipv4_hdr {
     uint8_t version;
@@ -40,7 +41,7 @@ struct ipv4_hdr {
 
     bool is_a_frag() { return frag_off > 0; }
     int serialize(packet &p);
-    event_description deserialize(packet &p);
+    event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
 };
 

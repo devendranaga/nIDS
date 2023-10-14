@@ -34,6 +34,14 @@ struct packet {
     fw_error_type deserialize(uint16_t &bytes);
     fw_error_type deserialize(uint32_t &bytes);
     fw_error_type deserialize(uint8_t *mac);
+    void hexdump()
+    {
+        uint32_t i;
+
+        for (i = 0; i < buf_len; i ++) {
+            printf("%02x ", buf[i]);
+        }
+    }
 };
 
 }
