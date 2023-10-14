@@ -7,8 +7,8 @@ set(LIB_SOURCES
 	./lib/protocols/l2/arp.cc
 	./lib/protocols/l2/vlan.cc
 	./lib/protocols/l3/ipv4.cc
+	./lib/protocols/l4/udp.cc
 	./lib/raw/raw_socket.cc
-	./lib/parser/parser.cc
 	./lib/logging/logger.cc
 	./lib/pcap/pcap_intf.cc
 	./lib/pcap/pcap_replay.cc
@@ -19,6 +19,7 @@ set(SERVICE_SOURCES
 	./src/config/config.cc
 	./src/core/core.cc
 	./src/core/rule_parser.cc
+	./src/parser/parser.cc
 	./src/events/event_mgr.cc
 	./src/events/event_file_writer.cc
 	./src/filters/filter.cc)
@@ -31,10 +32,11 @@ include_directories(
 	./lib
 	./lib/common/
 	./lib/packet/
-	./lib/parser/
+	./src/parser/
 	./lib/protocols/l2/
 	./lib/protocols/l3/
 	./lib/protocols/common/
+	./lib/protocols/l4/
 	./lib/logging/
 	./lib/raw/
 	./lib/pcap/

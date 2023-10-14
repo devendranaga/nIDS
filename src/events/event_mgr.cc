@@ -14,9 +14,13 @@ const static struct {
     event_description evt;
     rule_ids rule_id;
 } auto_det_rule_id_list[ ] = {
+    //
+    // ethernet rules
     {event_description::Evt_Eth_Ethertype_Unknown,
      rule_ids::Rule_Id_Unsupported_Ethertype},
 
+    //
+    // arp rules
     {event_description::Evt_ARP_Hdrlen_Too_Small,
      rule_ids::Rule_Id_ARP_Hdrlen_Too_Small},
 
@@ -29,6 +33,8 @@ const static struct {
     {event_description::Evt_ARP_Inval_Operation,
      rule_ids::Rule_Id_ARP_Inval_Operation},
 
+    //
+    // ipv4 rules
     {event_description::Evt_IPV4_Hdrlen_Too_Small,
      rule_ids::Rule_Id_IPV4_Hdrlen_Too_Small},
 
@@ -49,6 +55,20 @@ const static struct {
 
     {event_description::Evt_IPV4_Protocol_Unsupported,
      rule_ids::Rule_Id_IPV4_Protocol_Unsupported},
+
+    //
+    // udp rules
+    {event_description::Evt_Udp_Src_Port_Invalid,
+     rule_ids::Rule_Id_Udp_Src_Port_Invalid},
+
+    {event_description::Evt_Udp_Dst_Port_Invalid,
+     rule_ids::Rule_Id_Udp_Dst_Port_Invalid},
+
+    {event_description::Evt_Udp_Len_Too_Short,
+     rule_ids::Rule_Id_Udp_Len_Too_Short},
+
+    {event_description::Evt_Udp_Chksum_Invalid,
+     rule_ids::Rule_Id_Udp_Chksum_Invalid},
 
     {event_description::Evt_Unknown_Error,
      rule_ids::Rule_Id_Unknown},
