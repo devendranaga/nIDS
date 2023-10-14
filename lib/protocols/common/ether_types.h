@@ -1,6 +1,8 @@
 #ifndef __FW_ETHER_TYPES_H__
 #define __FW_ETHER_TYPES_H__
 
+#include <stdint.h>
+
 namespace firewall {
 
 enum class ether_type : uint16_t {

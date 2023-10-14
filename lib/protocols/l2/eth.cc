@@ -1,3 +1,8 @@
+/**
+ * @brief - implements ethernet serialize and deserialize.
+ * 
+ * @copyright - 2023-present. All rights reserved. Devendra Naga.
+*/
 #include <eth.h>
 #include <rule_parser.h>
 

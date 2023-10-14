@@ -1,3 +1,8 @@
+/**
+ * @brief - implements parser.
+ * 
+ * @copyright - 2023-present. All rights reserved. Devendra Naga.
+*/
 #include <logger.h>
 #include <parser.h>
 #include <event_mgr.h>
@@ -39,19 +44,25 @@ void parser::detect_os_signature()
 int parser::run(packet &pkt)
 {
     event_mgr *evt_mgr = event_mgr::instance();
-    event_description evt_desc;
     ether_type ether = eh.get_ethertype();
+    event_description evt_desc = event_description::Evt_Unknown_Error;
 
+    //
+    // deserialize ethernet header
     eh.deserialize(pkt, log_);
     protocols_avail.set_eth();
 
+    //
+    // check if its vlan, parse it
     if (eh.has_ethertype_vlan()) {
 
     }
 
+    //
+    // parse the rest of the l2 / l3 frames.
     switch (ether) {
         case ether_type::Ether_Type_ARP: {
-            evt_desc = arp_h.deserialize(pkt);
+            evt_desc = arp_h.deserialize(pkt, log_);
             protocols_avail.set_arp();
         } break;
         case ether_type::Ether_Type_IPv4: {

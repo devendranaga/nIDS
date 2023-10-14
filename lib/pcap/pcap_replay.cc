@@ -1,3 +1,8 @@
+/**
+ * @brief - implements pcap replay.
+ * 
+ * @copyright - 2023-present. All rights reserved. Devendra Naga.
+*/
 #include <iostream>
 #include <cstdint>
 #include <cstring>
@@ -32,11 +37,14 @@ void pcap_replay::replay()
 
         std::memset(pkt, 0, sizeof(pkt));
         std::memset(&hdr, 0, sizeof(hdr));
+
+        // read the frame from the pcap
         ret = rd.read_packet(&hdr, pkt, sizeof(pkt));
         if (ret < 0) {
             return;
         }
 
+        // write it on the interface
         raw_->send_msg(dummy_mac, pkt, hdr.incl_len);
     }
 }

@@ -55,7 +55,7 @@ struct arp_hdr {
      * @param [in] p packet frame.
      * @return returns event_description type.
     */
-    event_description deserialize(packet &p);
+    event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
 
     inline bool is_arp_req()

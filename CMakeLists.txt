@@ -19,6 +19,7 @@ set(SERVICE_SOURCES
 	./src/core/core.cc
 	./src/core/rule_parser.cc
 	./src/events/event_mgr.cc
+	./src/events/event_file_writer.cc
 	./src/filters/filter.cc)
 
 set(TOOL_PACKET_GEN_SOURCES

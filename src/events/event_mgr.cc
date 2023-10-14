@@ -1,3 +1,8 @@
+/**
+ * @brief - implements event manager interface.
+ * 
+ * @copyright - 2023-present All rights reserved. Devendra Naga.
+*/
 #include <event_mgr.h>
 
 namespace firewall {
@@ -23,38 +28,80 @@ const static struct {
 
     {event_description::Evt_ARP_Inval_Operation,
      rule_ids::Rule_Id_ARP_Inval_Operation},
+
+    {event_description::Evt_IPV4_Hdrlen_Too_Small,
+     rule_ids::Rule_Id_IPV4_Hdrlen_Too_Small},
+
+    {event_description::Evt_IPV4_Hdrlen_Too_Big,
+     rule_ids::Rule_Id_IPV4_Hdrlen_Too_Big},
+
+    {event_description::Evt_IPV4_Hdrlen_Inval,
+     rule_ids::Rule_Id_IPV4_Hdrlen_Inval},
+
+    {event_description::Evt_IPV4_Version_Invalid,
+     rule_ids::Rule_Id_IPV4_Version_Invalid},
+
+    {event_description::Evt_IPV4_Flags_Invalid,
+     rule_ids::Rule_Id_IPV4_Flags_Invalid},
+
+    {event_description::Evt_IPV4_Hdr_Chksum_Invalid,
+     rule_ids::Rule_Id_IPV4_Hdr_Chksum_Invalid},
+
+    {event_description::Evt_IPV4_Protocol_Unsupported,
+     rule_ids::Rule_Id_IPV4_Protocol_Unsupported},
+
+    {event_description::Evt_Unknown_Error,
+     rule_ids::Rule_Id_Unknown},
 };
 
-void event::create(uint32_t rule_id,
-                   event_type evt_type,
-                   event_description evt_details,
-                   const parser &pkt)
+/**
+ * @brief - create an event.
+*/
+void event_mgr::create_evt(event &evt,
+                           uint32_t rule_id,
+                           event_type evt_type,
+                           event_description evt_details,
+                           const parser &pkt)
 {
-    evt_type = evt_type;
-    evt_details = evt_details;
-    rule_id = rule_id;
+    evt.evt_type = evt_type;
+    evt.evt_details = evt_details;
+    evt.rule_id = rule_id;
 
-    std::memcpy(src_mac, pkt.eh.src_mac, sizeof(pkt.eh.src_mac));
-    std::memcpy(dst_mac, pkt.eh.dst_mac, sizeof(pkt.eh.dst_mac));
-    ethertype = pkt.eh.ethertype;
+    std::memcpy(evt.src_mac, pkt.eh.src_mac, sizeof(pkt.eh.src_mac));
+    std::memcpy(evt.dst_mac, pkt.eh.dst_mac, sizeof(pkt.eh.dst_mac));
+    evt.ethertype = pkt.eh.ethertype;
     switch (pkt.eh.ethertype) {
         case static_cast<uint16_t>(ether_type::Ether_Type_IPv4):
-            protocol = pkt.ipv4_h.protocol;
+            evt.protocol = pkt.ipv4_h.protocol;
         break;
     }
-    pkt_len = pkt.pkt_len;
+    evt.pkt_len = pkt.pkt_len;
 }
 
 fw_error_type event_mgr::init(logger *log)
 {
+    firewall_config *fw_conf = firewall_config::instance();
+    fw_error_type ret;
+
     log_ = log;
 
+    //
     // create storage thread
     storage_thr_id_ = std::make_shared<std::thread>(
                         &event_mgr::storage_thread, this);
     storage_thr_id_->detach();
 
     log_->info("evt_mgr::init: create storage thread ok\n");
+
+    //
+    // initialize event file writer
+    ret = evt_file_w_.init(fw_conf->evt_config.event_file_path,
+                           fw_conf->evt_config.event_file_size_bytes);
+    if (ret != fw_error_type::eNo_Error) {
+        return ret;
+    }
+
+    log_->info("evt_mgr::init: create log file writer ok\n");
 
     return fw_error_type::eNo_Error;
 }
@@ -86,7 +133,7 @@ void event_mgr::store(event_type evt_type,
 {
     event evt;
 
-    evt.create(get_matching_rule(evt_desc), evt_type, evt_desc, pkt);
+    create_evt(evt, get_matching_rule(evt_desc), evt_type, evt_desc, pkt);
     store(evt);
 }
 
@@ -101,11 +148,13 @@ void event_mgr::storage_thread()
         std::this_thread::sleep_for(std::chrono::seconds(1));
         {
             std::unique_lock<std::mutex> lock(storage_thr_lock_);
-
             int q_len = 0;
+
             for (q_len = event_list_.size(); q_len > 0; q_len = event_list_.size()) {
                 event evt = event_list_.front();
 
+                // write to the event log
+                evt_file_w_.write(evt);
                 event_list_.pop();
             }
         }

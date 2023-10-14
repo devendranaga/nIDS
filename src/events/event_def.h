@@ -1,11 +1,14 @@
+/**
+ * @brief - Defines event type and description.
+ *
+ * @copyright - 2023-present All rights reserved. Devendra Naga.
+*/
 #ifndef __FW_EVENT_DEF_H__
 #define __FW_EVENT_DEF_H__
 
-#include <stdint.h>
-#include <map>
-
 namespace firewall {
 
+//
 // constants set by the firewall.
 // these are internally detected by the firewall without having to
 // give any rules.
@@ -51,6 +54,8 @@ enum class event_description {
     Evt_Parse_Ok,
 };
 
+//
+// Type of event
 enum class event_type {
     Evt_Allow,
     Evt_Deny,
@@ -60,3 +65,4 @@ enum class event_type {
 }
 
 #endif
+

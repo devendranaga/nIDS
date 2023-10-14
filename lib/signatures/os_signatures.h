@@ -1,11 +1,16 @@
 /**
  * @brief - Stores OS signatures detected so far on a frame.
+ * 
+ * @copyright - 2023-present. All rights reserved. Devendra Naga.
  */
 #ifndef __FW_OS_SIGNATURES_H__
 #define __FW_OS_SIGNATURES_H__
 
 namespace firewall {
 
+/**
+ * @brief - Type of OS.
+*/
 enum class os_type {
 	Linux_2_4,
 	Linux_4_10_2015_or_Later,
