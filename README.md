@@ -21,4 +21,6 @@ cmake ../
 make -j12
 ```
 
-Supported protocols are [here](doc/supported_protocols.md)
+Supported protocols are [here](doc/supported_protocols.md).
+
+Supported signatures are [here](doc/supported_signatures.md).
