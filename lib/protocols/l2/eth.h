@@ -12,6 +12,7 @@
 #include <ether_types.h>
 #include <logger.h>
 #include <packet.h>
+#include <event_def.h>
 
 namespace firewall {
 
@@ -44,7 +45,7 @@ struct eth_hdr {
 	}
 
 	void serialize(packet &p);
-	void deserialize(packet &p, logger *log, bool debug = false);
+	event_description deserialize(packet &p, logger *log, bool debug = false);
 
 	bool is_zero_src_mac()
 	{
@@ -60,6 +61,7 @@ struct eth_hdr {
 
 	private:
 		void print(logger *log);
+		const uint16_t eth_hdr_len_ = 14;
 };
 
 };

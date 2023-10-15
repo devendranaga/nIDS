@@ -15,8 +15,12 @@ void eth_hdr::serialize(packet &p)
 	p.serialize(ethertype);
 }
 
-void eth_hdr::deserialize(packet &p, logger *log, bool debug)
+event_description eth_hdr::deserialize(packet &p, logger *log, bool debug)
 {
+	if (p.remaining_len() < eth_hdr_len_) {
+		return event_description::Evt_Eth_Hdrlen_Too_Small;
+	}
+
 	p.deserialize(src_mac);
 	p.deserialize(dst_mac);
 	p.deserialize(ethertype);
@@ -24,6 +28,8 @@ void eth_hdr::deserialize(packet &p, logger *log, bool debug)
 	if (debug) {
 		print(log);
 	}
+
+	return event_description::Evt_Parse_Ok;
 }
 
 void eth_hdr::print(logger *log)

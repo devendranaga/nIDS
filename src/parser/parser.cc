@@ -6,6 +6,7 @@
 #include <logger.h>
 #include <parser.h>
 #include <event_mgr.h>
+#include <protocols_types.h>
 
 namespace firewall {
 
@@ -47,10 +48,15 @@ int parser::run(packet &pkt)
     ether_type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
     bool pkt_dump = true;
+    protocols_types proto;
 
     //
     // deserialize ethernet header
-    eh.deserialize(pkt, log_, pkt_dump);
+    evt_desc = eh.deserialize(pkt, log_, pkt_dump);
+    if (evt_desc != event_description::Evt_Unknown_Error) {
+        evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
+        return -1;
+    }
     protocols_avail.set_eth();
 
     ether = eh.get_ethertype();
@@ -75,6 +81,7 @@ int parser::run(packet &pkt)
             protocols_avail.set_ipv4();
         } break;
         default:
+            evt_desc = event_description::Evt_Unknown_Error;
         break;
     }
 
@@ -83,6 +90,19 @@ int parser::run(packet &pkt)
     if (evt_desc != event_description::Evt_Parse_Ok) {
         evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
         return -1;
+    }
+
+    //
+    // parse the rest of l4 frames.
+    proto = get_protocol_type();
+    switch (proto) {
+        case static_cast<protocols_types>(protocols_types::Protocol_Udp): {
+            evt_desc = udp_h.deserialize(pkt, log_, pkt_dump);
+            protocols_avail.set_udp();
+        } break;
+        default:
+            evt_desc = event_description::Evt_Unknown_Error;
+        break;
     }
 
     //

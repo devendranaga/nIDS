@@ -19,6 +19,9 @@ const static struct {
     {event_description::Evt_Eth_Ethertype_Unknown,
      rule_ids::Rule_Id_Unsupported_Ethertype},
 
+    {event_description::Evt_Eth_Hdrlen_Too_Small,
+     rule_ids::Rule_Id_Eth_Hdrlen_Too_Small},
+
     //
     // arp rules
     {event_description::Evt_ARP_Hdrlen_Too_Small,

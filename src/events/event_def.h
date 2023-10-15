@@ -18,6 +18,7 @@ namespace firewall {
 // event description.
 enum class rule_ids {
     Rule_Id_Unsupported_Ethertype = 0x00000001,
+    Rule_Id_Eth_Hdrlen_Too_Small,
     Rule_Id_ARP_Hdrlen_Too_Small,
     Rule_Id_ARP_HW_Addr_Len_Inval,
     Rule_Id_ARP_Protocol_Addr_Len_Inval,
@@ -43,6 +44,7 @@ enum class event_description {
     Evt_Eth_Dst_Mac_Matched,
     Evt_Eth_Ethertype_Matched,
     Evt_Eth_Ethertype_Unknown,
+    Evt_Eth_Hdrlen_Too_Small,
     Evt_ARP_Hdrlen_Too_Small,
     Evt_ARP_HW_Addr_Len_Inval,
     Evt_ARP_Protocol_Addr_Len_Inval,
