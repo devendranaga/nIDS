@@ -23,6 +23,9 @@ struct ipv6_hdr {
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
+
+    private:
+        const int hdrlen_ = 40;
 };
 
 }

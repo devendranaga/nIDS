@@ -7,6 +7,7 @@
 #include <parser.h>
 #include <event_mgr.h>
 #include <protocols_types.h>
+#include <port_numbers.h>
 
 namespace firewall {
 
@@ -51,9 +52,45 @@ event_description parser::parse_l4(packet &pkt)
     // parse the rest of l4 frames.
     proto = get_protocol_type();
     switch (proto) {
-        case static_cast<protocols_types>(protocols_types::Protocol_Udp): {
+        case protocols_types::Protocol_Udp: {
             evt_desc = udp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_udp();
+        } break;
+        case protocols_types::Protocol_Icmp6: {
+            evt_desc = icmp6_h.deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_icmp6();
+        } break;
+        default:
+            evt_desc = event_description::Evt_Unknown_Error;
+        break;
+    }
+
+    //
+    // parse failure or unsupported protocol
+    if (evt_desc != event_description::Evt_Parse_Ok) {
+        return evt_desc;
+    }
+
+    //
+    // parse application
+    if (this->has_port()) {
+        evt_desc = parse_app(pkt);
+    }
+
+    return evt_desc;
+}
+
+event_description parser::parse_app(packet &pkt)
+{
+    event_description evt_desc = event_description::Evt_Unknown_Error;
+    Port_Numbers dst_port;
+
+    dst_port = this->get_dst_port();
+
+    switch (dst_port) {
+        case Port_Numbers::Port_Number_DHCP: {
+            evt_desc = dhcp_h.deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_dhcp();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;

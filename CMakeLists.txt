@@ -11,6 +11,8 @@ set(LIB_SOURCES
 	./lib/protocols/l3/ipv6.cc
 	./lib/protocols/l4/udp.cc
 	./lib/protocols/l4/tcp.cc
+	./lib/protocols/l4/icmp6.cc
+	./lib/protocols/app/dhcp.cc
 	./lib/raw/raw_socket.cc
 	./lib/logging/logger.cc
 	./lib/pcap/pcap_intf.cc
@@ -40,6 +42,7 @@ include_directories(
 	./lib/protocols/l3/
 	./lib/protocols/common/
 	./lib/protocols/l4/
+	./lib/protocols/app/
 	./lib/logging/
 	./lib/raw/
 	./lib/pcap/

@@ -36,6 +36,7 @@ enum class rule_ids {
     Rule_Id_Udp_Dst_Port_Invalid,
     Rule_Id_Udp_Chksum_Invalid,
     Rule_Id_Udp_Len_Too_Short,
+    Rule_Id_DHCP_MAGIC_Invalid,
     Rule_Id_Unknown,
 };
 
@@ -60,10 +61,14 @@ enum class event_description {
     Evt_IPV4_Flags_Invalid,
     Evt_IPV4_Hdr_Chksum_Invalid,
     Evt_IPV4_Protocol_Unsupported,
+    Evt_IPV6_Hdrlen_Too_Small,
+    Evt_IPV6_Version_Invalid,
+    Evt_Icmp6_Icmp6_Type_Unsupported,
     Evt_Udp_Src_Port_Invalid,
     Evt_Udp_Dst_Port_Invalid,
     Evt_Udp_Chksum_Invalid,
     Evt_Udp_Len_Too_Short,
+    Evt_DHCP_MAGIC_Invalid,
     Evt_Unknown_Error,
     Evt_Parse_Ok,
 };

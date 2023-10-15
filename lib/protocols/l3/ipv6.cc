@@ -9,7 +9,19 @@ int ipv6_hdr::serialize(packet &p)
 
 event_description ipv6_hdr::deserialize(packet &p, logger *log, bool debug)
 {
+    //
+    // check if the ipv6 frame is malformed / too short in length
+    if (p.remaining_len() < hdrlen_) {
+        return event_description::Evt_IPV6_Hdrlen_Too_Small;
+    }
+
     version = (p.buf[p.off] & 0xF0) >> 4;
+    //
+    // check version not 6
+    if (version != IPV6_VERSION) {
+        return event_description::Evt_IPV6_Version_Invalid;
+    }
+
     priority = ((p.buf[p.off] & 0x0F) << 4) | 
                ((p.buf[p.off + 1] & 0xF0) >> 4);
     p.off += 2;

@@ -105,6 +105,13 @@ const static struct {
         rule_ids::Rule_Id_Udp_Chksum_Invalid
     },
 
+    //
+    // DHCP rules
+    {
+        event_description::Evt_DHCP_MAGIC_Invalid,
+        rule_ids::Rule_Id_DHCP_MAGIC_Invalid
+    },
+
     {event_description::Evt_Unknown_Error,
      rule_ids::Rule_Id_Unknown},
 };
