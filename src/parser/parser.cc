@@ -10,7 +10,7 @@
 
 namespace firewall {
 
-parser::parser(logger *log): log_(log) { }
+parser::parser(logger *log): log_(log), pkt_dump_(true) { }
 parser::~parser() { }
 
 /**
@@ -42,18 +42,37 @@ void parser::detect_os_signature()
     }
 }
 
+event_description parser::parse_l4(packet &pkt)
+{
+    event_description evt_desc = event_description::Evt_Unknown_Error;
+    protocols_types proto;
+
+    //
+    // parse the rest of l4 frames.
+    proto = get_protocol_type();
+    switch (proto) {
+        case static_cast<protocols_types>(protocols_types::Protocol_Udp): {
+            evt_desc = udp_h.deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_udp();
+        } break;
+        default:
+            evt_desc = event_description::Evt_Unknown_Error;
+        break;
+    }
+
+    return evt_desc;
+}
+
 int parser::run(packet &pkt)
 {
     event_mgr *evt_mgr = event_mgr::instance();
     ether_type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
-    bool pkt_dump = true;
-    protocols_types proto;
 
     //
     // deserialize ethernet header
-    evt_desc = eh.deserialize(pkt, log_, pkt_dump);
-    if (evt_desc != event_description::Evt_Unknown_Error) {
+    evt_desc = eh.deserialize(pkt, log_, pkt_dump_);
+    if (evt_desc != event_description::Evt_Parse_Ok) {
         evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
         return -1;
     }
@@ -64,7 +83,11 @@ int parser::run(packet &pkt)
     //
     // check if its vlan, parse it
     if (eh.has_ethertype_vlan()) {
-        vh.deserialize(pkt, log_, pkt_dump);
+        evt_desc = vh.deserialize(pkt, log_, pkt_dump_);
+        if (evt_desc != event_description::Evt_Parse_Ok) {
+            evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
+            return -1;
+        }
         protocols_avail.set_vlan();
         ether = eh.get_ethertype();
     }
@@ -73,12 +96,16 @@ int parser::run(packet &pkt)
     // parse the rest of the l2 / l3 frames.
     switch (ether) {
         case ether_type::Ether_Type_ARP: {
-            evt_desc = arp_h.deserialize(pkt, log_, pkt_dump);
+            evt_desc = arp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_arp();
         } break;
         case ether_type::Ether_Type_IPv4: {
-            evt_desc = ipv4_h.deserialize(pkt, log_, pkt_dump);
+            evt_desc = ipv4_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ipv4();
+        } break;
+        case ether_type::Ether_Type_IPv6: {
+            evt_desc = ipv6_h.deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_ipv6();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
@@ -92,26 +119,14 @@ int parser::run(packet &pkt)
         return -1;
     }
 
-    //
-    // parse the rest of l4 frames.
-    proto = get_protocol_type();
-    switch (proto) {
-        case static_cast<protocols_types>(protocols_types::Protocol_Udp): {
-            evt_desc = udp_h.deserialize(pkt, log_, pkt_dump);
-            protocols_avail.set_udp();
-        } break;
-        default:
-            evt_desc = event_description::Evt_Unknown_Error;
-        break;
+    if (protocols_avail.has_ipv4() ||
+        protocols_avail.has_ipv6()) {
+        evt_desc = parse_l4(pkt);
     }
 
     //
     // detect the OS signature
     detect_os_signature();
-
-    if (evt_desc != event_description::Evt_Parse_Ok) {
-        // log the event and return
-    }
 
     return 0;
 }

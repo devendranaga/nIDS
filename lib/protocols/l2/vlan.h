@@ -29,6 +29,9 @@ struct vlan_hdr {
     { return static_cast<ether_type>(ethertype); }
 
     void print(logger *log);
+
+    private:
+        uint16_t vlan_hdrlen_ = 4;
 };
 
 }

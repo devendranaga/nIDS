@@ -1,3 +1,8 @@
+/**
+ * @brief - implements rule parser.
+ * 
+ * @copyright - 2023-present. All rights reserved. Devendra Naga.
+*/
 #include <iostream>
 #include <fstream>
 #include <jsoncpp/json/json.h>
@@ -29,17 +34,6 @@ void rule_config::parse_eth_rule(Json::Value &rule_cfg_data,
     }
 }
 
-void rule_config_item::print()
-{
-    logger *log = logger::instance();
-
-    log->verbose("rule_name: %s\n", rule_name.c_str());
-    log->verbose("rule_id: %d\n", rule_id);
-    log->verbose("type: %d\n", type);
-
-    eth_rule.print(log);
-}
-
 void eth_rule_config::print(logger *log)
 {
     log->verbose("eth_rules: {\n");
@@ -53,6 +47,42 @@ void eth_rule_config::print(logger *log)
                     to_dst[4], to_dst[5]);
     log->verbose("\tethertype: %04x\n", ethertype);
     log->verbose("}\n");
+}
+
+void rule_config::parse_vlan_rule(Json::Value &rule_cfg_data,
+                                  rule_config_item &rule)
+{
+    auto pri = rule_cfg_data["vlan"]["pri"];
+    if (!pri.isNull()) {
+        rule.vlan_rule.pri = pri.asUInt();
+        rule.sig_mask.vlan_pri = 1;
+    }
+
+    auto vid = rule_cfg_data["vlan"]["vid"];
+    if (!vid.isNull()) {
+        rule.vlan_rule.vid = rule_cfg_data["vlan"]["vid"].asUInt();
+        rule.sig_mask.vid = 1;
+    }
+}
+
+void vlan_rule_config::print(logger *log)
+{
+    log->verbose("vlan_rules: {\n");
+    log->verbose("\tpri: %d\n", pri);
+    log->verbose("\tvid: %d\n", vid);
+    log->verbose("}\n");
+}
+
+void rule_config_item::print()
+{
+    logger *log = logger::instance();
+
+    log->verbose("rule_name: %s\n", rule_name.c_str());
+    log->verbose("rule_id: %d\n", rule_id);
+    log->verbose("type: %d\n", type);
+
+    eth_rule.print(log);
+    vlan_rule.print(log);
 }
 
 fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
@@ -74,6 +104,7 @@ fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
     }
 
     parse_eth_rule(rule_cfg_data, rule);
+    parse_vlan_rule(rule_cfg_data, rule);
 
     rule.print();
 

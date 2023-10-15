@@ -15,6 +15,8 @@
 #include <arp.h>
 // IPV4 header
 #include <ipv4.h>
+// IPV6 header
+#include <ipv6.h>
 // UDP header
 #include <udp.h>
 #include <packet.h>
@@ -42,11 +44,13 @@ struct protocol_bits {
         void set_arp() { arp = 1; }
         void set_vlan() { vlan = 1; }
         void set_udp() { udp = 1; }
-        bool has_eth() { return eth == 1; }
-        bool has_ipv4() { return ipv4 == 1; }
-        bool has_arp() { return arp == 1; }
-        bool has_vlan() { return vlan == 1; }
-        bool has_udp() { return udp == 1; }
+        void set_ipv6() { ipv6 = 1; }
+        bool has_eth() const { return eth == 1; }
+        bool has_ipv4() const { return ipv4 == 1; }
+        bool has_arp() const { return arp == 1; }
+        bool has_vlan() const { return vlan == 1; }
+        bool has_udp() const { return udp == 1; }
+        bool has_ipv6() const { return ipv6 == 1; }
 
     private:
         uint32_t eth:1;
@@ -54,6 +58,7 @@ struct protocol_bits {
         uint32_t arp:1;
         uint32_t vlan:1;
         uint32_t udp:1;
+        uint32_t ipv6:1;
 };
 
 /**
@@ -73,9 +78,13 @@ struct parser {
         // ARP header
         arp_hdr arp_h;
 
-        // ipv4 header
+        // IPV4 header
         ipv4_hdr ipv4_h;
 
+        // IPV6 header
+        ipv6_hdr ipv6_h;
+
+        // UDP header
         udp_hdr udp_h;
 
         // parsed protocols so far
@@ -92,6 +101,8 @@ struct parser {
         {
             if (protocols_avail.has_ipv4()) {
                 return static_cast<protocols_types>(ipv4_h.protocol);
+            } else if (protocols_avail.has_ipv6()) {
+                return static_cast<protocols_types>(ipv6_h.nh);
             }
 
             return static_cast<protocols_types>(protocols_types::Protocol_Max);
@@ -99,8 +110,10 @@ struct parser {
 
     private:
         void detect_os_signature();
+        event_description parse_l4(packet &pkt);
 
         logger *log_;
+        bool pkt_dump_;
 };
 
 }

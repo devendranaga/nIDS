@@ -86,6 +86,19 @@ fw_error_type packet::serialize(uint8_t *mac)
     return fw_error_type::eNo_Error;
 }
 
+fw_error_type packet::serialize(uint8_t *bufin, uint32_t buflen_to_copy)
+{
+    if (packet_assert_length(off + buflen_to_copy, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    memcpy(&buf[off], bufin, buflen_to_copy);
+
+    off += buflen_to_copy;
+
+    return fw_error_type::eNo_Error;
+}
+
 fw_error_type packet::deserialize(uint8_t &byte)
 {
     if (packet_assert_length(off + 1, buf_len)) {
@@ -133,6 +146,18 @@ fw_error_type packet::deserialize(uint8_t *mac)
 
     memcpy(mac, &buf[off], FW_MACADDR_LEN);
     off += FW_MACADDR_LEN;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::deserialize(uint8_t *bufout, uint32_t buflen_to_copy)
+{
+    if (packet_assert_length(off + buflen_to_copy, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    memcpy(bufout, &buf[off], buflen_to_copy);
+    off += buflen_to_copy;
 
     return fw_error_type::eNo_Error;
 }

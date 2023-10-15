@@ -5,9 +5,12 @@ set(LIB_SOURCES
 	./lib/packet/packet.cc
 	./lib/protocols/l2/eth.cc
 	./lib/protocols/l2/arp.cc
+	./lib/protocols/l2/ptp.cc
 	./lib/protocols/l2/vlan.cc
 	./lib/protocols/l3/ipv4.cc
+	./lib/protocols/l3/ipv6.cc
 	./lib/protocols/l4/udp.cc
+	./lib/protocols/l4/tcp.cc
 	./lib/raw/raw_socket.cc
 	./lib/logging/logger.cc
 	./lib/pcap/pcap_intf.cc

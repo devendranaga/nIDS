@@ -24,7 +24,7 @@ struct eth_rule_config {
     uint8_t to_dst[6];
     uint16_t ethertype;
 
-    eth_rule_config()
+    explicit eth_rule_config() noexcept
     {
         std::memset(from_src, 0, sizeof(from_src));
         std::memset(to_dst, 0, sizeof(to_dst));
@@ -34,16 +34,31 @@ struct eth_rule_config {
     void print(logger *log);
 };
 
+struct vlan_rule_config {
+    uint8_t pri;
+    uint16_t vid;
+
+    explicit vlan_rule_config() noexcept :
+                pri(0), vid(0)
+    { }
+    ~vlan_rule_config() { }
+    void print(logger *log);
+};
+
 struct signature_id_bitmask {
     uint32_t from_src:1;
     uint32_t to_dst:1;
     uint32_t ethertype:1;
+    uint8_t vlan_pri:1;
+    uint8_t vid:1;
 
     explicit signature_id_bitmask()
     {
         from_src = 0;
         to_dst = 0;
         ethertype = 0;
+        vlan_pri = 0;
+        vid = 0;
     }
 
     ~signature_id_bitmask()
@@ -60,6 +75,7 @@ struct rule_config_item {
     uint32_t rule_id;
     rule_type type;
     eth_rule_config eth_rule;
+    vlan_rule_config vlan_rule;
     signature_id_bitmask sig_mask;
 
     explicit rule_config_item() :
@@ -82,6 +98,9 @@ struct signature_item {
     ~signature_item() { }
 };
 
+/**
+ * @brief - defines rule configuration.
+*/
 struct rule_config {
     std::vector<rule_config_item> rules_cfg_;
 
@@ -92,17 +111,22 @@ struct rule_config {
         return &conf;
     }
     ~rule_config() { }
+
     explicit rule_config(const rule_config &) = delete;
     const rule_config &operator=(const rule_config &) = delete;
     explicit rule_config(const rule_config &&) = delete;
     const rule_config &&operator=(const rule_config &&) = delete;
 
+    /**
+     * @brief - parse rules.
+    */
     fw_error_type parse(const std::string rules_file);
 
     private:
         explicit rule_config() { }
         fw_error_type parse_rule(Json::Value &it);
         void parse_eth_rule(Json::Value &it, rule_config_item &item);
+        void parse_vlan_rule(Json::Value &it, rule_config_item &item);
 };
 
 struct signature_list {

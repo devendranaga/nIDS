@@ -16,62 +16,94 @@ const static struct {
 } auto_det_rule_id_list[ ] = {
     //
     // ethernet rules
-    {event_description::Evt_Eth_Ethertype_Unknown,
-     rule_ids::Rule_Id_Unsupported_Ethertype},
-
-    {event_description::Evt_Eth_Hdrlen_Too_Small,
-     rule_ids::Rule_Id_Eth_Hdrlen_Too_Small},
+    {
+        event_description::Evt_Eth_Ethertype_Unknown,
+        rule_ids::Rule_Id_Unsupported_Ethertype
+    },
+    {
+        event_description::Evt_Eth_Hdrlen_Too_Small,
+        rule_ids::Rule_Id_Eth_Hdrlen_Too_Small
+    },
 
     //
     // arp rules
-    {event_description::Evt_ARP_Hdrlen_Too_Small,
-     rule_ids::Rule_Id_ARP_Hdrlen_Too_Small},
+    {
+        event_description::Evt_ARP_Hdrlen_Too_Small,
+        rule_ids::Rule_Id_ARP_Hdrlen_Too_Small
+    },
+    {
+        event_description::Evt_ARP_HW_Addr_Len_Inval,
+        rule_ids::Rule_Id_ARP_HW_Addr_Len_Inval
+    },
+    {
+        event_description::Evt_ARP_Protocol_Addr_Len_Inval,
+        rule_ids::Rule_Id_ARP_Protocol_Addr_Len_Inval
+    },
+    {
+        event_description::Evt_ARP_Inval_Operation,
+        rule_ids::Rule_Id_ARP_Inval_Operation
+    },
 
-    {event_description::Evt_ARP_HW_Addr_Len_Inval,
-     rule_ids::Rule_Id_ARP_HW_Addr_Len_Inval},
-
-    {event_description::Evt_ARP_Protocol_Addr_Len_Inval,
-     rule_ids::Rule_Id_ARP_Protocol_Addr_Len_Inval},
-
-    {event_description::Evt_ARP_Inval_Operation,
-     rule_ids::Rule_Id_ARP_Inval_Operation},
+    //
+    // vlan rules
+    {
+        event_description::Evt_VLAN_Hdrlen_Too_Short,
+        rule_ids::Rule_Id_Vlan_Hdrlen_Too_Small,
+    },
+    {
+        event_description::Evt_VLAN_Inval_VID,
+        rule_ids::Rule_Id_Vlan_Id_Inval,
+    },
 
     //
     // ipv4 rules
-    {event_description::Evt_IPV4_Hdrlen_Too_Small,
-     rule_ids::Rule_Id_IPV4_Hdrlen_Too_Small},
-
-    {event_description::Evt_IPV4_Hdrlen_Too_Big,
-     rule_ids::Rule_Id_IPV4_Hdrlen_Too_Big},
-
-    {event_description::Evt_IPV4_Hdrlen_Inval,
-     rule_ids::Rule_Id_IPV4_Hdrlen_Inval},
-
-    {event_description::Evt_IPV4_Version_Invalid,
-     rule_ids::Rule_Id_IPV4_Version_Invalid},
-
-    {event_description::Evt_IPV4_Flags_Invalid,
-     rule_ids::Rule_Id_IPV4_Flags_Invalid},
-
-    {event_description::Evt_IPV4_Hdr_Chksum_Invalid,
-     rule_ids::Rule_Id_IPV4_Hdr_Chksum_Invalid},
-
-    {event_description::Evt_IPV4_Protocol_Unsupported,
-     rule_ids::Rule_Id_IPV4_Protocol_Unsupported},
+    {
+        event_description::Evt_IPV4_Hdrlen_Too_Small,
+        rule_ids::Rule_Id_IPV4_Hdrlen_Too_Small
+    },
+    {
+        event_description::Evt_IPV4_Hdrlen_Too_Big,
+        rule_ids::Rule_Id_IPV4_Hdrlen_Too_Big
+    },
+    {
+        event_description::Evt_IPV4_Hdrlen_Inval,
+        rule_ids::Rule_Id_IPV4_Hdrlen_Inval
+    },
+    {
+        event_description::Evt_IPV4_Version_Invalid,
+        rule_ids::Rule_Id_IPV4_Version_Invalid
+    },
+    {
+        event_description::Evt_IPV4_Flags_Invalid,
+        rule_ids::Rule_Id_IPV4_Flags_Invalid
+    },
+    {
+        event_description::Evt_IPV4_Hdr_Chksum_Invalid,
+        rule_ids::Rule_Id_IPV4_Hdr_Chksum_Invalid
+    },
+    {
+        event_description::Evt_IPV4_Protocol_Unsupported,
+        rule_ids::Rule_Id_IPV4_Protocol_Unsupported
+    },
 
     //
     // udp rules
-    {event_description::Evt_Udp_Src_Port_Invalid,
-     rule_ids::Rule_Id_Udp_Src_Port_Invalid},
-
-    {event_description::Evt_Udp_Dst_Port_Invalid,
-     rule_ids::Rule_Id_Udp_Dst_Port_Invalid},
-
-    {event_description::Evt_Udp_Len_Too_Short,
-     rule_ids::Rule_Id_Udp_Len_Too_Short},
-
-    {event_description::Evt_Udp_Chksum_Invalid,
-     rule_ids::Rule_Id_Udp_Chksum_Invalid},
+    {
+        event_description::Evt_Udp_Src_Port_Invalid,
+        rule_ids::Rule_Id_Udp_Src_Port_Invalid
+    },
+    {
+        event_description::Evt_Udp_Dst_Port_Invalid,
+        rule_ids::Rule_Id_Udp_Dst_Port_Invalid
+    },
+    {
+        event_description::Evt_Udp_Len_Too_Short,
+        rule_ids::Rule_Id_Udp_Len_Too_Short
+    },
+    {
+        event_description::Evt_Udp_Chksum_Invalid,
+        rule_ids::Rule_Id_Udp_Chksum_Invalid
+    },
 
     {event_description::Evt_Unknown_Error,
      rule_ids::Rule_Id_Unknown},
@@ -92,8 +124,15 @@ void event_mgr::create_evt(event &evt,
 
     std::memcpy(evt.src_mac, pkt.eh.src_mac, sizeof(pkt.eh.src_mac));
     std::memcpy(evt.dst_mac, pkt.eh.dst_mac, sizeof(pkt.eh.dst_mac));
+
+    //
+    // if vlan header is present, get ethertype from vlan header
     evt.ethertype = pkt.eh.ethertype;
-    switch (pkt.eh.ethertype) {
+    if (pkt.protocols_avail.has_vlan()) {
+        evt.ethertype = pkt.vh.ethertype;
+    }
+
+    switch (evt.ethertype) {
         case static_cast<uint16_t>(ether_type::Ether_Type_IPv4):
             evt.protocol = pkt.ipv4_h.protocol;
         break;

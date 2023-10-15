@@ -1,7 +1,7 @@
 [
 	{
 		"rule_name": "allow_ipv4",
-		"rule_id": 1,
+		"rule_id": 10000,
 		"rule_type": "allow",
 		"from_src": "00:11:22:33:44:55",
 		"to_dst": "11:22:33:44:55:66",
@@ -9,9 +9,13 @@
 	},
 	{
 		"rule_name": "allow_vlan",
-		"rule_id": 2,
+		"rule_id": 10001,
 		"rule_type": "deny",
-		"ethertype": "0x8100"
+		"ethertype": "0x8100",
+		"vlan": {
+			"pri": 1,
+			"vid": 10
+		}
 	}
 ]
 
