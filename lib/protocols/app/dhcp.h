@@ -57,6 +57,7 @@ struct dhcp_opt_hostname {
     ~dhcp_opt_hostname() {
         if (hostname) {
             free(hostname);
+            hostname = nullptr;
         }
     }
 };
@@ -108,7 +109,7 @@ struct dhcp_hdr {
                 hostname(nullptr),
                 req_list(nullptr)
     { }
-    ~dhcp_hdr() { }
+    ~dhcp_hdr();
 
     int serialize(packet &p);
 

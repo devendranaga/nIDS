@@ -39,6 +39,11 @@ struct eth_hdr {
 		return (ether_type)ethertype == ether_type::Ether_Type_ARP;
 	}
 
+	inline bool has_ethertype_ipv6()
+	{
+		return (ether_type)ethertype == ether_type::Ether_Type_IPv6;
+	}
+
 	ether_type get_ethertype()
 	{
 		return (ether_type)ethertype;
@@ -47,15 +52,15 @@ struct eth_hdr {
 	void serialize(packet &p);
 	event_description deserialize(packet &p, logger *log, bool debug = false);
 
-	bool is_zero_src_mac()
+	bool is_zero_src_mac() const
 	{
-		uint8_t zmac[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+		const uint8_t zmac[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 		return memcmp(src_mac, zmac, sizeof(src_mac));
 	}
 
-	bool is_broadcast_dst_mac()
+	bool is_broadcast_dst_mac() const
 	{
-		uint8_t bmac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+		const uint8_t bmac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 		return memcmp(dst_mac, bmac, sizeof(dst_mac));
 	}
 

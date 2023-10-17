@@ -96,7 +96,7 @@ event_description dhcp_hdr::deserialize(packet &p, logger *log, bool debug)
                     uint8_t byte_1;
 
                     p.deserialize(byte_1);
-                    req_list->list.emplace_back(byte_1);
+                    req_list->list.push_back(static_cast<dhcp_param_req_list>(byte_1));
                 }
             } break;
             case static_cast<uint8_t>(dhcp_param_req_list::End): {
@@ -117,7 +117,45 @@ event_description dhcp_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void dhcp_hdr::print(logger *log)
 {
+    log->verbose("DHCP: {\n");
+    log->verbose("\t msg_type: %d\n", msg_type);
+    log->verbose("\t hw_type: %d\n", hw_type);
+    log->verbose("\t hw_addr_len: %d\n", hw_addr_len);
+    log->verbose("\t hops: %d\n", hops);
+    log->verbose("\t transaction_id: %u\n", transaciton_id);
+    log->verbose("\t secs_elapsed: %d\n", secs_elapsed);
+    log->verbose("\t broadcast: %d\n", broadcast);
+    log->verbose("\t reserved: %d\n", reserved);
+    log->verbose("\t client_ipaddr: %u\n", client_ipaddr);
+    log->verbose("\t your_ipaddr: %u\n", your_ipaddr);
+    log->verbose("\t next_server_ipaddr: %u\n", next_server_ipaddr);
+    log->verbose("\t relay_agent_ipaddr: %u\n", relay_agent_ipaddr);
+    log->verbose("\t client_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                            client_macaddr[0], client_macaddr[1],
+                            client_macaddr[2], client_macaddr[3],
+                            client_macaddr[4], client_macaddr[5]);
+    log->verbose("\t server_hostname: %s\n", (char *)server_hostname);
+    log->verbose("\t bootfilename: %s\n", (char *)bootfilename);
+    log->verbose("\t dhcp_magic: %c%c%c%c\n",
+                            dhcp_magic[0], dhcp_magic[1],
+                            dhcp_magic[2], dhcp_magic[3]);
+    log->verbose("}\n");
+}
 
+dhcp_hdr::~dhcp_hdr()
+{
+    if (type) {
+        free(type);
+    }
+    if (req_ipaddr) {
+        free(req_ipaddr);
+    }
+    if (hostname) {
+        free(hostname);
+    }
+    if (req_list) {
+        free(req_list);
+    }
 }
 
 }

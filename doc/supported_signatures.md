@@ -10,7 +10,9 @@
 | 6 | IPV4 | Header length too small / big / invalid |
 | 7 | IPV4 | Invalid Version |
 | 8 | IPV4 | Invalid Flags |
-| 9 | UDP | Invalid src port |
-| 10 | UDP | Invalid dst port |
-| 11 | UDP | Too small udp header length |
+| 9 | IPV6 | Too short header length |
+| 10 | IPV6 | Invalid Version |
+| 11 | UDP | Invalid src port |
+| 12 | UDP | Invalid dst port |
+| 13 | UDP | Too small udp header length |
 

@@ -12,6 +12,7 @@ set(LIB_SOURCES
 	./lib/protocols/l4/udp.cc
 	./lib/protocols/l4/tcp.cc
 	./lib/protocols/l4/icmp6.cc
+	./lib/protocols/l4/icmp.cc
 	./lib/protocols/app/dhcp.cc
 	./lib/raw/raw_socket.cc
 	./lib/logging/logger.cc
