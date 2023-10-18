@@ -56,6 +56,10 @@ event_description parser::parse_l4(packet &pkt)
             evt_desc = udp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_udp();
         } break;
+        case protocols_types::Protocol_Icmp: {
+            evt_desc = icmp_h.deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_icmp();
+        } break;
         case protocols_types::Protocol_Icmp6: {
             evt_desc = icmp6_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_icmp6();

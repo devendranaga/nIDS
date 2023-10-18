@@ -1,3 +1,6 @@
+##
+# Build system for firewall and its related tooling
+#
 project(firewall)
 cmake_minimum_required(VERSION 3.25)
 
