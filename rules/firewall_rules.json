@@ -16,6 +16,37 @@
 			"pri": 1,
 			"vid": 10
 		}
+	},
+	{
+		"rule_name": "deny_arps",
+		"rule_id": 10002,
+		"rule_type": "deny",
+		"ethertype": "0x0806"
+	},
+	{
+		"rule_name": "deny_ipv4_with_options",
+		"rule_id": 10003,
+		"rule_type": "deny",
+		"ip": {
+			"check_options": true
+		}
+	},
+	{
+		"rule_name": "deny_ipv4_proto_icmp",
+		"rule_id": 10004,
+		"rule_type": "deny",
+		"ip": {
+			"protocol": "icmp"
+		}
+	},
+	{
+		"rule_name": "deny_icmps_with_payload",
+		"rule_id": 10005,
+		"rule_type": "deny",
+		"protocol": "icmp",
+		"icmp": {
+			"payload_non_zero": true
+		}
 	}
 ]
 

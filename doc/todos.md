@@ -8,7 +8,7 @@
 |   |                  | filters and we need to make a decision on which filter rule  |
 |   |                  | finally matched and weather to allow or deny or event frame. |
 | 2 | design ips       | we need to understand this more to define port maps first.   |
-| 3 | parse icmp       | |
+| 3 | parse ntp        | |
 | 4 | parse tcp        | |
 | 5 | parse icmp6 options | |
 | 6 | parse ipv6 options | |

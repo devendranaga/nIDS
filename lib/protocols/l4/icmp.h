@@ -6,6 +6,7 @@
 #ifndef __FW_LIB_PROTOCOLS_ICMP_H__
 #define __FW_LIB_PROTOCOLS_ICMP_H__
 
+#include <stdlib.h>
 #include <packet.h>
 #include <event_def.h>
 #include <logger.h>
@@ -46,7 +47,13 @@ struct icmp_hdr {
                 echo_req(nullptr),
                 echo_reply(nullptr)
     { }
-    ~icmp_hdr() { }
+    ~icmp_hdr()
+    {
+        if (echo_req)
+            free(echo_req);
+        if (echo_reply)
+            free(echo_reply);
+    }
 
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);
