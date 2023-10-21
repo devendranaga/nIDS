@@ -15,4 +15,8 @@
 | 11 | UDP | Invalid src port |
 | 12 | UDP | Invalid dst port |
 | 13 | UDP | Too small udp header length |
+| 14 | ICMP | ICMP Invalid type |
+| 15 | ICMP6 | ICMP6 Unsupported type |
+| 16 | DHCP | Invalid DHCP magic |
+
 

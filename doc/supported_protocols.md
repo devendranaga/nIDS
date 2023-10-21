@@ -10,6 +10,8 @@ The following protocol parsing is currently supported.
 | 4 | IPv4 | L3 |
 | 5 | IPv6 | L3 |
 | 6 | UDP | L4 |
-| 7 | ICMP6 | L4 | 
-| 8 | DHCP | APP |
+| 7 | ICMP | L4 |
+| 8 | ICMP6 | L4 |
+| 9 | DHCP | APP |
+| 10 | NTP | APP |
 
