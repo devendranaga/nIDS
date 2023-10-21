@@ -14,7 +14,7 @@ namespace firewall {
 
 #define NTP_MODE_CLIENT 3
 
-struct ntp {
+struct ntp_hdr {
     uint32_t leap_indicator:2;
     uint32_t version:3;
     uint32_t mode:3;

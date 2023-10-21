@@ -7,12 +7,12 @@
 
 namespace firewall {
 
-int ntp::serialize(packet &p)
+int ntp_hdr::serialize(packet &p)
 {
     return -1;
 }
 
-event_description ntp::deserialize(packet &p, logger *log, bool debug)
+event_description ntp_hdr::deserialize(packet &p, logger *log, bool debug)
 {
     uint8_t byte_1;
 
