@@ -4,58 +4,49 @@
 project(firewall)
 cmake_minimum_required(VERSION 3.25)
 
+include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l2/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l3/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l4/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/app/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/pcap/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/tools/packet_gen/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/core/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/events/build.cmake)
+
 set(LIB_SOURCES
 	./lib/packet/packet.cc
-	./lib/protocols/l2/eth.cc
-	./lib/protocols/l2/arp.cc
-	./lib/protocols/l2/ptp.cc
-	./lib/protocols/l2/vlan.cc
-	./lib/protocols/l3/ipv4.cc
-	./lib/protocols/l3/ipv6.cc
-	./lib/protocols/l4/udp.cc
-	./lib/protocols/l4/tcp.cc
-	./lib/protocols/l4/icmp6.cc
-	./lib/protocols/l4/icmp.cc
-	./lib/protocols/app/dhcp.cc
+	${LIB_SOURCES_L2}
+	${LIB_SOURCES_L3}
+	${LIB_SOURCES_L4}
+	${LIB_SOURCES_APP}
+	${LIB_SOURCES_PCAP}
 	./lib/raw/raw_socket.cc
 	./lib/logging/logger.cc
-	./lib/pcap/pcap_intf.cc
-	./lib/pcap/pcap_replay.cc
 	./lib/crypto/crypto.cc
 	./lib/common/common.cc)
 
 set(SERVICE_SOURCES
 	./src/config/config.cc
-	./src/core/core.cc
-	./src/core/rule_parser.cc
+	${CORE_SRC}
 	./src/parser/parser.cc
-	./src/events/event_mgr.cc
-	./src/events/event_file_writer.cc
+	${EVENT_MGR_SRC}
 	./src/filters/filter.cc)
 
 set(TOOL_PACKET_GEN_SOURCES
-	./tools/packet_gen/packet_gen_config.cc
-	./tools/packet_gen/packet_gen.cc)
+	${PKT_GEN_SRC})
 
 include_directories(
 	./lib
 	./lib/common/
 	./lib/packet/
 	./src/parser/
-	./lib/protocols/l2/
-	./lib/protocols/l3/
 	./lib/protocols/common/
-	./lib/protocols/l4/
-	./lib/protocols/app/
 	./lib/logging/
 	./lib/raw/
-	./lib/pcap/
 	./lib/crypto/
 	./lib/signatures/
 	./src/
-	./src/core/
 	./src/config/
-	./src/events/
 	./src/filters/
 	./tools/packet_gen/)
 

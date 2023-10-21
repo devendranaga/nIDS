@@ -68,7 +68,27 @@ fw_error_type packet::serialize(uint32_t bytes)
     buf[off + 2] = (bytes & 0x00FF0000) >> 16;
     buf[off + 3] = (bytes & 0xFF000000) >> 24;
 
-    off += 3;
+    off += 4;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::serialize(uint64_t bytes)
+{
+    if (packet_assert_length(off + 8, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    buf[off] = (bytes & 0x00000000000000FF);
+    buf[off + 1] = (bytes & 0x000000000000FF00) >> 8;
+    buf[off + 2] = (bytes & 0x0000000000FF0000) >> 16;
+    buf[off + 3] = (bytes & 0x00000000FF000000) >> 24;
+    buf[off + 4] = (bytes & 0x000000FF00000000) >> 32;
+    buf[off + 5] = (bytes & 0x0000FF0000000000) >> 40;
+    buf[off + 6] = (bytes & 0x00FF000000000000) >> 48;
+    buf[off + 7] = (bytes & 0xFF00000000000000) >> 56;
+
+    off += 8;
 
     return fw_error_type::eNo_Error;
 }
@@ -134,6 +154,25 @@ fw_error_type packet::deserialize(uint32_t &bytes)
              (buf[off + 1] << 8) |
              buf[off]);
     off += 4;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::deserialize(uint64_t &bytes)
+{
+    if (packet_assert_length(off + 8, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    bytes = (((uint64_t)(buf[off + 7]) << 56) |
+             ((uint64_t)(buf[off + 6]) << 48) |
+             ((uint64_t)(buf[off + 5]) << 40) |
+             ((uint64_t)(buf[off + 4]) << 32) |
+             (buf[off + 3] << 24) |
+             (buf[off + 2] << 16) |
+             (buf[off + 1] << 8) |
+             buf[off]);
+    off += 8;
 
     return fw_error_type::eNo_Error;
 }

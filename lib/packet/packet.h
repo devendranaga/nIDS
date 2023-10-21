@@ -29,11 +29,13 @@ struct packet {
     fw_error_type serialize(uint8_t byte);
     fw_error_type serialize(uint16_t bytes);
     fw_error_type serialize(uint32_t bytes);
+    fw_error_type serialize(uint64_t bytes);
     fw_error_type serialize(uint8_t *mac);
     fw_error_type serialize(uint8_t *buf, uint32_t buf_len);
     fw_error_type deserialize(uint8_t &byte);
     fw_error_type deserialize(uint16_t &bytes);
     fw_error_type deserialize(uint32_t &bytes);
+    fw_error_type deserialize(uint64_t &bytes);
     fw_error_type deserialize(uint8_t *mac);
     fw_error_type deserialize(uint8_t *buf, uint32_t buf_len);
     void hexdump()
