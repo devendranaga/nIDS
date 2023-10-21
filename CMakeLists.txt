@@ -9,21 +9,26 @@ include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l3/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l4/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/app/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/pcap/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/raw/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/tools/packet_gen/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/core/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/events/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/logging/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/crypto/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/common/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/lib/packet/build.cmake)
 
 set(LIB_SOURCES
-	./lib/packet/packet.cc
+	${LIB_SOURCES_PACKET}
 	${LIB_SOURCES_L2}
 	${LIB_SOURCES_L3}
 	${LIB_SOURCES_L4}
 	${LIB_SOURCES_APP}
 	${LIB_SOURCES_PCAP}
-	./lib/raw/raw_socket.cc
-	./lib/logging/logger.cc
-	./lib/crypto/crypto.cc
-	./lib/common/common.cc)
+	${LIB_SOURCES_RAW}
+	${LIB_SOURCES_LOGGING}
+	${LIB_SOURCES_CRYPTO}
+	${LIB_SOURCES_COMMON})
 
 set(SERVICE_SOURCES
 	./src/config/config.cc
@@ -37,15 +42,11 @@ set(TOOL_PACKET_GEN_SOURCES
 
 include_directories(
 	./lib
-	./lib/common/
-	./lib/packet/
 	./src/parser/
 	./lib/protocols/common/
-	./lib/logging/
-	./lib/raw/
-	./lib/crypto/
 	./lib/signatures/
 	./src/
+	./src/stats/
 	./src/config/
 	./src/filters/
 	./tools/packet_gen/)
