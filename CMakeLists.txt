@@ -13,6 +13,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/lib/raw/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/tools/packet_gen/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/core/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/events/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/parser/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/stats/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/logging/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/crypto/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/common/build.cmake)
@@ -32,13 +34,14 @@ set(LIB_SOURCES
 
 set(SERVICE_SOURCES
 	./src/config/config.cc
-	${CORE_SRC}
-	./src/parser/parser.cc
-	${EVENT_MGR_SRC}
+	${CORE_SOURCES}
+	${PARSER_SOURCES}
+	${EVENT_MGR_SOURCES}
+	${STATS_SOURCES}
 	./src/filters/filter.cc)
 
 set(TOOL_PACKET_GEN_SOURCES
-	${PKT_GEN_SRC})
+	${PKT_GEN_SOURCES})
 
 include_directories(
 	./lib
@@ -48,8 +51,7 @@ include_directories(
 	./src/
 	./src/stats/
 	./src/config/
-	./src/filters/
-	./tools/packet_gen/)
+	./src/filters/)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -g -ggdb")
 

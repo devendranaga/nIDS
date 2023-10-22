@@ -19,6 +19,8 @@
 #include <ipv6.h>
 // UDP header
 #include <udp.h>
+// TCP header
+#include <tcp.h>
 // ICMP header
 #include <icmp.h>
 // ICMP6 header
@@ -46,6 +48,7 @@ struct protocol_bits {
                             arp(0),
                             vlan(0),
                             icmp(0),
+                            tcp(0),
                             udp(0),
                             ipv6(0),
                             icmp6(0),
@@ -59,6 +62,7 @@ struct protocol_bits {
         void set_arp() { arp = 1; }
         void set_vlan() { vlan = 1; }
         void set_icmp() { icmp = 1; }
+        void set_tcp() { tcp = 1; }
         void set_udp() { udp = 1; }
         void set_ipv6() { ipv6 = 1; }
         void set_icmp6() { icmp6 = 1; }
@@ -69,6 +73,7 @@ struct protocol_bits {
         bool has_arp() const { return arp == 1; }
         bool has_vlan() const { return vlan == 1; }
         bool has_icmp() const { return icmp == 1; }
+        bool has_tcp() const { return tcp == 1; }
         bool has_udp() const { return udp == 1; }
         bool has_ipv6() const { return ipv6 == 1; }
         bool has_icmp6() const { return icmp6 == 1; }
@@ -81,6 +86,7 @@ struct protocol_bits {
         uint32_t arp:1;
         uint32_t vlan:1;
         uint32_t icmp:1;
+        uint32_t tcp:1;
         uint32_t udp:1;
         uint32_t ipv6:1;
         uint32_t icmp6:1;
@@ -93,7 +99,7 @@ struct protocol_bits {
 */
 struct parser {
     public:
-        explicit parser(logger *log);
+        explicit parser(const std::string ifname, logger *log);
         ~parser();
 
         // ethernet header
@@ -110,6 +116,9 @@ struct parser {
 
         // IPV6 header
         ipv6_hdr ipv6_h;
+
+        // TCP header
+        tcp_hdr tcp_h;
 
         // UDP header
         udp_hdr udp_h;
@@ -170,6 +179,7 @@ struct parser {
         event_description parse_l4(packet &pkt);
         event_description parse_app(packet &pkt);
 
+        std::string ifname_;
         logger *log_;
         bool pkt_dump_;
 };

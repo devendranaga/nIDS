@@ -73,6 +73,51 @@ void vlan_rule_config::print(logger *log)
     log->verbose("}\n");
 }
 
+void rule_config::parse_ipv4_rule(Json::Value &rule_cfg_data,
+                                  rule_config_item &rule)
+{
+    auto chk_options = rule_cfg_data["ipv4"]["check_options"];
+    printf("check otp '%s'\n", chk_options.asString().c_str());
+    if (!chk_options.isNull()) {
+        rule.ipv4_rule.check_options = chk_options.asBool();
+        rule.sig_mask.ipv4_check_options = 1;
+    }
+
+    auto protocol = rule_cfg_data["ipv4"]["protocol"];
+    if (!protocol.isNull()) {
+        if (protocol.asString() == "icmp") {
+            rule.ipv4_rule.protocol = protocols_types::Protocol_Icmp;
+            rule.sig_mask.ipv4_protocol = 1;
+        }
+    }
+}
+
+void ipv4_rule_config::print(logger *log)
+{
+    log->verbose("ipv4_rules: {\n");
+    log->verbose("\tcheck_options: %d\n", check_options);
+    log->verbose("\tprotocol: %d\n", static_cast<int>(protocol));
+    log->verbose("}\n");
+}
+
+void rule_config::parse_icmp_rule(Json::Value &rule_cfg_data,
+                                  rule_config_item &rule)
+{
+    auto non_zero_pl_str = rule_cfg_data["icmp"]["non_zero_payload"];
+    if (!non_zero_pl_str.isNull()) {
+        printf("%s\n", non_zero_pl_str.asString().c_str());
+        rule.icmp_rule.non_zero_payload = non_zero_pl_str.asBool();
+        rule.sig_mask.icmp_non_zero_payload = 1;
+    }
+}
+
+void icmp_rule_config::print(logger *log)
+{
+    log->verbose("icmp_rules: {\n");
+    log->verbose("\tnon_zero_payload: %d\n", non_zero_payload);
+    log->verbose("}\n");
+}
+
 void rule_config_item::print()
 {
     logger *log = logger::instance();
@@ -83,6 +128,8 @@ void rule_config_item::print()
 
     eth_rule.print(log);
     vlan_rule.print(log);
+    ipv4_rule.print(log);
+    icmp_rule.print(log);
 }
 
 fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
@@ -105,6 +152,8 @@ fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
 
     parse_eth_rule(rule_cfg_data, rule);
     parse_vlan_rule(rule_cfg_data, rule);
+    parse_ipv4_rule(rule_cfg_data, rule);
+    parse_icmp_rule(rule_cfg_data, rule);
 
     rule.print();
 

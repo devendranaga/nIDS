@@ -6,6 +6,7 @@
 #ifndef __FW_PROTOCOLS_ARP_H__
 #define __FW_PROTOCOLS_ARP_H__
 
+#include <cstring>
 #include <stdint.h>
 #include <common.h>
 #include <ether_types.h>
@@ -48,6 +49,14 @@ struct arp_hdr {
     uint8_t target_hw_addr[FW_MACADDR_LEN];
     uint32_t target_proto_addr;
 
+    explicit arp_hdr()
+    {
+        std::memset(sender_hw_addr, 0, sizeof(sender_hw_addr));
+        std::memset(target_hw_addr, 0, sizeof(target_hw_addr));
+        sender_proto_addr = 0;
+        target_proto_addr = 0;
+    }
+    ~arp_hdr() { }
     int serialize(packet &p);
     /**
      * @brief - implements ARP deserialization.
@@ -65,7 +74,7 @@ struct arp_hdr {
     { return operation == (uint32_t)arp_operation::Reply; }
 
     private:
-        const int arp_hdr_len = 28;
+        const int arp_hdr_len_ = 28;
 };
 
 }

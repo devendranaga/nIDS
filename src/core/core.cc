@@ -4,6 +4,7 @@
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #include <core.h>
+#include <packet_stats.h>
 
 namespace firewall {
 
@@ -81,6 +82,8 @@ fw_error_type firewall_intf::init(const std::string ifname,
 {
     fw_error_type ret;
 
+    ifname_ = ifname;
+
     // Parse rules file
     ret = rule_data_->parse(rule_file);
     if (ret != fw_error_type::eNo_Error) {
@@ -124,11 +127,11 @@ void firewall_intf::rx_thread()
             return;
         }
 
-        stats_.inc_rx_count();
         pkt.buf_len = ret;
         pkt.create(buf, ret);
 
-        log_->verbose("rx packet %d\n", stats_.rx_count);
+        // increment rx frame count
+        firewall_pkt_stats::instance()->inc_n_rx(ifname_);
 
         {
             // queue the frame
@@ -139,29 +142,41 @@ void firewall_intf::rx_thread()
     }
 }
 
+/**
+ * @brief - run the packet filter.
+ * 
+ * This is written indepdently out of the queue retrieve logic to increase
+ * the flexibility of queue retrieval design.
+*/
+void firewall_intf::run_filter(packet &pkt)
+{
+    parser p(ifname_, log_);
+    int ret;
+
+    log_->verbose("filter packet with size %d\n", pkt.buf_len);
+
+    ret = p.run(pkt);
+    if (ret != 0) {
+        firewall_pkt_stats::instance()->inc_n_deny(ifname_);
+    }
+    pkt.free_pkt();
+}
+
 void firewall_intf::filter_thread()
 {
     while (1) {
         packet pkt;
-        bool valid_pkt = false;
 
         // retrieve one packet from the queue
         {
             std::unique_lock<std::mutex> lock(rx_thr_lock_);
             rx_thr_cond_.wait(lock);
-            if (pkt_q_.size() > 0) {
+            while (pkt_q_.size() > 0) {
                 pkt = pkt_q_.front();
-                valid_pkt = true;
+
+                run_filter(pkt);
+                pkt_q_.pop();
             }
-            pkt_q_.pop();
-        }
-
-        if (valid_pkt) {
-            log_->verbose("filter packet with size %d\n", pkt.buf_len);
-            parser p(log_);
-
-            p.run(pkt);
-            pkt.free_pkt();
         }
     }
 }

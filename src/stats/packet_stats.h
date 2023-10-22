@@ -1,42 +1,61 @@
+/**
+ * @brief - Implements storage of packet statistics.
+ * 
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_PACKET_STATS_H__
 #define __FW_PACKET_STATS_H__
 
 #include <stdint.h>
+#include <string>
+#include <memory>
+#include <vector>
 
 namespace firewall {
 
-/**
- * @brief - Ethernet statistics
-*/
-struct firewall_pkt_stats_eth {
-    uint64_t rx_inval_dst;
-    uint64_t rx_inval_src;
-    uint64_t rx_inval_ethertype;
+struct firewall_intf_stats {
+    std::string ifname;
+    uint64_t n_rx;
+    uint64_t n_deny;
+    uint64_t n_allowed;
+    uint64_t n_events;
 
-    explicit firewall_pkt_stats_eth() : rx_inval_dst(0),
-                                        rx_inval_src(0),
-                                        rx_inval_ethertype(0)
+    explicit firewall_intf_stats() :
+                    ifname(""),
+                    n_rx(0),
+                    n_deny(0),
+                    n_allowed(0),
+                    n_events(0)
     { }
-    ~firewall_pkt_stats_eth() { }
-
-    void inc_rx_inval_dst() { rx_inval_dst ++; }
-    void inc_rx_inval_src() { rx_inval_src ++; }
-    void inc_rx_inval_ethertype() { rx_inval_ethertype ++; }
+    ~firewall_intf_stats() { }
 };
 
 /**
  * @brief - defines packet statistics
 */
-struct firewall_pkt_stats {
-    uint64_t rx_count;
+class firewall_pkt_stats {
+    public:
+        static firewall_pkt_stats *instance() 
+        {
+            static firewall_pkt_stats stats;
+            return &stats;
+        }
 
-    firewall_pkt_stats_eth eth_stats;
+        void inc_n_rx(const std::string ifname);
+        void inc_n_deny(const std::string ifname);
+        void inc_n_allowed(const std::string ifname);
+        void inc_n_events(const std::string ifname);
 
-    explicit firewall_pkt_stats() : rx_count(0)
-    { }
-    ~firewall_pkt_stats() { }
+        firewall_pkt_stats(const firewall_pkt_stats &) = delete;
+        const firewall_pkt_stats &operator=(const firewall_pkt_stats &) = delete;
+        firewall_pkt_stats(const firewall_pkt_stats &&) = delete;
+        const firewall_pkt_stats &&operator=(const firewall_pkt_stats &&) = delete;
 
-    void inc_rx_count() { rx_count ++; }
+        ~firewall_pkt_stats() { }
+
+    private:
+        explicit firewall_pkt_stats() { }
+        std::vector<firewall_intf_stats> stats_;
 };
 
 }

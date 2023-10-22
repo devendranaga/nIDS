@@ -21,7 +21,7 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
 
     switch (static_cast<Icmp_Type>(type)) {
         case Icmp_Type::Echo_Req: {
-            echo_req = (icmp_echo_req *)calloc(1, sizeof(icmp_echo_req));
+            echo_req = std::make_shared<icmp_echo_req>();
             if (!echo_req) {
                 return event_description::Evt_Unknown_Error;
             }
@@ -35,7 +35,7 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             std::memcpy(echo_req->data, &p.buf[p.off], p.remaining_len());
         } break;
         case Icmp_Type::Echo_Reply: {
-            echo_reply = (icmp_echo_reply *)calloc(1, sizeof(icmp_echo_reply));
+            echo_reply = std::make_shared<icmp_echo_reply>();
             if (!echo_reply) {
                 return event_description::Evt_Unknown_Error;
             }

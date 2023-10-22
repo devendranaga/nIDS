@@ -33,7 +33,7 @@ void pcap_replay::replay()
         pcaprec_hdr_t hdr;
         uint8_t pkt[2400];
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(replay_intvl_));
+        std::this_thread::sleep_for(std::chrono::microseconds(replay_intvl_));
 
         std::memset(pkt, 0, sizeof(pkt));
         std::memset(&hdr, 0, sizeof(hdr));

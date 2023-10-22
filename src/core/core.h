@@ -40,6 +40,7 @@ class firewall_intf {
     private:
         void rx_thread();
         void filter_thread();
+        void run_filter(packet &pkt);
         std::shared_ptr<std::thread> rx_thr_id_;
         std::condition_variable rx_thr_cond_;
         std::shared_ptr<std::thread> filt_thr_id_;
@@ -47,8 +48,8 @@ class firewall_intf {
         std::queue<packet> pkt_q_;
         std::mutex rx_thr_lock_;
         logger *log_;
-        firewall_pkt_stats stats_;
         rule_config *rule_data_;
+        std::string ifname_;
 };
 
 /**

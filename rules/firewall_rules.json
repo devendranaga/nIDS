@@ -27,7 +27,7 @@
 		"rule_name": "deny_ipv4_with_options",
 		"rule_id": 10003,
 		"rule_type": "deny",
-		"ip": {
+		"ipv4": {
 			"check_options": true
 		}
 	},
@@ -35,7 +35,7 @@
 		"rule_name": "deny_ipv4_proto_icmp",
 		"rule_id": 10004,
 		"rule_type": "deny",
-		"ip": {
+		"ipv4": {
 			"protocol": "icmp"
 		}
 	},
@@ -45,7 +45,7 @@
 		"rule_type": "deny",
 		"protocol": "icmp",
 		"icmp": {
-			"payload_non_zero": true
+			"non_zero_payload": true
 		}
 	}
 ]

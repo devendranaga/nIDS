@@ -1,7 +1,7 @@
 project(firewall)
 cmake_minimum_required(VERSION 3.25)
 
-SET(EVENT_MGR_SRC
+SET(EVENT_MGR_SOURCES
 	./src/events/event_mgr.cc
 	./src/events/event_file_writer.cc)
 

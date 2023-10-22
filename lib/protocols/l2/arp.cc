@@ -15,7 +15,7 @@ int arp_hdr::serialize(packet &p)
 
 event_description arp_hdr::deserialize(packet &p, logger *log, bool debug)
 {
-    if (p.remaining_len() < arp_hdr_len) {
+    if (p.remaining_len() < arp_hdr_len_) {
         return event_description::Evt_ARP_Hdrlen_Too_Small;
     }
 

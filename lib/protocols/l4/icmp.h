@@ -7,6 +7,7 @@
 #define __FW_LIB_PROTOCOLS_ICMP_H__
 
 #include <stdlib.h>
+#include <memory>
 #include <packet.h>
 #include <event_def.h>
 #include <logger.h>
@@ -40,20 +41,15 @@ struct icmp_hdr {
     uint8_t type;
     uint8_t code;
     uint16_t checksum;
-    icmp_echo_req *echo_req;
-    icmp_echo_reply *echo_reply;
+    std::shared_ptr<icmp_echo_req> echo_req;
+    std::shared_ptr<icmp_echo_reply> echo_reply;
 
     explicit icmp_hdr() :
                 echo_req(nullptr),
                 echo_reply(nullptr)
     { }
     ~icmp_hdr()
-    {
-        if (echo_req)
-            free(echo_req);
-        if (echo_reply)
-            free(echo_reply);
-    }
+    { }
 
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);

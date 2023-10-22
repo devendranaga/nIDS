@@ -5,13 +5,18 @@
 */
 #include <logger.h>
 #include <parser.h>
+#include <packet_stats.h>
 #include <event_mgr.h>
 #include <protocols_types.h>
 #include <port_numbers.h>
 
 namespace firewall {
 
-parser::parser(logger *log): log_(log), pkt_dump_(true) { }
+parser::parser(const std::string ifname, logger *log) :
+                        ifname_(ifname),
+                        log_(log),
+                        pkt_dump_(true)
+{ }
 parser::~parser() { }
 
 /**
@@ -63,6 +68,10 @@ event_description parser::parse_l4(packet &pkt)
         case protocols_types::Protocol_Icmp6: {
             evt_desc = icmp6_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_icmp6();
+        } break;
+        case protocols_types::Protocol_Tcp: {
+            evt_desc = tcp_h.deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_tcp();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
