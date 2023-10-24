@@ -23,7 +23,9 @@
 | 19 | ICMP | ICMP Invalid type |
 | 20 | ICMP | ICMP invalid destination unreachable code |
 | 21 | ICMP | ICMP invalid time exceeded code |
-| 22 | ICMP6 | ICMP6 Unsupported type |
-| 23 | DHCP | Invalid DHCP magic |
+| 22 | ICMP | ICMP Timestamp req / response headers are too small |
+| 23 | ICMP | ICMP Info message header is too small |
+| 24 | ICMP6 | ICMP6 Unsupported type |
+| 25 | DHCP | Invalid DHCP magic |
 
 

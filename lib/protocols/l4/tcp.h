@@ -22,6 +22,7 @@ enum class Tcp_Options_Type : uint32_t {
 };
 
 struct tcp_hdr_opt_mss {
+    uint8_t len;
     uint16_t val;
 };
 
@@ -47,10 +48,26 @@ struct tcp_hdr_options {
     std::shared_ptr<tcp_hdr_opt_win_scale> win_scale;
 
     int serialize(packet &p);
-    event_description deserialize(packet &p, logger *log, bool debug = false);
+    /**
+     * @brief - deserialize TCP header options.
+     *
+     * @param [inout] p - pkt
+     * @param [in] rem_len - remaining length
+     * @param [in] log - logger
+     * @param [in] debug - debug enable
+     * 
+     * @return returns event_description after the parsing.
+    */
+    event_description deserialize(packet &p,
+                                  uint32_t rem_len,
+                                  logger *log,
+                                  bool debug = false);
     void print(logger *log);
 };
 
+/**
+ * @brief - Implements TCP header serialize and deserialize.
+*/
 struct tcp_hdr {
     uint16_t src_port;
     uint16_t dst_port;
@@ -81,6 +98,7 @@ struct tcp_hdr {
     ~tcp_hdr() { }
 
     int serialize(packet &p);
+    bool has_opts() { return opts != nullptr; }
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
 

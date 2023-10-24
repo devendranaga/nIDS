@@ -28,7 +28,7 @@ packet::~packet()
 
 static inline bool packet_assert_length(int in_bytes, int given_len)
 {
-    return (in_bytes >= given_len);
+    return (in_bytes > given_len);
 }
 
 fw_error_type packet::serialize(uint8_t byte)

@@ -167,7 +167,8 @@ struct parser {
 
         bool has_port()
         {
-            if (protocols_avail.has_udp()) {
+            if (protocols_avail.has_udp() ||
+                protocols_avail.has_tcp()) {
                 return true;
             }
 
@@ -178,6 +179,8 @@ struct parser {
         {
             if (protocols_avail.has_udp()) {
                 return static_cast<Port_Numbers>(udp_h.dst_port);
+            } else if (protocols_avail.has_tcp()) {
+                return static_cast<Port_Numbers>(tcp_h.dst_port);
             }
 
             return Port_Numbers::Port_Number_Max;

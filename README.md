@@ -16,6 +16,15 @@ This project uses cmake for build and jsoncpp for configuration parsing.
 sudo apt install cmake libjsoncpp-dev
 ```
 
+## Build macros
+
+Fllowing are the build macros used in the nIDS.
+
+| S. No | Macro name | Description |
+|-------|------------|-------------|
+| 1 |  DFW_ENABLE_DEBUG | Enable debugging |
+
+
 ## Compiling
 
 ```bash

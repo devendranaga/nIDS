@@ -12,6 +12,32 @@ int ipv4_hdr::serialize(packet &p)
     return -1;
 }
 
+bool ipv4_hdr::validate_checksum(packet &p)
+{
+    uint32_t csum = 0;
+    uint32_t carry = 0;
+    uint32_t i = 0;
+
+    //
+    // every two bytes are added until the end of the frame
+    for (i = start_off; i < end_off; i += 2) {
+        csum += (p.buf[i + 1] << 8) | p.buf[i];
+    }
+
+    // if over 0xFFFF, get the carry in the 3rd byte
+    carry = (csum & 0xFF0000) >> 16;
+    // find the resulting checksum without carry
+    csum = csum & 0xFFFF;
+
+    // the sum of checksum and carry now must be 0xFFFF
+    // this means that the checksum is valid.
+    if (csum + carry == 0xFFFF) {
+        return true;
+    }
+
+    return false;
+}
+
 event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
 {
     uint8_t byte_1;
@@ -79,11 +105,19 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
         print(log);
     }
 
+    //
+    // validate the checksum
+    if (validate_checksum(p) == false) {
+        return event_description::Evt_IPV4_Hdr_Chksum_Invalid;
+    }
+
     return event_description::Evt_Parse_Ok;
 }
 
 void ipv4_hdr::print(logger *log)
 {
+    std::string ipaddr_str;
+
     log->verbose("IPV4: {\n");
     log->verbose("\t version: %d\n", version);
     log->verbose("\t hdr_len: %d\n", hdr_len);
@@ -100,9 +134,26 @@ void ipv4_hdr::print(logger *log)
     log->verbose("\t ttl: %d\n", ttl);
     log->verbose("\t protocol: %d\n", protocol);
     log->verbose("\t hdr_checksum: 0x%04x\n", hdr_chksum);
-    log->verbose("\t src_addr: %u\n", src_addr);
-    log->verbose("\t dst_addr: %u\n", dst_addr);
+
+    get_ipaddr_str(src_addr, ipaddr_str);
+    log->verbose("\t src_addr: %u (%s)\n", src_addr, ipaddr_str.c_str());
+
+    get_ipaddr_str(dst_addr, ipaddr_str);
+    log->verbose("\t dst_addr: %u (%s)\n", dst_addr, ipaddr_str.c_str());
     log->verbose("}\n");
+}
+
+void ipv4_hdr::get_ipaddr_str(uint32_t ipaddr, std::string &ipaddr_str)
+{
+    char ip[32] = {0};
+
+    snprintf(ip, sizeof(ip), "%d.%d.%d.%d",
+                            (ipaddr & 0x000000FF),
+                            (ipaddr & 0x0000FF00) >> 8,
+                            (ipaddr & 0x00FF0000) >> 16,
+                            (ipaddr & 0xFF000000) >> 24);
+
+    ipaddr_str = ip;
 }
 
 }

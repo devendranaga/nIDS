@@ -53,7 +53,11 @@ include_directories(
 	./src/config/
 	./src/filters/)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -g -ggdb")
+# Enable Debugging
+set(CMAKE_CXX_FLAGS "-DFW_ENABLE_DEBUG")
+
+# General C++ flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -g -ggdb")
 
 add_library(packet_core ${LIB_SOURCES})
 

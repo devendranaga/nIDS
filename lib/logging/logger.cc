@@ -12,6 +12,8 @@
 
 namespace firewall {
 
+#if defined(FW_ENABLE_DEBUG)
+
 static std::mutex logger_lock;
 
 static void log_msg(const char *fmt, const char *logger_msg, va_list ap)
@@ -89,6 +91,30 @@ void logger::fatal(const char *fmt, ...)
     log_msg(fmt, "fatal", ap);
     va_end(ap);
 }
+
+#else
+
+void logger::info(const char *fmt, ...)
+{
+}
+
+void logger::verbose(const char *fmt, ...)
+{
+}
+
+void logger::warn(const char *fmt, ...)
+{
+}
+
+void logger::error(const char *fmt, ...)
+{
+}
+
+void logger::fatal(const char *fmt, ...)
+{
+}
+
+#endif
 
 }
 

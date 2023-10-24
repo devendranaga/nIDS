@@ -20,6 +20,9 @@ namespace firewall {
 #define IPV4_HDR_NO_OPTIONS 20
 #define IPV4_HDR_LEN_MAX 60
 
+/**
+ * @brief - Implements IPv4 header serialize and deserialize.
+*/
 struct ipv4_hdr {
     uint8_t version;
     uint32_t hdr_len;
@@ -39,10 +42,33 @@ struct ipv4_hdr {
     uint32_t start_off;
     uint32_t end_off;
 
+    /**
+     * @brief - check if an ipv4 packet is a fragment.
+     *
+     * @return true if a fragment
+     * @return false if not
+    */
     bool is_a_frag() { return frag_off > 0; }
     int serialize(packet &p);
+    /**
+     * @brief - deserialize the ipv4 packet.
+     *
+     * @param [inout] p - packet
+     * @param [in] log - logger
+     * @param [in] debug - debug print
+     * 
+     * @return returns the event description after parsing the frame.
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
+    /**
+     * @brief - validate the checksum.
+     *
+     * @return true if checksum is valid
+     * @return false if checksum is invalid
+    */
+    bool validate_checksum(packet &p);
+    void get_ipaddr_str(uint32_t ipaddr, std::string &ipaddr_str);
 };
 
 }

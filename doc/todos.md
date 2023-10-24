@@ -12,7 +12,7 @@
 | 4 | parse tcp options   | |
 | 5 | parse icmp6 options | |
 | 6 | parse ipv6 options | |
-| 7 | ipv4 header checksum validation | |
+| 7 | apply `FW_DEBUG_ENABLE` macro to all the `print` functions |
 | 8 | icmp deny on packets with 0 bytes | |
 | 10 | parse ipv6 extensions | |
 | 11 | udp checksum validation | |

@@ -248,6 +248,7 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void icmp_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("ICMP: {\n");
     log->verbose("\t type: %d\n", type);
     log->verbose("\t code: %d\n", code);
@@ -277,19 +278,23 @@ void icmp_hdr::print(logger *log)
         source_quench->print("Source_Quench", log);
 
     log->verbose("}\n");
+#endif
 }
 
 void icmp_echo_req::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t Echo_Req: {\n");
     log->verbose("\t\t id: 0x%04x\n", id);
     log->verbose("\t\t seq_no: 0x%04x\n", seq_no);
     log->verbose("\t\t data_len: %d\n", data_len);
     log->verbose("\t }\n");
+#endif
 }
 
 void icmp_dest_unreachable::print(const std::string str, logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t %s: {\n", str.c_str());
     log->verbose("\t\t reserved: %d\n", reserved);
     if (ipv4_h)
@@ -305,27 +310,33 @@ void icmp_dest_unreachable::print(const std::string str, logger *log)
                         original_datagram[6],
                         original_datagram[7]);
     log->verbose("\t }\n");
+#endif
 }
 
 void icmp_echo_reply::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t Echo_Reply: {\n");
     log->verbose("\t\t id: 0x%04x\n", id);
     log->verbose("\t\t seq_no: 0x%04x\n", seq_no);
     log->verbose("\t\t data_len: %d\n", data_len);
     log->verbose("\t }\n");
+#endif
 }
 
 void icmp_info_msg::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t Info: {\n");
     log->verbose("\t\t id: 0x%04x\n", id);
     log->verbose("\t\t seq_no: %d\n", seq_no);
     log->verbose("\t }\n");
+#endif
 }
 
 void icmp_timestamp_msg::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t Timestamp: {\n");
     log->verbose("\t\t id: 0x%04x\n", id);
     log->verbose("\t\t seq_no: %d\n", seq_no);
@@ -333,10 +344,12 @@ void icmp_timestamp_msg::print(logger *log)
     log->verbose("\t\t rx_ts: %u\n", rx_ts);
     log->verbose("\t\t tx_ts: %u\n", tx_ts);
     log->verbose("\t }\n");
+#endif
 }
 
 void icmp_param_problem::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t Parameter_Problem: {\n");
     log->verbose("\t\t pointer: %d\n", pointer);
     log->verbose("\t\t unused: %02d %02d %02d\n",
@@ -354,10 +367,12 @@ void icmp_param_problem::print(logger *log)
                     original_datagram[6],
                     original_datagram[7]);
     log->verbose("\t }\n");
+#endif
 }
 
 void icmp_redir_msg::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t Redirect_Msg: {\n");
     log->verbose("\t\t Gateway internet address: %u\n", gateway_internet_addr);
     if (ipv4_h)
@@ -373,6 +388,7 @@ void icmp_redir_msg::print(logger *log)
                     original_datagram[6],
                     original_datagram[7]);
     log->verbose("\t }\n");
+#endif
 }
 
 }

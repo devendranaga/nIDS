@@ -58,6 +58,13 @@ struct icmp_echo_req {
     uint16_t data_len;
     uint8_t *data;
 
+	explicit icmp_echo_req() : data_len(0), data(nullptr) { }
+	~icmp_echo_req()
+	{
+		if (data) {
+			free(data);
+		}
+	}
     void print(logger *log);
 };
 
@@ -66,6 +73,14 @@ struct icmp_echo_reply {
     uint16_t seq_no;
     uint16_t data_len;
     uint8_t *data;
+
+	explicit icmp_echo_reply() : data_len(0), data(nullptr) { }
+	~icmp_echo_reply()
+	{
+		if (data) {
+			free(data);
+		}
+	}
 
     void print(logger *log);
 };
@@ -131,6 +146,7 @@ struct icmp_hdr {
     uint8_t code;
     uint16_t checksum;
 
+    // one or more of these are valid pointers upon parsing an icmp packet.
     std::shared_ptr<icmp_echo_req> echo_req;
     std::shared_ptr<icmp_echo_reply> echo_reply;
     std::shared_ptr<icmp_dest_unreachable> dest_unreachable;
@@ -150,6 +166,15 @@ struct icmp_hdr {
     ~icmp_hdr() { }
 
     int serialize(packet &p);
+    /**
+     * @brief - deserialize icmp packet.
+     * 
+     * @param [inout] p - packet
+     * @param [in] log - logger
+     * @param [in] debug - debug print
+     * 
+     * @return returns the event description of parsed packet.
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
 
