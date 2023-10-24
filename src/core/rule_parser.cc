@@ -77,7 +77,6 @@ void rule_config::parse_ipv4_rule(Json::Value &rule_cfg_data,
                                   rule_config_item &rule)
 {
     auto chk_options = rule_cfg_data["ipv4"]["check_options"];
-    printf("check otp '%s'\n", chk_options.asString().c_str());
     if (!chk_options.isNull()) {
         rule.ipv4_rule.check_options = chk_options.asBool();
         rule.sig_mask.ipv4_check_options = 1;

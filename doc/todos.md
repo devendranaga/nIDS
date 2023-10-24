@@ -14,7 +14,6 @@
 | 6 | parse ipv6 options | |
 | 7 | ipv4 header checksum validation | |
 | 8 | icmp deny on packets with 0 bytes | |
-| 9 | parse icmp options | |
 | 10 | parse ipv6 extensions | |
 | 11 | udp checksum validation | |
 | 12 | tcp checksum validation | |

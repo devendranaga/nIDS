@@ -123,6 +123,26 @@ const static struct {
     //
     // ICMP rules
     {
+        event_description::Evt_Icmp_Hdr_Len_Too_Short,
+        rule_ids::Rule_Id_Icmp_Hdr_Len_Too_Short,
+    },
+    {
+        event_description::Evt_Icmp_Echo_Req_Hdr_Len_Too_Short,
+        rule_ids::Rule_Id_Icmp_Echo_Req_Hdr_Len_Too_Short,
+    },
+    {
+        event_description::Evt_Icmp_Echo_Reply_Hdr_Len_Too_Short,
+        rule_ids::Rule_Id_Icmp_Echo_Reply_Hdr_Len_Too_Short,
+    },
+    {
+        event_description::Evt_Icmp_Ts_Msg_Hdr_Len_Too_Short,
+        rule_ids::Rule_Id_Icmp_Ts_Msg_Hdr_Len_Too_Short,
+    },
+    {
+        event_description::Evt_Icmp_Info_Msg_Hdr_Len_Too_Short,
+        rule_ids::Rule_Id_Icmp_Info_Msg_Hdr_Len_Too_Short,
+    },
+    {
         event_description::Evt_Icmp_Invalid_Type,
         rule_ids::Rule_Id_Icmp_Invalid_Type,
     },

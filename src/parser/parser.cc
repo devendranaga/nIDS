@@ -15,7 +15,7 @@ namespace firewall {
 parser::parser(const std::string ifname, logger *log) :
                         ifname_(ifname),
                         log_(log),
-                        pkt_dump_(false)
+                        pkt_dump_(true)
 { }
 parser::~parser() { }
 

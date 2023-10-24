@@ -2,7 +2,7 @@
 # Build system for firewall and its related tooling
 #
 project(firewall)
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.22)
 
 include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l2/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l3/build.cmake)

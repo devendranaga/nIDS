@@ -53,6 +53,8 @@ enum class Icmp_Code_Redir_Msg : uint32_t {
 struct icmp_echo_req {
     uint16_t id;
     uint16_t seq_no;
+
+    // below items are not part of the protocol
     uint16_t data_len;
     uint8_t *data;
 
@@ -74,7 +76,7 @@ struct icmp_dest_unreachable {
     uint8_t original_datagram[8]; // 8 bytes of the datagram of ip->protocol
 
     event_description parse(packet &p, logger *log, bool debug);
-    void print(logger *log);
+    void print(const std::string str, logger *log);
 };
 
 struct icmp_param_problem {
@@ -83,6 +85,7 @@ struct icmp_param_problem {
     std::shared_ptr<ipv4_hdr> ipv4_h; // IPv4 header
     uint8_t original_datagram[8]; // 8 bytes of the datagram of ip->protocol;
 
+    event_description parse(packet &p, logger *log, bool debug);
     void print(logger *log);
 };
 
@@ -104,6 +107,9 @@ struct icmp_timestamp_msg {
 
     event_description parse(packet &p, logger *log, bool debug);
     void print(logger *log);
+
+    private:
+        const int ts_len = 16;
 };
 
 struct icmp_info_msg {
@@ -112,6 +118,9 @@ struct icmp_info_msg {
 
     event_description parse(packet &p, logger *log, bool debug);
     void print(logger *log);
+
+    private:
+        const int info_len = 4;
 };
 
 /**
@@ -121,13 +130,14 @@ struct icmp_hdr {
     uint8_t type;
     uint8_t code;
     uint16_t checksum;
+
     std::shared_ptr<icmp_echo_req> echo_req;
     std::shared_ptr<icmp_echo_reply> echo_reply;
     std::shared_ptr<icmp_dest_unreachable> dest_unreachable;
     std::shared_ptr<icmp_dest_unreachable> time_exceeded;
     std::shared_ptr<icmp_param_problem> param_problem;
     std::shared_ptr<icmp_dest_unreachable> source_quench;
-    std::shared_ptr<icmp_param_problem> redir_msg;
+    std::shared_ptr<icmp_redir_msg> redir_msg;
     std::shared_ptr<icmp_timestamp_msg> ts;
     std::shared_ptr<icmp_timestamp_msg> ts_reply;
     std::shared_ptr<icmp_info_msg> info_req;
@@ -142,6 +152,9 @@ struct icmp_hdr {
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
+
+    private:
+        const int icmp_hdr_len_ = 4;
 };
 
 }

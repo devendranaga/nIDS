@@ -1,5 +1,5 @@
 project(firewall)
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.22)
 
 SET(LIB_SOURCES_PCAP
 	./lib/pcap/pcap_intf.cc
