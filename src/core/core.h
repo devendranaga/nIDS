@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <getopt.h>
+#include <unistd.h>
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -41,14 +42,28 @@ class firewall_intf {
         void rx_thread();
         void filter_thread();
         void run_filter(packet &pkt);
+        //
+        // receive thread for each interface
         std::shared_ptr<std::thread> rx_thr_id_;
         std::condition_variable rx_thr_cond_;
+        //
+        // filter thread id for each interface
         std::shared_ptr<std::thread> filt_thr_id_;
+        //
+        // raw socket interface
         std::shared_ptr<raw_socket> raw_;
+        //
+        // list of packet queues
         std::queue<packet> pkt_q_;
         std::mutex rx_thr_lock_;
+        //
+        // logger pointer
         logger *log_;
+        //
+        // list of rules applying to this interface
         rule_config *rule_data_;
+        //
+        // interface name
         std::string ifname_;
 };
 

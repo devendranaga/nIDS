@@ -1,6 +1,6 @@
 /**
  * @brief - Implements logging. Currently logs to console.
- * 
+ *
  * @copyright - 2023-present All rights reserved.
 */
 #include <stdio.h>

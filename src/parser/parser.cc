@@ -15,7 +15,7 @@ namespace firewall {
 parser::parser(const std::string ifname, logger *log) :
                         ifname_(ifname),
                         log_(log),
-                        pkt_dump_(true)
+                        pkt_dump_(false)
 { }
 parser::~parser() { }
 
@@ -108,6 +108,10 @@ event_description parser::parse_app(packet &pkt)
         case Port_Numbers::Port_Number_NTP: {
             evt_desc = ntp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ntp();
+        } break;
+        case Port_Numbers::Port_Number_TLS: {
+            evt_desc = tls_h.deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_tls();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;

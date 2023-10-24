@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements commonly used functions.
+ * 
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #include <iostream>
 #include <stdint.h>
 #include <string.h>

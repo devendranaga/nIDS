@@ -29,6 +29,8 @@
 #include <dhcp.h>
 // NTP header
 #include <ntp.h>
+// TLS header
+#include <tls.h>
 
 #include <packet.h>
 #include <port_numbers.h>
@@ -53,7 +55,8 @@ struct protocol_bits {
                             ipv6(0),
                             icmp6(0),
                             dhcp(0),
-                            ntp(0)
+                            ntp(0),
+                            tls(0)
         { }
         ~protocol_bits() { }
 
@@ -68,6 +71,7 @@ struct protocol_bits {
         void set_icmp6() { icmp6 = 1; }
         void set_dhcp() { dhcp = 1; }
         void set_ntp() { ntp = 1; }
+        void set_tls() { tls = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_ipv4() const { return ipv4 == 1; }
         bool has_arp() const { return arp == 1; }
@@ -79,6 +83,7 @@ struct protocol_bits {
         bool has_icmp6() const { return icmp6 == 1; }
         bool has_dhcp() const { return dhcp == 1; }
         bool has_ntp() const { return ntp == 1; }
+        bool has_tls() const { return tls == 1; }
 
     private:
         uint32_t eth:1;
@@ -92,6 +97,7 @@ struct protocol_bits {
         uint32_t icmp6:1;
         uint32_t dhcp:1;
         uint32_t ntp:1;
+        uint32_t tls:1;
 };
 
 /**
@@ -134,6 +140,9 @@ struct parser {
 
         // NTP header
         ntp_hdr ntp_h;
+
+        // TLS header
+        tls_hdr tls_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;

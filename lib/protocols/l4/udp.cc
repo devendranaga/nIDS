@@ -30,6 +30,10 @@ event_description udp_hdr::deserialize(packet &p, logger *log, bool debug)
         return event_description::Evt_Udp_Dst_Port_Invalid;
     }
 
+    if (debug) {
+        print(log);
+    }
+
     return event_description::Evt_Parse_Ok;
 }
 

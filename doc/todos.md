@@ -19,5 +19,15 @@
 | 11 | udp checksum validation | |
 | 12 | tcp checksum validation | |
 | 13 | tracking tcp connection | |
-| 14 | parse dns frame | |
-
+| 14 | parse dns protocol | |
+| 15 | parse igmp protocol | |
+| 16 | parse ggp protocol | |
+| 17 | parse ipip protocol | |
+| 18 | parse dhcp6 protocol | |
+| 19 | Detection of DoS events | |
+| 20 | Monitor unauthorized access to files or folders | |
+| 21 | parse uds protocol | |
+| 22 | parse doip protocol | |
+| 23 | must log support for csv | |
+| 24 | must compress event log after write | |
+| 25 | use gz to support compression | |

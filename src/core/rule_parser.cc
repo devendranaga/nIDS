@@ -1,6 +1,6 @@
 /**
  * @brief - implements rule parser.
- * 
+ *
  * @copyright - 2023-present. All rights reserved. Devendra Naga.
 */
 #include <iostream>

@@ -25,6 +25,11 @@ fw_error_type fw_core::init(int argc, char **argv)
 
     log_ = logger::instance();
 
+    if (argc == 1) {
+        usage(argv[0]);
+        return fw_error_type::eInvalid;
+    }
+
     while ((rc = getopt(argc, argv, "f:")) != -1) {
         switch (rc) {
             case 'f':
@@ -187,6 +192,11 @@ int main(int argc, char **argv)
 {
     firewall::fw_core core;
     firewall::fw_error_type ret;
+
+    if (geteuid() != 0) {
+        fprintf(stderr, "fwd requires super user privileges to run\n");
+        return -1;
+    }
 
     // initialize the core firewall library
     ret = core.init(argc, argv);

@@ -88,8 +88,10 @@ fw_error_type event_file_writer::write(const event &evt)
         create_new_file();
     }
 
-    fwrite(msg, total_len, 1, fp_);
-    fflush(fp_);
+    if (fp_) {
+        fwrite(msg, total_len, 1, fp_);
+        fflush(fp_);
+    }
 
     cur_size_ += total_len;
 

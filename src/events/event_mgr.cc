@@ -87,7 +87,22 @@ const static struct {
     },
 
     //
-    // udp rules
+    // TCP rules
+    {
+        event_description::Evt_Tcp_Hdrlen_Too_Short,
+        rule_ids::Rule_Id_Tcp_Hdrlen_Too_Short,
+    },
+    {
+        event_description::Evt_Tcp_Flags_All_Set,
+        rule_ids::Rule_Id_Tcp_Flags_All_Set,
+    },
+    {
+        event_description::Evt_Tcp_Flags_None_Set,
+        rule_ids::Rule_Id_Tcp_Flags_None_Set,
+    },
+
+    //
+    // UDP rules
     {
         event_description::Evt_Udp_Src_Port_Invalid,
         rule_ids::Rule_Id_Udp_Src_Port_Invalid
@@ -103,6 +118,21 @@ const static struct {
     {
         event_description::Evt_Udp_Chksum_Invalid,
         rule_ids::Rule_Id_Udp_Chksum_Invalid
+    },
+
+    //
+    // ICMP rules
+    {
+        event_description::Evt_Icmp_Invalid_Type,
+        rule_ids::Rule_Id_Icmp_Invalid_Type,
+    },
+    {
+        event_description::Evt_Icmp_Time_Exceeded_Invalid_Code,
+        rule_ids::Rule_Id_Icmp_Time_Exceeded_Invalid_Code,
+    },
+    {
+        event_description::Evt_Icmp_Dest_Unreachable_Invalid_Code,
+        rule_ids::Rule_Id_Icmp_Dest_Unreachable_Invalid_Code,
     },
 
     //

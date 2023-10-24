@@ -15,4 +15,5 @@ The following protocol parsing is currently supported.
 | 9 | ICMP6 | L4 |
 | 10 | DHCP | APP |
 | 11 | NTP | APP |
+| 12 | TLS | APP (only version matching!) |
 

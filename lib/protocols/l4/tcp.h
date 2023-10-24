@@ -83,6 +83,10 @@ struct tcp_hdr {
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
+
+    private:
+        event_description check_flags();
+        const int tcp_hdr_len_no_off_ = 20;
 };
 
 }

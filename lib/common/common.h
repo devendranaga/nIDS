@@ -1,7 +1,7 @@
 /**
  * @brief - Implements common definitions.
  * 
- * @copyright - 2023-present All rights reserved.
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
 */
 #ifndef __FW_COMMON_H__
 #define __FW_COMMON_H__
