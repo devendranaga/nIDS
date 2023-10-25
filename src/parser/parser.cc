@@ -125,7 +125,6 @@ bool parser::exploit_search(packet &pkt)
         evt_mgr->store(event_type::Evt_Deny,
                        expl_.get_matching_evt_desc(port),
                        *this);
-        printf("matched blaster\n");
         return true;
     }
 
@@ -140,7 +139,8 @@ event_description parser::parse_app(packet &pkt)
     dst_port = this->get_dst_port();
 
     switch (dst_port) {
-        case Port_Numbers::Port_Number_DHCP: {
+        case Port_Numbers::Port_Number_DHCP_Server:
+        case Port_Numbers::Port_Number_DHCP_Client: {
             evt_desc = dhcp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_dhcp();
         } break;

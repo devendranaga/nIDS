@@ -130,18 +130,16 @@ void firewall_intf::rx_thread()
 {
     packet pkt;
     uint8_t mac[6];
-    uint8_t buf[4096];
     int ret;
 
     while (1) {
         // receive the frame
-        ret = raw_->recv_msg(mac, buf, sizeof(buf));
+        ret = raw_->recv_msg(mac, pkt.buf, sizeof(pkt.buf));
         if (ret < 0) {
             return;
         }
 
         pkt.buf_len = ret;
-        pkt.create(buf, ret);
 
         // increment rx frame count
         firewall_pkt_stats::instance()->inc_n_rx(ifname_);
@@ -172,7 +170,6 @@ void firewall_intf::run_filter(packet &pkt)
     if (ret != 0) {
         firewall_pkt_stats::instance()->inc_n_deny(ifname_);
     }
-    pkt.free_pkt();
 }
 
 void firewall_intf::filter_thread()

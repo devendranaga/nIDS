@@ -169,6 +169,30 @@ const static struct {
         event_description::Evt_DHCP_MAGIC_Invalid,
         rule_ids::Rule_Id_DHCP_MAGIC_Invalid
     },
+    {
+        event_description::Evt_DHCP_Opt_Client_Id_Len_Inval,
+        rule_ids::Rule_Id_DHCP_Opt_Client_Id_Len_Inval,
+    },
+    {
+        event_description::Evt_DHCP_Opt_SubnetMask_Len_Inval,
+        rule_ids::Rule_Id_DHCP_Opt_SubnetMask_Len_Inval,
+    },
+    {
+        event_description::Evt_DHCP_Opt_Renewal_Time_Len_Inval,
+        rule_ids::Rule_Id_DHCP_Opt_Renewal_Time_Len_Inval,
+    },
+    {
+        event_description::Evt_DHCP_Opt_Ipaddr_Lease_Time_Len_Inval,
+        rule_ids::Rule_Id_DHCP_Opt_Ipaddr_Lease_Time_Len_Inval,
+    },
+    {
+        event_description::Evt_DHCP_Opt_Server_Id_Len_Inval,
+        rule_ids::Rule_Id_DHCP_Opt_Server_Id_Len_Inval,
+    },
+    {
+        event_description::Evt_DHCP_Hdr_Len_Too_Short,
+        rule_ids::Rule_Id_DHCP_Hdr_Len_Too_Short,
+    },
 
     //
     // Rules matched by the Exploit filter

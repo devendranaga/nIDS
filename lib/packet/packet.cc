@@ -9,17 +9,13 @@ namespace firewall {
 
 packet::packet()
 {
-    buf = nullptr;
+	std::memset(buf, 0, sizeof(buf));
     buf_len = 0;
     off = 0;
 }
 
 packet::packet(uint32_t pkt_len) : buf_len(pkt_len), off(0)
 {
-    buf = (uint8_t *)calloc(1, pkt_len);
-    if (!buf) {
-        throw std::runtime_error("cannot allocate packet memory");
-    }
 }
 
 packet::~packet()
@@ -199,28 +195,6 @@ fw_error_type packet::deserialize(uint8_t *bufout, uint32_t buflen_to_copy)
     off += buflen_to_copy;
 
     return fw_error_type::eNo_Error;
-}
-
-int packet::create(uint8_t *pkt, uint32_t pkt_len)
-{
-    buf_len = pkt_len;
-
-    buf = (uint8_t *)calloc(1, pkt_len + 1);
-    if (!buf) {
-        return -1;
-    }
-
-    memcpy(buf, pkt, pkt_len);
-
-    return 0;
-}
-
-void packet::free_pkt()
-{
-    if (buf) {
-        free(buf);
-        buf = nullptr;
-    }
 }
 
 }

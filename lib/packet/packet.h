@@ -7,7 +7,7 @@
 #define __FW_PACKET_H__
 
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include <stdint.h>
 #include <stdlib.h>
 #include <common.h>
@@ -15,14 +15,12 @@
 namespace firewall {
 
 struct packet {
-    uint8_t *buf;
+    uint8_t buf[4096];
     uint32_t buf_len;
     uint32_t off;
 
     explicit packet();
     explicit packet(uint32_t pkt_len);
-    int create(uint8_t *pkt, uint32_t buf_len);
-    void free_pkt();
     int remaining_len() { return buf_len - off; }
     ~packet();
 
