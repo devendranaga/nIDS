@@ -135,6 +135,7 @@ event_description dhcp_opts::deserialize(packet &p, logger *log, bool debug)
                 if (!type) {
                     return event_description::Evt_Unknown_Error;
                 }
+                p.deserialize(type->len);
                 p.deserialize(type->type);
             } break;
             case dhcp_param_req_list::Req_IPAddr: {
@@ -203,7 +204,7 @@ event_description dhcp_opts::deserialize(packet &p, logger *log, bool debug)
                 }
 
                 evt_desc = rebind_time->deserialize(p, log, debug);
-                if (evt_desc != event_description::Evt_Unknown_Error) {
+                if (evt_desc != event_description::Evt_Parse_Ok) {
                     return evt_desc;
                 }
             } break;
@@ -214,7 +215,7 @@ event_description dhcp_opts::deserialize(packet &p, logger *log, bool debug)
                 }
 
                 evt_desc = lease_time->deserialize(p, log, debug);
-                if (evt_desc != event_description::Evt_Unknown_Error) {
+                if (evt_desc != event_description::Evt_Parse_Ok) {
                     return evt_desc;
                 }
             } break;
@@ -225,7 +226,18 @@ event_description dhcp_opts::deserialize(packet &p, logger *log, bool debug)
                 }
 
                 evt_desc = dhcp_server_id->deserialize(p, log, debug);
-                if (evt_desc != event_description::Evt_Unknown_Error) {
+                if (evt_desc != event_description::Evt_Parse_Ok) {
+                    return evt_desc;
+                }
+            } break;
+            case dhcp_param_req_list::Subnet_Mask: {
+                subnet_mask = std::make_shared<dhcp_opt_subnet_mask>();
+                if (!subnet_mask) {
+                    return event_description::Evt_Unknown_Error;
+                }
+
+                evt_desc = subnet_mask->deserialize(p, log, debug);
+                if (evt_desc != event_description::Evt_Parse_Ok) {
                     return evt_desc;
                 }
             } break;

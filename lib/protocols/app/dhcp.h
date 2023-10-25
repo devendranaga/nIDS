@@ -45,12 +45,14 @@ enum class dhcp_param_req_list {
 };
 
 struct dhcp_opt_msg_type {
+    uint8_t len;
     uint8_t type;
 
 	void print(logger *log)
 	{
     #if defined(FW_ENABLE_DEBUG)
 		log->verbose("\t\t msg_type: {\n");
+		log->verbose("\t\t\t len: %d\n", len);
 		log->verbose("\t\t\t val: %d\n", type);
 		log->verbose("\t\t }\n");
     #endif 
