@@ -100,6 +100,10 @@ const static struct {
         event_description::Evt_Tcp_Flags_None_Set,
         rule_ids::Rule_Id_Tcp_Flags_None_Set,
     },
+    {
+        event_description::Evt_Tcp_Invalid_Option,
+        rule_ids::Rule_Id_Tcp_Invalid_Option,
+    },
 
     //
     // UDP rules
@@ -154,6 +158,10 @@ const static struct {
         event_description::Evt_Icmp_Dest_Unreachable_Invalid_Code,
         rule_ids::Rule_Id_Icmp_Dest_Unreachable_Invalid_Code,
     },
+    {
+        event_description::Evt_Icmp_Covert_Channel_Maybe_Active,
+        rule_ids::Rule_Id_Icmp_Covert_Channel_Maybe_Active,
+    },
 
     //
     // DHCP rules
@@ -162,8 +170,17 @@ const static struct {
         rule_ids::Rule_Id_DHCP_MAGIC_Invalid
     },
 
-    {event_description::Evt_Unknown_Error,
-     rule_ids::Rule_Id_Unknown},
+    //
+    // Rules matched by the Exploit filter
+    {
+        event_description::Evt_Known_Exploit_Win32_Blaster,
+        rule_ids::Rule_Id_Known_Exploit_Win32_Blaster,
+    },
+
+    {
+        event_description::Evt_Unknown_Error,
+        rule_ids::Rule_Id_Unknown
+    },
 };
 
 /**

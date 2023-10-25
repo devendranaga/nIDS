@@ -18,6 +18,7 @@ enum class fw_error_type {
 	eOut_Of_Bounds,
 	eToo_Short,
 	eInvalid,
+	eOut_Of_Memory,
 
 	/* Configuration error. */
 	eConfig_Error,

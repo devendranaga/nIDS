@@ -54,7 +54,15 @@ fw_error_type fw_core::init(int argc, char **argv)
 
         log_->info("create interface context on %s\n", it.intf_name.c_str());
 
+        //
+        // allocate interface pointer
         intf = std::make_shared<firewall_intf>(log_);
+        if (!intf) {
+            return fw_error_type::eOut_Of_Memory;
+        }
+
+        //
+        // initialize interface
         ret = intf->init(it.intf_name, it.rule_file);
         if (ret != fw_error_type::eNo_Error) {
             log_->error("failed to init interface on %s\n", it.intf_name.c_str());

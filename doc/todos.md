@@ -14,6 +14,7 @@
 | 6 | parse ipv6 options | |
 | 7 | apply `FW_DEBUG_ENABLE` macro to all the `print` functions |
 | 8 | icmp deny on packets with 0 bytes | |
+| 9 | parse tftp frames |
 | 10 | parse ipv6 extensions | |
 | 11 | udp checksum validation | |
 | 12 | tcp checksum validation | |
@@ -30,3 +31,5 @@
 | 23 | must log support for csv | |
 | 24 | must compress event log after write | |
 | 25 | use gz to support compression | |
+| 26 | match tcp / udp data portion content for known exploit names |
+| 27 | match icmp data portion content for known exploit names |

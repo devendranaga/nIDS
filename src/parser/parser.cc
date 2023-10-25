@@ -87,10 +87,49 @@ event_description parser::parse_l4(packet &pkt)
     //
     // parse application
     if (this->has_port()) {
-        evt_desc = parse_app(pkt);
+        //
+        // matching exploit dst port results in dropping the frame
+        // and generate immediate event.
+        //
+        // parse_app happens only if the known exploit is not matched.
+        if (exploit_search(pkt) == false) {
+            evt_desc = parse_app(pkt);
+        }
     }
 
     return evt_desc;
+}
+
+bool parser::exploit_search(packet &pkt)
+{
+    Port_Numbers port;
+    bool contains_exploit = false;
+
+    //
+    // match dst_port first
+    port = this->get_dst_port();
+    contains_exploit = expl_.match(port);
+
+    //
+    // try src_port match afterwards
+    if (contains_exploit == false) {
+        port = this->get_src_port();
+        contains_exploit = expl_.match(port);
+    }
+
+    //
+    // if a match found in either src_port or dst_port
+    if (contains_exploit) {
+        event_mgr *evt_mgr = event_mgr::instance();
+
+        evt_mgr->store(event_type::Evt_Deny,
+                       expl_.get_matching_evt_desc(port),
+                       *this);
+        printf("matched blaster\n");
+        return true;
+    }
+
+    return false;
 }
 
 event_description parser::parse_app(packet &pkt)

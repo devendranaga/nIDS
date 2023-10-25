@@ -45,10 +45,13 @@ enum class rule_ids {
     Rule_Id_Icmp_Echo_Reply_Hdr_Len_Too_Short,
     Rule_Id_Icmp_Ts_Msg_Hdr_Len_Too_Short,
     Rule_Id_Icmp_Info_Msg_Hdr_Len_Too_Short,
+    Rule_Id_Icmp_Covert_Channel_Maybe_Active,
     Rule_Id_Icmp_Invalid_Type,
     Rule_Id_Icmp_Dest_Unreachable_Invalid_Code,
     Rule_Id_Icmp_Time_Exceeded_Invalid_Code,
     Rule_Id_DHCP_MAGIC_Invalid,
+    Rule_Id_TLS_Version_Unsupported,
+    Rule_Id_Known_Exploit_Win32_Blaster,
     Rule_Id_Unknown,
 };
 
@@ -89,11 +92,13 @@ enum class event_description {
     Evt_Icmp_Echo_Reply_Hdr_Len_Too_Short,
     Evt_Icmp_Ts_Msg_Hdr_Len_Too_Short,
     Evt_Icmp_Info_Msg_Hdr_Len_Too_Short,
+    Evt_Icmp_Covert_Channel_Maybe_Active,
     Evt_Icmp_Invalid_Type,
     Evt_Icmp_Dest_Unreachable_Invalid_Code,
     Evt_Icmp_Time_Exceeded_Invalid_Code,
     Evt_DHCP_MAGIC_Invalid,
     Evt_TLS_Version_Unsupported,
+    Evt_Known_Exploit_Win32_Blaster,
     Evt_Unknown_Error,
     Evt_Parse_Ok,
 };

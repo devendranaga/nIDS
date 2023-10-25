@@ -17,6 +17,7 @@ event_description udp_hdr::deserialize(packet &p, logger *log, bool debug)
     if (p.remaining_len() < udp_hdrlen_) {
         return event_description::Evt_Udp_Len_Too_Short;
     }
+
     p.deserialize(src_port);
     p.deserialize(dst_port);
     p.deserialize(length);
@@ -39,12 +40,14 @@ event_description udp_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void udp_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("UDP: {\n");
     log->verbose("\t src_port: %d\n", src_port);
     log->verbose("\t dst_port: %d\n", dst_port);
     log->verbose("\t length: %d\n", length);
     log->verbose("\t checksum: 0x%04x\n", checksum);
     log->verbose("}\n");
+#endif
 }
 
 }

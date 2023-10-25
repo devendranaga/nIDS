@@ -133,6 +133,16 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             p.deserialize(echo_req->id);
             p.deserialize(echo_req->seq_no);
             echo_req->data_len = p.remaining_len();
+            //
+            // windows might have 32 bytes of data length.
+            // linux can go till 48 bytes in length.
+            // so if over 48 bytes, generally mean someone is
+            // transmitting data via the icmp echo-req and echo-reply
+            // messages.
+            if (echo_req->data_len > icmp_max_data_len_) {
+                return event_description::Evt_Icmp_Covert_Channel_Maybe_Active;
+            }
+
             echo_req->data = (uint8_t *)calloc(1, p.remaining_len());
             if (!echo_req->data) {
                 return event_description::Evt_Unknown_Error;
@@ -153,6 +163,16 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             p.deserialize(echo_reply->id);
             p.deserialize(echo_reply->seq_no);
             echo_reply->data_len = p.remaining_len();
+            //
+            // windows might have 32 bytes of data length.
+            // linux can go till 48 bytes in length.
+            // so if over 48 bytes, generally mean someone is
+            // transmitting data via the icmp echo-req and echo-reply
+            // messages.
+            if (echo_reply->data_len > icmp_max_data_len_) {
+                return event_description::Evt_Icmp_Covert_Channel_Maybe_Active;
+            }
+
             echo_reply->data = (uint8_t *)calloc(1, p.remaining_len());
             if (!echo_reply->data) {
                 return event_description::Evt_Unknown_Error;

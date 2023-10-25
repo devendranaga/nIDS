@@ -30,13 +30,10 @@ fw_error_type event_file_writer::create_new_file()
                         t->tm_min,
                         t->tm_sec,
                         ts.tv_nsec / 1000000ull);
-    
     fp_ = fopen(filename, "w");
     if (!fp_) {
         return fw_error_type::eInvalid;
     }
-
-    cur_size_ = 0;
 
     return fw_error_type::eNo_Error;
 }
@@ -50,6 +47,7 @@ fw_error_type event_file_writer::init(const std::string filepath, uint32_t files
         fclose(fp_);
     }
 
+    cur_size_ = 0;
     filepath_ = filepath;
     filesize_bytes_ = filesize_bytes;
     fp_ = NULL;
@@ -59,6 +57,7 @@ fw_error_type event_file_writer::init(const std::string filepath, uint32_t files
 
 fw_error_type event_file_writer::write(const event &evt)
 {
+    fw_error_type ret;
     uint8_t buf[2048];
     event_msg *msg = (event_msg *)buf;
     int total_len = 0;
@@ -85,7 +84,10 @@ fw_error_type event_file_writer::write(const event &evt)
     //
     // if its over filesize, rotate it
     if (cur_size_ >= filesize_bytes_) {
-        create_new_file();
+        ret = create_new_file();
+        if (ret != fw_error_type::eNo_Error) {
+            return ret;
+        }
     }
 
     if (fp_) {

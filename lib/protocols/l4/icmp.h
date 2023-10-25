@@ -180,6 +180,7 @@ struct icmp_hdr {
 
     private:
         const int icmp_hdr_len_ = 4;
+        const int icmp_max_data_len_ = 48;
 };
 
 }

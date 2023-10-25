@@ -25,7 +25,10 @@
 | 21 | ICMP | ICMP invalid time exceeded code |
 | 22 | ICMP | ICMP Timestamp req / response headers are too small |
 | 23 | ICMP | ICMP Info message header is too small |
-| 24 | ICMP6 | ICMP6 Unsupported type |
-| 25 | DHCP | Invalid DHCP magic |
+| 24 | ICMP | ICMP covert channel is active |
+| 25 | ICMP6 | ICMP6 Unsupported type |
+| 26 | DHCP | Invalid DHCP magic |
+| 27 | Exploit Filter | Win32.Blaster worm dest port 4444 is matched |
+
 
 

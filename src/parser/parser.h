@@ -31,6 +31,8 @@
 #include <ntp.h>
 // TLS header
 #include <tls.h>
+// Known exploits
+#include <known_exploits.h>
 
 #include <packet.h>
 #include <port_numbers.h>
@@ -186,13 +188,26 @@ struct parser {
             return Port_Numbers::Port_Number_Max;
         }
 
+        Port_Numbers get_src_port()
+        {
+            if (protocols_avail.has_udp()) {
+                return static_cast<Port_Numbers>(udp_h.src_port);
+            } else if (protocols_avail.has_tcp()) {
+                return static_cast<Port_Numbers>(tcp_h.src_port);
+            }
+
+            return Port_Numbers::Port_Number_Max;
+        }
+
     private:
         void detect_os_signature();
         event_description parse_l4(packet &pkt);
         event_description parse_app(packet &pkt);
+        bool exploit_search(packet &pkt);
 
         std::string ifname_;
         logger *log_;
+        exploit_match expl_;
         bool pkt_dump_;
 };
 

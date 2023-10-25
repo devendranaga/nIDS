@@ -1,8 +1,11 @@
-# Firewall
+# Firewall (nIDS)
 
 This is an implementation of firewalling for Linux based routers and switches.
 
 This is implemented with C++17 language standard and some shell script.
+
+The nIDS detection is performed at various levels of the TCP/IP stack and also in the
+application level performing DPI (Deep Packet Inspection).
 
 **Note**
 
@@ -22,7 +25,7 @@ Fllowing are the build macros used in the nIDS.
 
 | S. No | Macro name | Description |
 |-------|------------|-------------|
-| 1 |  DFW_ENABLE_DEBUG | Enable debugging |
+| 1 |  `FW_ENABLE_DEBUG` | Enable debugging |
 
 
 ## Compiling
@@ -39,6 +42,9 @@ make -j12
 Supported protocols are [here](doc/supported_protocols.md).
 
 ## Supported signatures
+
+The nIDS auto detects some of the known malformed packets at various levels of the TCP/IP stack and
+known worms. The list is below.
 
 Supported signatures are [here](doc/supported_signatures.md).
 

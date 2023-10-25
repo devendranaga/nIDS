@@ -12,6 +12,9 @@
 
 namespace firewall {
 
+/**
+ * @brief - Implements udp serialize and deserialize.
+*/
 struct udp_hdr {
     uint16_t src_port;
     uint16_t dst_port;
