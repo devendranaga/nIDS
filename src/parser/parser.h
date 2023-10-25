@@ -141,10 +141,10 @@ struct parser {
         std::shared_ptr<dhcp_hdr> dhcp_h;
 
         // NTP header
-        ntp_hdr ntp_h;
+        std::shared_ptr<ntp_hdr> ntp_h;
 
         // TLS header
-        tls_hdr tls_h;
+        std::shared_ptr<tls_hdr> tls_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;

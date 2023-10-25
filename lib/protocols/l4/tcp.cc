@@ -113,6 +113,19 @@ void tcp_hdr::print(logger *log)
             log->verbose("\t\t\t %d\n", opts->sack_permitted->len);
             log->verbose("\t\t}\n");
         }
+        if (opts->ts) {
+            log->verbose("\t\tTimestamp: {\n");
+            log->verbose("\t\t\tlen: %d\n", opts->ts->len);
+            log->verbose("\t\t\tts_val: %u\n", opts->ts->ts_val);
+            log->verbose("\t\t\tts_echo_reply: %u\n", opts->ts->ts_echo_reply);
+            log->verbose("\t\t}\n");
+        }
+        if (opts->win_scale) {
+            log->verbose("\t\tWin_Scale: {\n");
+            log->verbose("\t\t\tlen: %d\n", opts->win_scale->len);
+            log->verbose("\t\t\tshift_count: %d\n", opts->win_scale->shift_count);
+            log->verbose("\t\t}\n");
+        }
         log->verbose("\t}\n");  
     }
     log->verbose("}\n");
@@ -141,6 +154,7 @@ event_description tcp_hdr::check_flags()
         (rst == 0) &&
         (syn == 0) &&
         (fin == 0)) {
+        // NULL scan in progress
         return event_description::Evt_Tcp_Flags_None_Set;
     }
 
@@ -175,6 +189,31 @@ event_description tcp_hdr_options::deserialize(packet &p,
                     return event_description::Evt_Unknown_Error;
                 }
                 p.deserialize(sack_permitted->len);
+            } break;
+            case Tcp_Options_Type::Timestamp: {
+                p.off ++;
+                ts = std::make_shared<tcp_hdr_opt_timestamp>();
+                if (!ts) {
+                    return event_description::Evt_Unknown_Error;
+                }
+                p.deserialize(ts->len);
+                if (ts->len_in_range()) {
+                    return event_description::Evt_Tcp_Opt_Ts_Inval_Len;
+                }
+                p.deserialize(ts->ts_val);
+                p.deserialize(ts->ts_echo_reply);
+            } break;
+            case Tcp_Options_Type::Win_Scale: {
+                p.off ++;
+                win_scale = std::make_shared<tcp_hdr_opt_win_scale>();
+                if (!win_scale) {
+                    return event_description::Evt_Unknown_Error;
+                }
+                p.deserialize(win_scale->len);
+                if (win_scale->len_in_range()) {
+                    return event_description::Evt_Tcp_Opt_Win_Scale_Inval_Len;
+                }
+                p.deserialize(win_scale->shift_count);
             } break;
             default:
                 return event_description::Evt_Tcp_Invalid_Option;

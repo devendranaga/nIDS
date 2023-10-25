@@ -44,6 +44,20 @@ struct eth_hdr {
 		return (ether_type)ethertype == ether_type::Ether_Type_IPv6;
 	}
 
+	//
+	// bit 1 of the first byte if set is locally adminsterd
+	inline bool is_locally_administered(uint8_t *mac)
+	{
+		return !!(mac[0] & 0x02);
+	}
+
+	//
+	// bit 0 of the first byte if set is multicast
+	inline bool is_multicast(uint8_t *mac)
+	{
+		return !!(mac[0] & 0x01);
+	}
+
 	ether_type get_ethertype()
 	{
 		return (ether_type)ethertype;

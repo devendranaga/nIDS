@@ -34,11 +34,19 @@ struct tcp_hdr_opt_timestamp {
     uint8_t len;
     uint32_t ts_val;
     uint32_t ts_echo_reply;
+
+    bool len_in_range() { return len == len_; }
+    private:
+        const int len_ = 10;
 };
 
 struct tcp_hdr_opt_win_scale {
     uint8_t len;
     uint8_t shift_count;
+
+    bool len_in_range() { return len == len_; }
+    private:
+        const int len_ = 3;
 };
 
 struct tcp_hdr_options {

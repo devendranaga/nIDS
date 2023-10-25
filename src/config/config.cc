@@ -38,6 +38,8 @@ fw_error_type firewall_config::parse(const std::string config_file)
     auto evt_file_fmt = root["events"]["event_file_format"].asString();
     if (evt_file_fmt == "json") {
         evt_config.evt_file_format = event_file_format::Json;
+    } else if (evt_file_fmt == "binary") {
+        evt_config.evt_file_format = event_file_format::Binary;
     } else {
         return fw_error_type::eConfig_Error;
     }

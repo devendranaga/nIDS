@@ -165,11 +165,19 @@ event_description parser::parse_app(packet &pkt)
             protocols_avail.set_dhcp();
         } break;
         case Port_Numbers::Port_Number_NTP: {
-            evt_desc = ntp_h.deserialize(pkt, log_, pkt_dump_);
+            ntp_h = std::make_shared<ntp_hdr>();
+            if (!ntp_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = ntp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ntp();
         } break;
         case Port_Numbers::Port_Number_TLS: {
-            evt_desc = tls_h.deserialize(pkt, log_, pkt_dump_);
+            tls_h = std::make_shared<tls_hdr>();
+            if (!tls_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = tls_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_tls();
         } break;
         default:
@@ -261,6 +269,12 @@ int parser::run(packet &pkt)
     if (protocols_avail.has_ipv4() ||
         protocols_avail.has_ipv6()) {
         evt_desc = parse_l4(pkt);
+        //
+        // parser failed to parse the input packet, deny it.
+        if (evt_desc != event_description::Evt_Parse_Ok) {
+            evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
+            return -1;
+        }
     }
 
     //

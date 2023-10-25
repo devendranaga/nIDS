@@ -48,6 +48,7 @@ event_description arp_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void arp_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("ARP: {\n");
     log->verbose("\t hw_type: %d\n", hw_type);
     log->verbose("\t proto_type: %d\n", proto_type);
@@ -65,6 +66,8 @@ void arp_hdr::print(logger *log)
                     target_hw_addr[4], target_hw_addr[5]);
     log->verbose("\t sender_proto_addr: %u\n", target_proto_addr);
     log->verbose("}\n");
+#endif
 }
 
 }
+

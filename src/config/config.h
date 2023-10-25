@@ -19,6 +19,7 @@ struct firewall_intf_info {
 
 enum class event_file_format {
     Json,
+    Binary,
 };
 
 enum class event_encryption_algorithm {

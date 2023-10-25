@@ -104,6 +104,14 @@ const static struct {
         event_description::Evt_Tcp_Invalid_Option,
         rule_ids::Rule_Id_Tcp_Invalid_Option,
     },
+    {
+        event_description::Evt_Tcp_Opt_Ts_Inval_Len,
+        rule_ids::Rule_Id_Tcp_Opt_Ts_Inval_Len,
+    },
+    {
+        event_description::Evt_Tcp_Opt_Win_Scale_Inval_Len,
+        rule_ids::Rule_Id_Tcp_Opt_Win_Scale_Inval_Len,
+    },
 
     //
     // UDP rules
@@ -302,10 +310,12 @@ void event_mgr::store(event_type evt_type,
 */
 void event_mgr::storage_thread()
 {
+    firewall_config *conf = firewall_config::instance();
+
     while (1) {
         // wake up every second and write the collected event logs
         // to disk.
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         {
             std::unique_lock<std::mutex> lock(storage_thr_lock_);
             int q_len = 0;
@@ -313,8 +323,13 @@ void event_mgr::storage_thread()
             for (q_len = event_list_.size(); q_len > 0; q_len = event_list_.size()) {
                 event evt = event_list_.front();
 
-                // write to the event log
-                evt_file_w_.write(evt);
+                if (conf->evt_config.evt_file_format == event_file_format::Json) {
+                    evt_file_w_.write_json(evt);
+                } else if (conf->evt_config.evt_file_format == event_file_format::Binary) {
+                    evt_file_w_.write(evt);
+                } else {
+                    // Discard the event frame.
+                }
                 event_list_.pop();
             }
         }

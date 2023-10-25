@@ -12,6 +12,8 @@
 #include <event_def.h>
 #include <event.h>
 #include <event_msg.h>
+#include <protocols_types.h>
+#include <port_numbers.h>
 
 namespace firewall {
 
@@ -29,7 +31,7 @@ class event_file_writer {
             if (fp_) {
                 fflush(fp_);
                 fclose(fp_);
-				fp_ = nullptr;
+                fp_ = nullptr;
             }
         }
 
@@ -51,11 +53,12 @@ class event_file_writer {
          * @return fw_error_type::eNo_Error.
         */
         fw_error_type write(const event &evt);
+        fw_error_type write_json(const event &evt);
 
     private:
         //
         // @brief - create a filename and return it in the given filename parameter.
-        fw_error_type create_new_file();
+        fw_error_type create_new_file(bool is_json);
 
         std::string filepath_;
         uint32_t filesize_bytes_;
