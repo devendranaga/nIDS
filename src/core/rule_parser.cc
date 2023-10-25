@@ -104,7 +104,6 @@ void rule_config::parse_icmp_rule(Json::Value &rule_cfg_data,
 {
     auto non_zero_pl_str = rule_cfg_data["icmp"]["non_zero_payload"];
     if (!non_zero_pl_str.isNull()) {
-        printf("%s\n", non_zero_pl_str.asString().c_str());
         rule.icmp_rule.non_zero_payload = non_zero_pl_str.asBool();
         rule.sig_mask.icmp_non_zero_payload = 1;
     }

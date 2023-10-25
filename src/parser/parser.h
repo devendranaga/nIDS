@@ -111,34 +111,34 @@ struct parser {
         ~parser();
 
         // ethernet header
-        eth_hdr eh;
+        std::shared_ptr<eth_hdr> eh;
 
         // VLAN header
-        vlan_hdr vh;
+        std::shared_ptr<vlan_hdr> vh;
 
         // ARP header
-        arp_hdr arp_h;
+        std::shared_ptr<arp_hdr> arp_h;
 
         // IPV4 header
-        ipv4_hdr ipv4_h;
+        std::shared_ptr<ipv4_hdr> ipv4_h;
 
         // IPV6 header
-        ipv6_hdr ipv6_h;
+        std::shared_ptr<ipv6_hdr> ipv6_h;
 
         // TCP header
-        tcp_hdr tcp_h;
+        std::shared_ptr<tcp_hdr> tcp_h;
 
         // UDP header
-        udp_hdr udp_h;
+        std::shared_ptr<udp_hdr> udp_h;
 
         // ICMP header
-        icmp_hdr icmp_h;
+        std::shared_ptr<icmp_hdr> icmp_h;
 
         // ICMP6 header
-        icmp6_hdr icmp6_h;
+        std::shared_ptr<icmp6_hdr> icmp6_h;
 
         // DHCP header
-        dhcp_hdr dhcp_h;
+        std::shared_ptr<dhcp_hdr> dhcp_h;
 
         // NTP header
         ntp_hdr ntp_h;
@@ -159,9 +159,9 @@ struct parser {
         protocols_types get_protocol_type()
         {
             if (protocols_avail.has_ipv4()) {
-                return static_cast<protocols_types>(ipv4_h.protocol);
+                return static_cast<protocols_types>(ipv4_h->protocol);
             } else if (protocols_avail.has_ipv6()) {
-                return static_cast<protocols_types>(ipv6_h.nh);
+                return static_cast<protocols_types>(ipv6_h->nh);
             }
 
             return static_cast<protocols_types>(protocols_types::Protocol_Max);
@@ -180,9 +180,9 @@ struct parser {
         Port_Numbers get_dst_port()
         {
             if (protocols_avail.has_udp()) {
-                return static_cast<Port_Numbers>(udp_h.dst_port);
+                return static_cast<Port_Numbers>(udp_h->dst_port);
             } else if (protocols_avail.has_tcp()) {
-                return static_cast<Port_Numbers>(tcp_h.dst_port);
+                return static_cast<Port_Numbers>(tcp_h->dst_port);
             }
 
             return Port_Numbers::Port_Number_Max;
@@ -191,9 +191,9 @@ struct parser {
         Port_Numbers get_src_port()
         {
             if (protocols_avail.has_udp()) {
-                return static_cast<Port_Numbers>(udp_h.src_port);
+                return static_cast<Port_Numbers>(udp_h->src_port);
             } else if (protocols_avail.has_tcp()) {
-                return static_cast<Port_Numbers>(tcp_h.src_port);
+                return static_cast<Port_Numbers>(tcp_h->src_port);
             }
 
             return Port_Numbers::Port_Number_Max;

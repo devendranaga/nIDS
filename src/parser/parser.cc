@@ -29,7 +29,7 @@ void parser::detect_os_signature()
     uint32_t ttl = 0;
 
     if (protocols_avail.has_ipv4()) {
-        ttl = ipv4_h.ttl;
+        ttl = ipv4_h->ttl;
     }
 
     switch (ttl) {
@@ -58,19 +58,35 @@ event_description parser::parse_l4(packet &pkt)
     proto = get_protocol_type();
     switch (proto) {
         case protocols_types::Protocol_Udp: {
-            evt_desc = udp_h.deserialize(pkt, log_, pkt_dump_);
+            udp_h = std::make_shared<udp_hdr>();
+            if (!udp_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = udp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_udp();
         } break;
         case protocols_types::Protocol_Icmp: {
-            evt_desc = icmp_h.deserialize(pkt, log_, pkt_dump_);
+            icmp_h = std::make_shared<icmp_hdr>();
+            if (!icmp_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = icmp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_icmp();
         } break;
         case protocols_types::Protocol_Icmp6: {
-            evt_desc = icmp6_h.deserialize(pkt, log_, pkt_dump_);
+            icmp6_h = std::make_shared<icmp6_hdr>();
+            if (!icmp6_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = icmp6_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_icmp6();
         } break;
         case protocols_types::Protocol_Tcp: {
-            evt_desc = tcp_h.deserialize(pkt, log_, pkt_dump_);
+            tcp_h = std::make_shared<tcp_hdr>();
+            if (!tcp_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = tcp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_tcp();
         } break;
         default:
@@ -141,7 +157,11 @@ event_description parser::parse_app(packet &pkt)
     switch (dst_port) {
         case Port_Numbers::Port_Number_DHCP_Server:
         case Port_Numbers::Port_Number_DHCP_Client: {
-            evt_desc = dhcp_h.deserialize(pkt, log_, pkt_dump_);
+            dhcp_h = std::make_shared<dhcp_hdr>();
+            if (!dhcp_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = dhcp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_dhcp();
         } break;
         case Port_Numbers::Port_Number_NTP: {
@@ -166,42 +186,64 @@ int parser::run(packet &pkt)
     ether_type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
 
+	printf("size %lu\n", sizeof(parser));
+
+    eh = std::make_shared<eth_hdr>();
+    if (!eh)
+        return -1;
+
     //
     // deserialize ethernet header
-    evt_desc = eh.deserialize(pkt, log_, pkt_dump_);
+    evt_desc = eh->deserialize(pkt, log_, pkt_dump_);
     if (evt_desc != event_description::Evt_Parse_Ok) {
         evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
         return -1;
     }
     protocols_avail.set_eth();
 
-    ether = eh.get_ethertype();
+    ether = eh->get_ethertype();
 
     //
     // check if its vlan, parse it
-    if (eh.has_ethertype_vlan()) {
-        evt_desc = vh.deserialize(pkt, log_, pkt_dump_);
+    if (eh->has_ethertype_vlan()) {
+        vh = std::make_shared<vlan_hdr>();
+        if (!vh)
+            return -1;
+
+        evt_desc = vh->deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
             return -1;
         }
         protocols_avail.set_vlan();
-        ether = eh.get_ethertype();
+        ether = eh->get_ethertype();
     }
 
     //
     // parse the rest of the l2 / l3 frames.
     switch (ether) {
         case ether_type::Ether_Type_ARP: {
-            evt_desc = arp_h.deserialize(pkt, log_, pkt_dump_);
+            arp_h = std::make_shared<arp_hdr>();
+            if (!arp_h)
+                return -1;
+
+            evt_desc = arp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_arp();
         } break;
         case ether_type::Ether_Type_IPv4: {
-            evt_desc = ipv4_h.deserialize(pkt, log_, pkt_dump_);
+            ipv4_h = std::make_shared<ipv4_hdr>();
+            if (!ipv4_h)
+                return -1;
+
+            evt_desc = ipv4_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ipv4();
         } break;
         case ether_type::Ether_Type_IPv6: {
-            evt_desc = ipv6_h.deserialize(pkt, log_, pkt_dump_);
+            ipv6_h = std::make_shared<ipv6_hdr>();
+            if (!ipv6_h)
+                return -1;
+
+            evt_desc = ipv6_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ipv6();
         } break;
         default:

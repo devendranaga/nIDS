@@ -29,6 +29,7 @@ class event_file_writer {
             if (fp_) {
                 fflush(fp_);
                 fclose(fp_);
+				fp_ = nullptr;
             }
         }
 

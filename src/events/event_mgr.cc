@@ -220,19 +220,19 @@ void event_mgr::create_evt(event &evt,
     evt.evt_details = evt_details;
     evt.rule_id = rule_id;
 
-    std::memcpy(evt.src_mac, pkt.eh.src_mac, sizeof(pkt.eh.src_mac));
-    std::memcpy(evt.dst_mac, pkt.eh.dst_mac, sizeof(pkt.eh.dst_mac));
+    std::memcpy(evt.src_mac, pkt.eh->src_mac, sizeof(pkt.eh->src_mac));
+    std::memcpy(evt.dst_mac, pkt.eh->dst_mac, sizeof(pkt.eh->dst_mac));
 
     //
     // if vlan header is present, get ethertype from vlan header
-    evt.ethertype = pkt.eh.ethertype;
+    evt.ethertype = pkt.eh->ethertype;
     if (pkt.protocols_avail.has_vlan()) {
-        evt.ethertype = pkt.vh.ethertype;
+        evt.ethertype = pkt.vh->ethertype;
     }
 
     switch (evt.ethertype) {
         case static_cast<uint16_t>(ether_type::Ether_Type_IPv4):
-            evt.protocol = pkt.ipv4_h.protocol;
+            evt.protocol = pkt.ipv4_h->protocol;
         break;
     }
     evt.pkt_len = pkt.pkt_len;
