@@ -40,6 +40,7 @@ bool ipv4_hdr::validate_checksum(packet &p)
 
 event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
 {
+    event_description evt_desc;
     uint8_t byte_1;
 
     //
@@ -99,6 +100,15 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
     p.deserialize(src_addr);
     p.deserialize(dst_addr);
 
+    //
+    // parse options
+    if (hdr_len > IPV4_HDR_NO_OPTIONS) {
+        evt_desc = opt.deserialize(p, log, hdr_len - IPV4_HDR_NO_OPTIONS, debug);
+        if (evt_desc != event_description::Evt_Parse_Ok) {
+            return evt_desc;
+        }
+    }
+
     end_off = p.off;
 
     if (debug) {
@@ -116,6 +126,7 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void ipv4_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     std::string ipaddr_str;
 
     log->verbose("IPV4: {\n");
@@ -140,7 +151,11 @@ void ipv4_hdr::print(logger *log)
 
     get_ipaddr_str(dst_addr, ipaddr_str);
     log->verbose("\t dst_addr: %u (%s)\n", dst_addr, ipaddr_str.c_str());
+    log->verbose("\t options: {\n");
+    opt.print(log);
+    log->verbose("\t }\n");
     log->verbose("}\n");
+#endif
 }
 
 void ipv4_hdr::get_ipaddr_str(uint32_t ipaddr, std::string &ipaddr_str)
@@ -154,6 +169,64 @@ void ipv4_hdr::get_ipaddr_str(uint32_t ipaddr, std::string &ipaddr_str)
                             (ipaddr & 0xFF000000) >> 24);
 
     ipaddr_str = ip;
+}
+
+event_description ipv4_options::deserialize(packet &p, logger *log, uint32_t opt_len, bool debug)
+{
+    event_description evt_desc = event_description::Evt_IPV4_Unknown_Opt;
+    uint32_t copy_on_frag;
+    uint32_t cls;
+    IPv4_Opt opt;
+    uint8_t val = 0;
+    uint32_t len = opt_len + p.off;
+
+    while (p.off < len) {
+        p.deserialize(val);
+        copy_on_frag = !!(val & 0x80);
+        cls = (val & 0x60) >> 5;
+        opt = static_cast<IPv4_Opt>(val & 0x1F);
+
+        switch (opt) {
+            case IPv4_Opt::Nop: {
+            } break;
+            case IPv4_Opt::Timestamp: {
+                ts = std::make_shared<ipv4_opt_timestamp>(copy_on_frag, cls);
+                if (!ts) {
+                    return event_description::Evt_Unknown_Error;
+                }
+                evt_desc = ts->deserialize(p, log, debug);
+            } break;
+            default:
+                evt_desc = event_description::Evt_IPV4_Unknown_Opt;
+            break;
+        }
+    }
+    return evt_desc;
+}
+
+event_description ipv4_opt_timestamp::deserialize(packet &p, logger *log, bool debug)
+{
+    uint8_t byte;
+    uint32_t len_parsed = 4;
+
+    p.deserialize(len);
+    p.deserialize(ptr);
+    p.deserialize(byte);
+    overflow = (byte & 0xF0) >> 4;
+    flag = (byte & 0x0F);
+
+    while (len_parsed < len) {
+        if (flag == 0) {
+            ipv4_opt_ts_data ts_data;
+
+            p.deserialize(ts_data.ts);
+            ts_list.push_back(ts_data);
+        }
+
+        len_parsed += 4;
+    }
+
+    return event_description::Evt_Parse_Ok;
 }
 
 }

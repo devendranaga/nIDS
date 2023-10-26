@@ -33,3 +33,5 @@
 | 25 | use gz to support compression | |
 | 26 | match tcp / udp data portion content for known exploit names |
 | 27 | match icmp data portion content for known exploit names |
+| 28 | parse ipv4 strict source route |
+| 29 | parse ipv4 loose source route |

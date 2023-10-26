@@ -85,6 +85,10 @@ const static struct {
         event_description::Evt_IPV4_Protocol_Unsupported,
         rule_ids::Rule_Id_IPV4_Protocol_Unsupported
     },
+    {
+        event_description::Evt_IPV4_Unknown_Opt,
+        rule_ids::Rule_Id_IPV4_Unknown_Opt
+    },
 
     //
     // TCP rules

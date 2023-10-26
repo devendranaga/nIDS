@@ -7,6 +7,8 @@
 #define __FW_PROTOCOLS_IPV4_H__
 
 #include <stdint.h>
+#include <vector>
+#include <memory>
 #include <logger.h>
 #include <packet.h>
 #include <protocols_types.h>
@@ -19,6 +21,90 @@ namespace firewall {
 #define IPV4_IHL_LEN 4
 #define IPV4_HDR_NO_OPTIONS 20
 #define IPV4_HDR_LEN_MAX 60
+
+enum class IPv4_Opt {
+    Nop = 1,
+    Timestamp = 4,
+    Commercial_IP_Security = 6,
+};
+
+struct ipv4_opt_comm_sec {
+    uint32_t copy_on_frag:1;
+    uint32_t cls:2;
+    uint8_t len;
+    uint32_t doi;
+    uint8_t tag_type;
+    uint8_t sensitivity_level;
+
+    void print(logger *log);
+};
+
+struct ipv4_opt_ts_data {
+    uint32_t ts;
+    uint32_t ipaddr;
+
+    explicit ipv4_opt_ts_data() : ts(0), ipaddr(0) { }
+    ~ipv4_opt_ts_data() { }
+};
+
+/**
+ * @brief - implements timestamp option.
+*/
+struct ipv4_opt_timestamp {
+    uint32_t copy_on_frag:1;
+    uint32_t cls:2;
+    uint8_t len;
+    uint8_t ptr;
+    uint32_t overflow:4;
+    uint32_t flag:4;
+    std::vector<ipv4_opt_ts_data> ts_list;
+
+    explicit ipv4_opt_timestamp() { }
+    explicit ipv4_opt_timestamp(uint32_t copy_on_frag, uint32_t cls) :
+                                    copy_on_frag(copy_on_frag),
+                                    cls(cls) { }
+    ~ipv4_opt_timestamp() { }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\tTimestamp: {\n");
+        log->verbose("\t\t\tcopy_on_frag: %d\n", copy_on_frag);
+        log->verbose("\t\t\tcls: %d\n", cls);
+        log->verbose("\t\t\tlen: %d\n", len);
+        log->verbose("\t\t\tptr: %d\n", ptr);
+        log->verbose("\t\t\toverflow: %d\n", overflow);
+        log->verbose("\t\t\tflag: %d\n", flag);
+        for (auto it : ts_list) {
+            log->verbose("\t\t\ttimestamp: %u\n", it.ts);
+            log->verbose("\t\t\tipaddr: %u\n", it.ipaddr);
+        }
+        log->verbose("\t\t}\n");
+    #endif
+    }
+};
+
+/**
+ * @brief - parses list of ipv4 options.
+*/
+struct ipv4_options {
+    std::shared_ptr<ipv4_opt_comm_sec> comm_sec;
+    std::shared_ptr<ipv4_opt_timestamp> ts;
+
+    explicit ipv4_options() :
+                    comm_sec(nullptr) { }
+    ~ipv4_options() { }
+
+    event_description deserialize(packet &p, logger *log, uint32_t opt_len, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        if (ts)
+            ts->print(log);
+    #endif
+    }
+};
 
 /**
  * @brief - Implements IPv4 header serialize and deserialize.
@@ -41,6 +127,8 @@ struct ipv4_hdr {
     uint32_t dst_addr;
     uint32_t start_off;
     uint32_t end_off;
+
+    ipv4_options opt;
 
     /**
      * @brief - check if an ipv4 packet is a fragment.
