@@ -9,6 +9,8 @@
 #include <logger.h>
 // ethernet header
 #include <eth.h>
+// MACsec header
+#include <macsec.h>
 // VLAN header
 #include <vlan.h>
 // ARP header
@@ -48,6 +50,7 @@ struct protocol_bits {
     public:
         explicit protocol_bits() :
                             eth(0),
+                            macsec(0),
                             ipv4(0),
                             arp(0),
                             vlan(0),
@@ -63,6 +66,7 @@ struct protocol_bits {
         ~protocol_bits() { }
 
         void set_eth() { eth = 1; }
+        void set_macsec() { macsec = 1; }
         void set_ipv4() { ipv4 = 1; }
         void set_arp() { arp = 1; }
         void set_vlan() { vlan = 1; }
@@ -75,6 +79,7 @@ struct protocol_bits {
         void set_ntp() { ntp = 1; }
         void set_tls() { tls = 1; }
         bool has_eth() const { return eth == 1; }
+        bool has_macsec() const { return macsec == 1; }
         bool has_ipv4() const { return ipv4 == 1; }
         bool has_arp() const { return arp == 1; }
         bool has_vlan() const { return vlan == 1; }
@@ -89,6 +94,7 @@ struct protocol_bits {
 
     private:
         uint32_t eth:1;
+        uint32_t macsec:1;
         uint32_t ipv4:1;
         uint32_t arp:1;
         uint32_t vlan:1;
@@ -112,6 +118,9 @@ struct parser {
 
         // ethernet header
         std::shared_ptr<eth_hdr> eh;
+
+        // MACsec header
+        std::shared_ptr<ieee8021ae_hdr> macsec_h;
 
         // VLAN header
         std::shared_ptr<vlan_hdr> vh;

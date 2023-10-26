@@ -26,6 +26,17 @@ const static struct {
     },
 
     //
+    // macsec rules
+    {
+        event_description::Evt_MACsec_TCI_ES_SC_Set,
+        rule_ids::Rule_Id_MACsec_TCI_ES_SC_Set,
+    },
+    {
+        event_description::Evt_MACsec_TCI_SC_SCB_Set,
+        rule_ids::Rule_Id_MACsec_TCI_SC_SCB_Set,
+    },
+
+    //
     // arp rules
     {
         event_description::Evt_ARP_Hdrlen_Too_Small,

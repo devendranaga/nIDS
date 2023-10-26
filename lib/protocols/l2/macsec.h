@@ -1,7 +1,93 @@
 #ifndef __FW_LIB_PROTOCOLS_MACSEC_H__
 #define __FW_LIB_PROTOCOLS_MACSEC_H__
 
+#include <packet.h>
+#include <event_def.h>
+#include <logger.h>
+
 namespace firewall {
+
+#define MACSEC_ICV_LEN 16
+
+struct ieee8021ae_tci {
+    uint32_t ver:1;
+    uint32_t es:1;
+    uint32_t sc:1;
+    uint32_t scb:1;
+    uint32_t e:1;
+    uint32_t c:1;
+    uint32_t an:2;
+};
+
+struct ieee8021ae_sci {
+    uint8_t mac[6];
+    uint16_t port_id;
+};
+
+/**
+ * @brief - implements MACsec serialize and deserialize.
+*/
+struct ieee8021ae_hdr {
+    ieee8021ae_tci tci;
+    uint8_t short_len;
+    uint32_t pkt_number;
+    ieee8021ae_sci sci;
+    uint16_t data_len;
+    uint8_t *data;
+    uint8_t icv[MACSEC_ICV_LEN];
+
+    explicit ieee8021ae_hdr() : data_len(0), data(nullptr) { }
+    ~ieee8021ae_hdr()
+    {
+        if (data)
+            free(data);
+    }
+
+    int serialize(packet &p);
+    /**
+     * @brief - implements ARP deserialization.
+     * 
+     * @param [in] p packet frame.
+     * @return returns event_description type.
+    */
+    event_description deserialize(packet &p, logger *log, bool debug = false);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("IEEE802.1AE: {\n");
+        log->verbose("\t tci; {\n");
+        log->verbose("\t\t ver: %d\n", tci.ver);
+        log->verbose("\t\t es: %d\n", tci.ver);
+        log->verbose("\t\t sc: %d\n", tci.sc);
+        log->verbose("\t\t scb: %d\n", tci.scb);
+        log->verbose("\t\t e: %d\n", tci.e);
+        log->verbose("\t\t c: %d\n", tci.c);
+        log->verbose("\t\t an: %d\n", tci.an);
+        log->verbose("\t }\n");
+        log->verbose("\t short_len: %d\n", short_len);
+        log->verbose("\t pkt_number: %u\n", pkt_number);
+        log->verbose("\t sci: {\n");
+        log->verbose("\t\t mac: %02x-%02x-%02x-%02x-%02x-%02x\n",
+                            sci.mac[0], sci.mac[1],
+                            sci.mac[2], sci.mac[3],
+                            sci.mac[4], sci.mac[5]);
+        log->verbose("\t\t port_number: %u\n", sci.port_id);
+        log->verbose("\t data_len: %d\n", data_len);
+        log->verbose("\t ICV: ");
+        for (auto i = 0; i < MACSEC_ICV_LEN; i ++) {
+            printf("%02x ", icv[i]);
+        }
+        log->verbose("\n");
+        log->verbose("\t }\n");
+        log->verbose("}\n");
+    #endif
+    }
+    bool is_an_encrypted_frame() { return tci.e && tci.c; }
+    bool is_an_authenticated_frame() { return (tci.e == 0) && (tci.c == 0); }
+
+    private:
+        int macsec_hdr_len_min_ = 22;
+};
 
 }
 

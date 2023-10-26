@@ -228,6 +228,21 @@ int parser::run(packet &pkt)
     }
 
     //
+    // Parse macsec frame.
+    if (ether == ether_type::Ether_Type_MACsec) {
+        macsec_h = std::make_shared<ieee8021ae_hdr>();
+        if (!macsec_h) {
+            return -1;
+        }
+
+        evt_desc = macsec_h->deserialize(pkt, log_, pkt_dump_);
+        if (evt_desc != event_description::Evt_Parse_Ok) {
+            evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
+            return -1;
+        }
+    }
+
+    //
     // parse the rest of the l2 / l3 frames.
     switch (ether) {
         case ether_type::Ether_Type_ARP: {
