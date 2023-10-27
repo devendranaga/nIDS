@@ -16,6 +16,7 @@
 namespace firewall {
 
 enum class dhcp_param_req_list {
+    Pad = 0,
     Subnet_Mask = 1,
     Time_Offset = 2,
     Router = 3,
@@ -25,6 +26,7 @@ enum class dhcp_param_req_list {
     Root_Path = 17,
     Interface_MTU = 26,
     Broadcast_Address = 28,
+    Perform_Router_Discover = 31,
     Static_Route = 33,
     NTP_Servers = 42,
     NetBIOS_over_TCP_IP_NameServer = 44,
@@ -305,6 +307,112 @@ struct dhcp_opt_dhcp_server_id {
         const int len_ = 4;
 };
 
+struct dhcp_opt_domain_name {
+    uint8_t len;
+    uint8_t *val;
+
+    explicit dhcp_opt_domain_name() : len(0), val(nullptr) { }
+    ~dhcp_opt_domain_name() { }
+
+    event_description deserialize(packet &p, logger *log, bool debug)
+    {
+        p.deserialize(len);
+        val = (uint8_t *)calloc(1, len);
+        if (!val) {
+            return event_description::Evt_Unknown_Error;
+        }
+        p.deserialize(val, len);
+
+        return event_description::Evt_Parse_Ok;
+    }
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\t Domain_Name: {\n");
+        log->verbose("\t\t\t len: %d\n", len);
+        log->verbose("\t\t }\n");
+    #endif
+    }
+};
+
+struct dhcp_opt_router {
+    uint8_t len;
+    uint32_t val;
+
+    event_description deserialize(packet &p, logger *log, bool debug)
+    {
+        p.deserialize(len);
+        p.deserialize(val);
+
+        return event_description::Evt_Parse_Ok;
+    }
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\t Router: {\n");
+        log->verbose("\t\t\t len: %d\n", len);
+        log->verbose("\t\t\t val: %u\n", val);
+        log->verbose("\t\t }\n");
+    #endif
+    }
+};
+
+struct dhcp_opt_dns {
+    uint8_t len;
+    std::vector<uint32_t> dns_server_list;
+
+    event_description deserialize(packet &p, logger *log, bool debug)
+    {
+        int count;
+
+        p.deserialize(len);
+        count = len / 4;
+
+        while (count > 0) {
+            uint32_t dns_server;
+
+            p.deserialize(dns_server);
+            dns_server_list.push_back(dns_server);
+            count --;
+        }
+
+        return event_description::Evt_Parse_Ok;
+    }
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\t DNS: {\n");
+        log->verbose("\t\t\t len: %d\n", len);
+        for (auto it : dns_server_list) {
+            log->verbose("\t\t\t server: %u\n", it);
+        }
+        log->verbose("\t\t }\n");
+    #endif
+    }
+};
+
+struct dhcp_opt_perform_router_discover {
+    uint8_t len;
+    uint8_t val;
+
+    event_description deserialize(packet &p, logger *log, bool debug)
+    {
+        p.deserialize(len);
+        p.deserialize(val);
+
+        return event_description::Evt_Parse_Ok;
+    }
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\t Router_Discover: {\n");
+        log->verbose("\t\t\t len: %d\n", len);
+        log->verbose("\t\t\t val: %d\n", val);
+        log->verbose("\t\t }\n");
+    #endif
+    }
+};
+
 struct dhcp_opts {
     std::shared_ptr<dhcp_opt_msg_type> type;
     std::shared_ptr<dhcp_opt_req_ipaddr> req_ipaddr;
@@ -316,6 +424,10 @@ struct dhcp_opts {
     std::shared_ptr<dhcp_opt_rebindig_time> rebind_time;
     std::shared_ptr<dhcp_opt_ipaddr_lease_time> lease_time;
     std::shared_ptr<dhcp_opt_dhcp_server_id> dhcp_server_id;
+    std::shared_ptr<dhcp_opt_domain_name> domain_name;
+    std::shared_ptr<dhcp_opt_router> router;
+    std::shared_ptr<dhcp_opt_dns> dns;
+    std::shared_ptr<dhcp_opt_perform_router_discover> perf_rdisc;
     dhcp_opt_param_end end;
 
     explicit dhcp_opts() : 
@@ -327,7 +439,11 @@ struct dhcp_opts {
                 subnet_mask(nullptr),
                 renewal_time(nullptr),
                 lease_time(nullptr),
-                dhcp_server_id(nullptr) { }
+                dhcp_server_id(nullptr),
+                domain_name(nullptr),
+                router(nullptr),
+                dns(nullptr),
+                perf_rdisc(nullptr) { }
     ~dhcp_opts() { }
 
     int serialize(packet &p);
@@ -362,6 +478,14 @@ struct dhcp_opts {
             lease_time->print(log);
         if (dhcp_server_id)
             dhcp_server_id->print(log);
+        if (dns)
+            dns->print(log);
+        if (router)
+            router->print(log);
+        if (domain_name)
+            domain_name->print(log);
+        if (perf_rdisc)
+            perf_rdisc->print(log);
     #endif
     }
 };

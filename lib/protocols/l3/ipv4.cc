@@ -196,6 +196,13 @@ event_description ipv4_options::deserialize(packet &p, logger *log, uint32_t opt
                 }
                 evt_desc = ts->deserialize(p, log, debug);
             } break;
+            case IPv4_Opt::Router_Alert: {
+                ra = std::make_shared<ipv4_opt_router_alert>(copy_on_frag, cls);
+                if (!ra) {
+                    return event_description::Evt_Unknown_Error;
+                }
+                evt_desc = ra->deserialize(p, log, debug);
+            } break;
             default:
                 evt_desc = event_description::Evt_IPV4_Unknown_Opt;
             break;
@@ -225,6 +232,14 @@ event_description ipv4_opt_timestamp::deserialize(packet &p, logger *log, bool d
 
         len_parsed += 4;
     }
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description ipv4_opt_router_alert::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(len);
+    p.deserialize(router_alert);
 
     return event_description::Evt_Parse_Ok;
 }

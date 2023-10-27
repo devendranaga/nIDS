@@ -23,6 +23,7 @@
 #include <packet_stats.h>
 #include <parser.h>
 #include <event_mgr.h>
+#include <perf.h>
 
 namespace firewall {
 
@@ -65,6 +66,8 @@ class firewall_intf {
         //
         // interface name
         std::string ifname_;
+        perf perf_ctx_;
+        std::shared_ptr<perf_item> pkt_perf_;
 };
 
 /**

@@ -15,7 +15,7 @@ namespace firewall {
 parser::parser(const std::string ifname, logger *log) :
                         ifname_(ifname),
                         log_(log),
-                        pkt_dump_(true)
+                        pkt_dump_(false)
 { }
 parser::~parser() { }
 
@@ -193,8 +193,6 @@ int parser::run(packet &pkt)
     event_mgr *evt_mgr = event_mgr::instance();
     ether_type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
-
-	printf("size %lu\n", sizeof(parser));
 
     eh = std::make_shared<eth_hdr>();
     if (!eh)

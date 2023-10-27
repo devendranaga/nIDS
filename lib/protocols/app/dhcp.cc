@@ -52,10 +52,8 @@ event_description dhcp_hdr::deserialize(packet &p, logger *log, bool debug)
         return event_description::Evt_DHCP_MAGIC_Invalid;
     }
 
-    printf("%s %u\n", __func__, __LINE__);
     evt_desc = opts.deserialize(p, log, debug);
     if (evt_desc != event_description::Evt_Parse_Ok) {
-    printf("%s %u\n", __func__, __LINE__);
         return evt_desc;
     }
 
@@ -88,7 +86,7 @@ void dhcp_hdr::print(logger *log)
                             client_macaddr[4], client_macaddr[5]);
     log->verbose("\t server_hostname: %s\n", (char *)server_hostname);
     log->verbose("\t bootfilename: %s\n", (char *)bootfilename);
-    log->verbose("\t dhcp_magic: %c%c%c%c\n",
+    log->verbose("\t dhcp_magic: %02x-%02x-%02x-%02x\n",
                             dhcp_magic[0], dhcp_magic[1],
                             dhcp_magic[2], dhcp_magic[3]);
     log->verbose("\t dhcp_options: {\n");
@@ -240,6 +238,52 @@ event_description dhcp_opts::deserialize(packet &p, logger *log, bool debug)
                 if (evt_desc != event_description::Evt_Parse_Ok) {
                     return evt_desc;
                 }
+            } break;
+            case dhcp_param_req_list::Domain_Name: {
+                domain_name = std::make_shared<dhcp_opt_domain_name>();
+                if (!domain_name) {
+                    return event_description::Evt_Unknown_Error;
+                }
+
+                evt_desc = domain_name->deserialize(p, log, debug);
+                if (evt_desc != event_description::Evt_Parse_Ok) {
+                    return evt_desc;
+                }
+            } break;
+            case dhcp_param_req_list::Router: {
+                router = std::make_shared<dhcp_opt_router>();
+                if (!router) {
+                    return event_description::Evt_Unknown_Error;
+                }
+
+                evt_desc = router->deserialize(p, log, debug);
+                if (evt_desc != event_description::Evt_Unknown_Error) {
+                    return evt_desc;
+                }
+            } break;
+            case dhcp_param_req_list::Domain_Name_Server: {
+                dns = std::make_shared<dhcp_opt_dns>();
+                if (!dns) {
+                    return event_description::Evt_Unknown_Error;
+                }
+
+                evt_desc = dns->deserialize(p, log, debug);
+                if (evt_desc != event_description::Evt_Parse_Ok) {
+                    return evt_desc;
+                }
+            } break;
+            case dhcp_param_req_list::Perform_Router_Discover: {
+                perf_rdisc = std::make_shared<dhcp_opt_perform_router_discover>();
+                if (!perf_rdisc) {
+                    return event_description::Evt_Unknown_Error;
+                }
+
+                evt_desc = perf_rdisc->deserialize(p, log, debug);
+                if (evt_desc != event_description::Evt_Parse_Ok) {
+                    return evt_desc;
+                }
+            } break;
+            case dhcp_param_req_list::Pad: {
             } break;
             default: {
                 evt_desc = event_description::Evt_Unknown_Error;

@@ -1,3 +1,8 @@
+/**
+ * @brief - implements IEEE 802.1AE MACsec serialize and deserialize.
+ * 
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_LIB_PROTOCOLS_MACSEC_H__
 #define __FW_LIB_PROTOCOLS_MACSEC_H__
 
@@ -57,12 +62,12 @@ struct ieee8021ae_hdr {
         log->verbose("IEEE802.1AE: {\n");
         log->verbose("\t tci; {\n");
         log->verbose("\t\t ver: %d\n", tci.ver);
-        log->verbose("\t\t es: %d\n", tci.ver);
-        log->verbose("\t\t sc: %d\n", tci.sc);
+        log->verbose("\t\t es:  %d\n", tci.ver);
+        log->verbose("\t\t sc:  %d\n", tci.sc);
         log->verbose("\t\t scb: %d\n", tci.scb);
-        log->verbose("\t\t e: %d\n", tci.e);
-        log->verbose("\t\t c: %d\n", tci.c);
-        log->verbose("\t\t an: %d\n", tci.an);
+        log->verbose("\t\t e:   %d\n", tci.e);
+        log->verbose("\t\t c:   %d\n", tci.c);
+        log->verbose("\t\t an:  %d\n", tci.an);
         log->verbose("\t }\n");
         log->verbose("\t short_len: %d\n", short_len);
         log->verbose("\t pkt_number: %u\n", pkt_number);
@@ -72,13 +77,13 @@ struct ieee8021ae_hdr {
                             sci.mac[2], sci.mac[3],
                             sci.mac[4], sci.mac[5]);
         log->verbose("\t\t port_number: %u\n", sci.port_id);
+        log->verbose("\t }\n");
         log->verbose("\t data_len: %d\n", data_len);
         log->verbose("\t ICV: ");
         for (auto i = 0; i < MACSEC_ICV_LEN; i ++) {
-            printf("%02x ", icv[i]);
+            fprintf(stderr, "%02x ", icv[i]);
         }
-        log->verbose("\n");
-        log->verbose("\t }\n");
+        fprintf(stderr, "\n");
         log->verbose("}\n");
     #endif
     }

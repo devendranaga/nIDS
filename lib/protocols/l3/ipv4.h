@@ -26,6 +26,7 @@ enum class IPv4_Opt {
     Nop = 1,
     Timestamp = 4,
     Commercial_IP_Security = 6,
+    Router_Alert = 20,
 };
 
 struct ipv4_opt_comm_sec {
@@ -85,12 +86,38 @@ struct ipv4_opt_timestamp {
     }
 };
 
+struct ipv4_opt_router_alert {
+    uint32_t copy_on_fragment:1;
+    uint32_t cls:2;
+    uint32_t len;
+    uint16_t router_alert;
+
+    explicit ipv4_opt_router_alert() { }
+    explicit ipv4_opt_router_alert(uint32_t cof, uint32_t cls) :
+                    copy_on_fragment(cof), cls(cls) { }
+    ~ipv4_opt_router_alert() { }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t Router_Alert: {\n");
+        log->verbose("\t\t copy_on_fragment: %d\n", copy_on_fragment);
+        log->verbose("\t\t cls: %d\n", cls);
+        log->verbose("\t\t len: %d\n", len);
+        log->verbose("\t\t router_alert: %d\n", router_alert);
+        log->verbose("\t }\n");
+    #endif
+    }
+};
+
 /**
  * @brief - parses list of ipv4 options.
 */
 struct ipv4_options {
     std::shared_ptr<ipv4_opt_comm_sec> comm_sec;
     std::shared_ptr<ipv4_opt_timestamp> ts;
+    std::shared_ptr<ipv4_opt_router_alert> ra;
 
     explicit ipv4_options() :
                     comm_sec(nullptr) { }

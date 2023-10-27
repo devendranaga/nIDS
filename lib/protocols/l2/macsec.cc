@@ -1,3 +1,8 @@
+/**
+ * @brief - implements IEEE 802.1AE MACsec serialize and deserialize.
+ * 
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #include <macsec.h>
 
 namespace firewall {
@@ -41,6 +46,9 @@ event_description ieee8021ae_hdr::deserialize(packet &p, logger *log, bool debug
     }
     p.deserialize(data, data_len);
     p.deserialize(icv, MACSEC_ICV_LEN);
+
+    if (debug)
+        print(log);
 
     return event_description::Evt_Parse_Ok;
 }

@@ -123,6 +123,8 @@ fw_error_type firewall_intf::init(const std::string ifname,
 
     log_->info("create rx thread ok\n");
 
+    pkt_perf_ = perf_ctx_.new_perf("pkt_perf");
+
     return fw_error_type::eNo_Error;
 }
 
@@ -164,12 +166,16 @@ void firewall_intf::run_filter(packet &pkt)
     parser p(ifname_, log_);
     int ret;
 
+    pkt_perf_->start();
+
     log_->verbose("filter packet with size %d\n", pkt.buf_len);
 
     ret = p.run(pkt);
     if (ret != 0) {
         firewall_pkt_stats::instance()->inc_n_deny(ifname_);
     }
+
+    pkt_perf_->stop(true);
 }
 
 void firewall_intf::filter_thread()
