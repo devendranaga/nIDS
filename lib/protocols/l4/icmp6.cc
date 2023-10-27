@@ -33,12 +33,14 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void icmp6_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("ICMP6: {\n");
     log->verbose("\t type: %d\n", type);
     log->verbose("\t code: %d\n", code);
     log->verbose("\t checksum: 0x%04x\n", checksum);
     log->verbose("\t cur_hoplimit: %d\n", cur_hoplimit);
     log->verbose("}\n");
+#endif
 }
 
 }

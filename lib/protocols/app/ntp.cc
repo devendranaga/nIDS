@@ -42,6 +42,7 @@ event_description ntp_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void ntp_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("NTP: {\n");
     log->verbose("\tleap_indicator: %d\n", leap_indicator);
     log->verbose("\tversion: %d\n", version);
@@ -57,6 +58,7 @@ void ntp_hdr::print(logger *log)
     log->verbose("\treceive_timesatmp: %u\n", receive_timestamp);
     log->verbose("\ttransmit_timestamp: %u\n", transmit_timestamp);
     log->verbose("}\n");
+#endif
 }
 
 }

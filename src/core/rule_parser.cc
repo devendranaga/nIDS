@@ -36,6 +36,7 @@ void rule_config::parse_eth_rule(Json::Value &rule_cfg_data,
 
 void eth_rule_config::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("eth_rules: {\n");
     log->verbose("\tfrom_src: %02x:%02x:%02x:%02x:%02x:%02x\n",
                     from_src[0], from_src[1],
@@ -47,6 +48,7 @@ void eth_rule_config::print(logger *log)
                     to_dst[4], to_dst[5]);
     log->verbose("\tethertype: %04x\n", ethertype);
     log->verbose("}\n");
+#endif
 }
 
 void rule_config::parse_vlan_rule(Json::Value &rule_cfg_data,
@@ -67,10 +69,12 @@ void rule_config::parse_vlan_rule(Json::Value &rule_cfg_data,
 
 void vlan_rule_config::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("vlan_rules: {\n");
     log->verbose("\tpri: %d\n", pri);
     log->verbose("\tvid: %d\n", vid);
     log->verbose("}\n");
+#endif
 }
 
 void rule_config::parse_ipv4_rule(Json::Value &rule_cfg_data,
@@ -93,10 +97,12 @@ void rule_config::parse_ipv4_rule(Json::Value &rule_cfg_data,
 
 void ipv4_rule_config::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("ipv4_rules: {\n");
     log->verbose("\tcheck_options: %d\n", check_options);
     log->verbose("\tprotocol: %d\n", static_cast<int>(protocol));
     log->verbose("}\n");
+#endif
 }
 
 void rule_config::parse_icmp_rule(Json::Value &rule_cfg_data,
@@ -111,13 +117,16 @@ void rule_config::parse_icmp_rule(Json::Value &rule_cfg_data,
 
 void icmp_rule_config::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("icmp_rules: {\n");
     log->verbose("\tnon_zero_payload: %d\n", non_zero_payload);
     log->verbose("}\n");
+#endif
 }
 
 void rule_config_item::print()
 {
+#if defined(FW_ENABLE_DEBUG)
     logger *log = logger::instance();
 
     log->verbose("rule_name: %s\n", rule_name.c_str());
@@ -128,6 +137,7 @@ void rule_config_item::print()
     vlan_rule.print(log);
     ipv4_rule.print(log);
     icmp_rule.print(log);
+#endif
 }
 
 fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
@@ -156,7 +166,7 @@ fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
     rule.print();
 
     rules_cfg_.emplace_back(rule);
-    
+
     return fw_error_type::eNo_Error;
 }
 
@@ -175,3 +185,4 @@ fw_error_type rule_config::parse(const std::string rules_file)
 }
 
 }
+

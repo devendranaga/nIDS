@@ -6,7 +6,23 @@
         "ethertype": "0x0800",
         "pkt_len": 100,
         "repeat": true,
-        "count": 100
+        "count": 100,
+        "inter_pkt_gap_us": 100
+    },
+    "arp": {
+        "spoof_mode": true,
+        "hwtype": 1,
+        "protocol_type": "0x0800",
+        "hw_size": 6,
+        "protocol_size": 4,
+        "opcode": 1,
+        "sender_mac": "00:11:22:33:44:55",
+        "sender_ipaddr": "192.168.1.1",
+        "target_mac": "00:11:22:33:44:55",
+        "target_ipaddr": "192.168.1.1",
+        "repeat": true,
+        "count": 100,
+        "inter_pkt_gap_us": 100
     },
     "pcap_replay": {
         "filepath": "./pcap_file.pcap",

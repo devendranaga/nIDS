@@ -45,6 +45,7 @@ event_description ipv6_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void ipv6_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("IPV6: {\n");
     log->verbose("\t version: %d\n", version);
     log->verbose("\t priority: %d\n", priority);
@@ -67,6 +68,7 @@ void ipv6_hdr::print(logger *log)
                  dst_addr[8], dst_addr[9], dst_addr[10], dst_addr[11],
                  dst_addr[12], dst_addr[13], dst_addr[14], dst_addr[15]);
     log->verbose("}\n");
+#endif
 }
 
 }

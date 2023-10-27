@@ -30,6 +30,7 @@ int packet_gen_eth_config::parse(Json::Value &r)
     pkt_len = r["pkt_len"].asUInt();
     repeat = r["repeat"].asBool();
     count = r["count"].asUInt();
+    inter_pkt_gap_us = r["inter_pkt_gap_us"].asUInt();
 
     valid_ = true;
 

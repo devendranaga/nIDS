@@ -3,6 +3,7 @@
  * 
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
+#include <syslog.h>
 #include <event_mgr.h>
 
 namespace firewall {
@@ -230,6 +231,32 @@ const static struct {
     },
 };
 
+const struct {
+    event_type type;
+    std::string str;
+} evt_type_str_map[] = {
+    {
+        event_type::Evt_Allow, "Allow"
+    },
+    {
+        event_type::Evt_Deny, "Deny",
+    },
+    {
+        event_type::Evt_Alert, "Alert",
+    }
+};
+
+const std::string event_mgr::evt_type_str(event_type type)
+{
+    for (auto it : evt_type_str_map) {
+        if (it.type == type) {
+            return it.str;
+        }
+    }
+
+    return "Unknown";
+}
+
 /**
  * @brief - create an event.
 */
@@ -345,10 +372,54 @@ void event_mgr::storage_thread()
                 } else {
                     // Discard the event frame.
                 }
+
+                if (conf->evt_config.log_to_syslog) {
+                    log_syslog(evt);
+                }
                 event_list_.pop();
             }
         }
     }
+}
+
+void event_mgr::log_syslog(event &evt)
+{
+    char msg[1024];
+    int len = 0;
+
+    len += snprintf(msg + len, sizeof(msg) - len,
+                    "[%s] from ", evt_type_str(evt.evt_type).c_str());
+    len += snprintf(msg + len, sizeof(msg) - len,
+                    "src_mac [%02x:%02x:%02x:%02x:%02x:%02x] "
+                    "dst_mac [%02x:%02x:%02x:%02x:%02x:%02x] "
+                    "ethertype 0x%04x ",
+                    evt.src_mac[0], evt.src_mac[1],
+                    evt.src_mac[2], evt.src_mac[3],
+                    evt.src_mac[4], evt.src_mac[5],
+                    evt.dst_mac[0], evt.dst_mac[1],
+                    evt.dst_mac[2], evt.dst_mac[3],
+                    evt.dst_mac[4], evt.dst_mac[5],
+                    evt.ethertype);
+    switch (static_cast<ether_type>(evt.ethertype)) {
+        case ether_type::Ether_Type_IPv4: {
+            std::string src_ipaddr;
+            std::string dst_ipaddr;
+
+            get_ipaddr(evt.src_addr, src_ipaddr);
+            get_ipaddr(evt.dst_addr, dst_ipaddr);
+            len += snprintf(msg + len, sizeof(msg) - len,
+                            "src_ip %s dst_ip %s ",
+                            src_ipaddr.c_str(), dst_ipaddr.c_str());
+            len += snprintf(msg + len, sizeof(msg) - len,
+                            "protocol %d", evt.protocol);
+        } break;
+        default:
+        break;
+    }
+
+    len += snprintf(msg + len, sizeof(msg) - len, "\n");
+
+    syslog(LOG_ALERT, "%s", msg);
 }
 
 }

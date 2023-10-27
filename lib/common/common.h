@@ -13,18 +13,18 @@ namespace firewall {
 #define FW_MACADDR_LEN 6
 
 enum class fw_error_type {
-	eSerialize_Failure,
-	eDeserialize_Failure,
-	eOut_Of_Bounds,
-	eToo_Short,
-	eInvalid,
-	eOut_Of_Memory,
+    eSerialize_Failure,
+    eDeserialize_Failure,
+    eOut_Of_Bounds,
+    eToo_Short,
+    eInvalid,
+    eOut_Of_Memory,
 
-	/* Configuration error. */
-	eConfig_Error,
+    /* Configuration error. */
+    eConfig_Error,
 
-	/* Success. */
-	eNo_Error,
+    /* Success. */
+    eNo_Error,
 };
 
 int parse_str_to_uint16(const std::string &v,
@@ -40,6 +40,8 @@ int parse_str_to_uint32(const std::string &v,
                         uint32_t &r);
 
 int parse_str_to_mac(const std::string &v, uint8_t *mac);
+
+void get_ipaddr(uint32_t ipaddr, std::string &ipaddr_str);
 
 }
 

@@ -46,18 +46,59 @@ int packet_gen::init(int argc, char **argv)
     return 0;
 }
 
-void packet_gen::run()
+void packet_gen::run_pcap_replay()
 {
     std::unique_ptr<pcap_replay> replay;
 
+    replay = std::make_unique<pcap_replay>(
+                        raw_,
+                        conf_->pcap_conf.filepath,
+                        conf_->pcap_conf.intvl_us,
+                        conf_->pcap_conf.repeat);
+    replay->replay();
+}
+
+void packet_gen::run()
+{
     if (conf_->pcap_conf.is_valid()) {
-        replay = std::make_unique<pcap_replay>(
-                            raw_,
-                            conf_->pcap_conf.filepath,
-                            conf_->pcap_conf.intvl_us,
-                            conf_->pcap_conf.repeat);
-        replay->replay();
+        run_pcap_replay();
     }
+    if (conf_->eth_conf.is_valid()) {
+        run_eth_replay();
+    }
+}
+
+void packet_gen::run_eth_replay()
+{
+    packet p(conf_->eth_conf.pkt_len);
+    eth_hdr eh;
+    uint8_t dst[6] = {0};
+    int count = 0;
+
+    log_->info("Starting Ethernet Replay\n");
+
+    std::memcpy(eh.src_mac,
+                conf_->eth_conf.src_mac, sizeof(conf_->eth_conf.src_mac));
+    std::memcpy(eh.dst_mac,
+                conf_->eth_conf.dst_mac, sizeof(conf_->eth_conf.dst_mac));
+    eh.ethertype = conf_->eth_conf.ethertype;
+    eh.serialize(p);
+
+    p.buf_len = p.off + conf_->eth_conf.pkt_len;
+
+    count = conf_->eth_conf.count;
+
+    log_->info("count %d repeat_enable %d\n", count, conf_->eth_conf.repeat);
+
+    while ((count > 0) || (conf_->eth_conf.repeat)) {
+        raw_->send_msg(dst, p.buf, p.buf_len);
+        count --;
+
+        std::this_thread::sleep_for(
+                std::chrono::microseconds(conf_->eth_conf.inter_pkt_gap_us));
+    }
+
+    log_->info("replay complete\n");
 }
 
 }

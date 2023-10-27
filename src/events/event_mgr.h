@@ -10,6 +10,7 @@
 #include <thread>
 #include <mutex>
 #include <queue>
+#include <common.h>
 #include <event_def.h>
 #include <config.h>
 #include <logger.h>
@@ -46,6 +47,8 @@ class event_mgr {
                         event_type evt_type,
                         event_description evt_details,
                         const parser &pkt);
+        void log_syslog(event &evt);
+        const std::string evt_type_str(event_type type);
 
         std::shared_ptr<std::thread> storage_thr_id_;
         event_file_writer evt_file_w_;

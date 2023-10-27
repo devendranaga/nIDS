@@ -9,7 +9,7 @@ namespace firewall {
 
 packet::packet()
 {
-	std::memset(buf, 0, sizeof(buf));
+    std::memset(buf, 0, sizeof(buf));
     buf_len = 0;
     off = 0;
 }
@@ -45,8 +45,8 @@ fw_error_type packet::serialize(uint16_t bytes)
         return fw_error_type::eOut_Of_Bounds;
     }
 
-    buf[off] = (bytes & 0x00FF);
-    buf[off + 1] = (bytes & 0xFF00) >> 8;
+    buf[off + 1] = (bytes & 0x00FF);
+    buf[off] = (bytes & 0xFF00) >> 8;
 
     off += 2;
 

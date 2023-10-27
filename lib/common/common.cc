@@ -86,4 +86,18 @@ int parse_str_to_mac(const std::string &v, uint8_t *mac)
     return 0;
 }
 
+void get_ipaddr(uint32_t ipaddr, std::string &ipaddr_str)
+{
+    char ipaddr_s[48];
+
+    snprintf(ipaddr_s, sizeof(ipaddr_s), "%u.%u.%u.%u",
+                       (ipaddr & 0x000000FF),
+                       (ipaddr & 0x0000FF00) >> 8,
+                       (ipaddr & 0x00FF0000) >> 16,
+                       (ipaddr & 0xFF000000) >> 24);
+
+    ipaddr_str = ipaddr_s;
 }
+
+}
+

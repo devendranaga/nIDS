@@ -34,6 +34,7 @@ event_description eth_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void eth_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
 	log->verbose("eth_hdr: {\n");
 	log->verbose("\tsrc_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
 					src_mac[0], src_mac[1],
@@ -45,6 +46,7 @@ void eth_hdr::print(logger *log)
 					dst_mac[4], dst_mac[5]);
 	log->verbose("\tethertype: %04x\n", ethertype);
 	log->verbose("}\n");
+#endif
 }
 
 }

@@ -13,18 +13,18 @@
 namespace firewall {
 
 enum class Tls_Version {
-	Tls_Version_1_0,
-	Tls_Version_1_1,
-	Tls_Version_1_2,
+    Tls_Version_1_0,
+    Tls_Version_1_1,
+    Tls_Version_1_2,
 };
 
 enum class Content_Type {
-	Handshake = 22,
+    Handshake = 22,
 };
 
 struct tls_hdr {
-	Content_Type type;
-	Tls_Version version;
+    Content_Type type;
+    Tls_Version version;
 
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);

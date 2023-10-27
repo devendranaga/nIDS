@@ -37,6 +37,22 @@ cmake ../
 make -j12
 ```
 
+## Running
+
+1. Firewall daemon can be started the following way:
+
+```bash
+sudo ./fwd -f firewall_config.json
+```
+
+The supporting rules files must be present as well.
+
+2. Packet generator can be started the following way:
+
+```bash
+sudo ./packet_gen -f packet_gen.json
+```
+
 ## Supported Protocols
 
 Supported protocols are [here](doc/supported_protocols.md).

@@ -45,12 +45,14 @@ event_description vlan_hdr::deserialize(packet &p, logger *log, bool debug)
 
 void vlan_hdr::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("VLAN: {\n");
     log->verbose("\t pri: %d\n", pri);
     log->verbose("\t dei: %d\n", dei);
     log->verbose("\t vid: %d\n", vid);
     log->verbose("\t ethertype: 0x%04x\n", ethertype);
     log->verbose("}\n");
+#endif
 }
 
 }
