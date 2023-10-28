@@ -10,7 +10,17 @@ namespace firewall {
 
 int arp_hdr::serialize(packet &p)
 {
-    return -1;
+    p.serialize(hw_type);
+    p.serialize(proto_type);
+    p.serialize(hw_addr_len);
+    p.serialize(proto_addr_len);
+    p.serialize(operation);
+    p.serialize(sender_hw_addr);
+    p.serialize(sender_proto_addr);
+    p.serialize(target_hw_addr);
+    p.serialize(target_proto_addr);
+
+    return 0;
 }
 
 event_description arp_hdr::deserialize(packet &p, logger *log, bool debug)

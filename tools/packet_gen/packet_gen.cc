@@ -37,6 +37,7 @@ int packet_gen::init(int argc, char **argv)
         log_->error("failed to parse %s\n", filename_.c_str());
         return -1;
     }
+    conf_->print(log_);
 
     log_->info("configuration %s parsed ok\n", filename_.c_str());
 
@@ -58,6 +59,39 @@ void packet_gen::run_pcap_replay()
     replay->replay();
 }
 
+void packet_gen::run_arp_replay()
+{
+    eth_hdr eh;
+    packet p(eh.get_hdr_len() + conf_->arp_conf.arp_h.get_hdr_len());
+    uint8_t dst[6] = {0};
+    int count = 0;
+
+    log_->info("starting ARP replay\n");
+
+    std::memcpy(eh.src_mac,
+                conf_->arp_conf.arp_h.sender_hw_addr,
+                FW_MACADDR_LEN);
+    std::memcpy(eh.dst_mac,
+                conf_->arp_conf.arp_h.target_hw_addr,
+                FW_MACADDR_LEN);
+    eh.ethertype = static_cast<uint16_t>(ether_type::Ether_Type_ARP);
+
+    eh.serialize(p);
+    conf_->arp_conf.arp_h.serialize(p);
+
+    count = conf_->arp_conf.count;
+
+    while ((count > 0) || (conf_->arp_conf.repeat)) {
+        raw_->send_msg(dst, p.buf, p.buf_len);
+        count --;
+
+        std::this_thread::sleep_for(
+                std::chrono::microseconds(conf_->arp_conf.inter_pkt_gap_us));
+    }
+
+    log_->info("ARP replay complete\n");
+}
+
 void packet_gen::run()
 {
     if (conf_->pcap_conf.is_valid()) {
@@ -65,6 +99,9 @@ void packet_gen::run()
     }
     if (conf_->eth_conf.is_valid()) {
         run_eth_replay();
+    }
+    if (conf_->arp_conf.is_valid()) {
+        run_arp_replay();
     }
 }
 

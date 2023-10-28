@@ -65,6 +65,9 @@ struct packet_gen_pcap_replay_config {
         bool valid_;
 };
 
+/**
+ * @brief - defines packet gen arp configuration.
+*/
 struct packet_gen_arp_config {
     bool spoof_mode;
     arp_hdr arp_h;
@@ -73,6 +76,16 @@ struct packet_gen_arp_config {
     uint32_t inter_pkt_gap_us;
 
     int parse(Json::Value &r);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("spoof_mode: %d\n", spoof_mode);
+        arp_h.print(log);
+        log->verbose("repeat: %d\n", repeat);
+        log->verbose("count: %d\n", count);
+        log->verbose("inter_pkt_gap_us: %d\n", inter_pkt_gap_us);
+    #endif
+    }
     bool is_valid() { return valid_; }
 
     private:
@@ -95,6 +108,14 @@ struct packet_gen_config {
     }
 
     int parse(const std::string filepath);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        if (arp_conf.is_valid()) {
+            arp_conf.print(log);
+        }
+    #endif
+    }
 
     private:
         explicit packet_gen_config() { }

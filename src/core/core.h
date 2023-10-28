@@ -1,6 +1,6 @@
 /**
  * @brief - Implements core packet receive and service
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #ifndef __FW_CORE_H__

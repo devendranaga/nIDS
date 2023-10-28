@@ -1,6 +1,6 @@
 /**
  * @brief - Implements core service.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #include <core.h>

@@ -99,5 +99,22 @@ void get_ipaddr(uint32_t ipaddr, std::string &ipaddr_str)
     ipaddr_str = ipaddr_s;
 }
 
+int parse_str_to_ipv4_addr(const std::string &v, uint32_t &ipaddr)
+{
+    uint32_t ip_4;
+    uint32_t ip_3;
+    uint32_t ip_2;
+    uint32_t ip_1;
+    int ret;
+
+    ret = sscanf(v.c_str(), "%u.%u.%u.%u", &ip_4, &ip_3, &ip_2, &ip_1);
+    if (ret != 4) {
+        return -1;
+    }
+
+    ipaddr = (ip_4) + (ip_3 << 8) + (ip_2 << 16) + (ip_1 << 24);
+    return 0;
+}
+
 }
 

@@ -12,6 +12,9 @@ namespace firewall {
 
 #define FW_MACADDR_LEN 6
 
+/**
+ * @brief - list of error types.
+*/
 enum class fw_error_type {
     eSerialize_Failure,
     eDeserialize_Failure,
@@ -27,6 +30,14 @@ enum class fw_error_type {
     eNo_Error,
 };
 
+/**
+ * @brief - parse string to uint16_t.
+ *
+ * @param [in] v - in string.
+ * @param [inout] r - output converted integer.
+ * 
+ * @return 0 on success -1 on failure.
+*/
 int parse_str_to_uint16(const std::string &v,
                         uint16_t &r);
 
@@ -42,6 +53,8 @@ int parse_str_to_uint32(const std::string &v,
 int parse_str_to_mac(const std::string &v, uint8_t *mac);
 
 void get_ipaddr(uint32_t ipaddr, std::string &ipaddr_str);
+
+int parse_str_to_ipv4_addr(const std::string &v, uint32_t &ipaddr);
 
 }
 

@@ -160,15 +160,7 @@ void ipv4_hdr::print(logger *log)
 
 void ipv4_hdr::get_ipaddr_str(uint32_t ipaddr, std::string &ipaddr_str)
 {
-    char ip[32] = {0};
-
-    snprintf(ip, sizeof(ip), "%d.%d.%d.%d",
-                            (ipaddr & 0x000000FF),
-                            (ipaddr & 0x0000FF00) >> 8,
-                            (ipaddr & 0x00FF0000) >> 16,
-                            (ipaddr & 0xFF000000) >> 24);
-
-    ipaddr_str = ip;
+    get_ipaddr(ipaddr, ipaddr_str);
 }
 
 event_description ipv4_options::deserialize(packet &p, logger *log, uint32_t opt_len, bool debug)

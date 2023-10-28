@@ -78,6 +78,8 @@ struct eth_hdr {
 		return memcmp(dst_mac, bmac, sizeof(dst_mac));
 	}
 
+	uint16_t get_hdr_len() { return eth_hdr_len_; }
+
 	private:
 		void print(logger *log);
 		const uint16_t eth_hdr_len_ = 14;

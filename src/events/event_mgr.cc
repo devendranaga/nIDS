@@ -219,6 +219,25 @@ const static struct {
     },
 
     //
+    // DoIP rules
+    {
+        event_description::Evt_DoIP_Hdrlen_Too_Small,
+        rule_ids::Rule_Id_DoIP_Hdrlen_Too_Small,
+    },
+    {
+        event_description::Evt_DoIP_Unsupported_Msg_Type,
+        rule_ids::Rule_Id_DoIP_Unsupported_Msg_Type,
+    },
+    {
+        event_description::Evt_DoIP_Veh_Announce_Too_Small,
+        rule_ids::Rule_Id_DoIP_Veh_Announce_Too_Small,
+    },
+    {
+        event_description::Evt_DoIP_Version_Mismatch,
+        rule_ids::Rule_Id_DoIP_Version_Mismatch,
+    },
+
+    //
     // Rules matched by the Exploit filter
     {
         event_description::Evt_Known_Exploit_Win32_Blaster,

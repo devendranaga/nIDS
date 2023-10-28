@@ -18,3 +18,10 @@ The following protocol parsing is currently supported.
 | 12 | NTP | APP |
 | 13 | TLS | APP (only version matching!) |
 
+Below are some of the supported Automotive protocols.
+
+| S.No | Protocol Name | Layer |
+|------|---------------|-------|
+| 1 | DoIP | APP |
+
+

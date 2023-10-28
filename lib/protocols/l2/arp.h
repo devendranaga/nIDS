@@ -73,6 +73,8 @@ struct arp_hdr {
     inline bool is_arp_reply()
     { return operation == (uint32_t)arp_operation::Reply; }
 
+    uint16_t get_hdr_len() { return arp_hdr_len_; }
+
     private:
         const int arp_hdr_len_ = 28;
 };
