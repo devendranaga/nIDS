@@ -128,6 +128,22 @@ const static struct {
         event_description::Evt_Tcp_Opt_Win_Scale_Inval_Len,
         rule_ids::Rule_Id_Tcp_Opt_Win_Scale_Inval_Len,
     },
+    {
+        event_description::Evt_Tcp_Opt_MSS_Repeated,
+        rule_ids::Rule_Id_Tcp_Opt_MSS_Repeated,
+    },
+    {
+        event_description::Evt_Tcp_Opt_SACK_Permitted_Repeated,
+        rule_ids::Rule_Id_Tcp_Opt_SACK_Permitted_Repeated,
+    },
+    {
+        event_description::EvT_Tcp_Opt_Ts_Repeated,
+        rule_ids::Rule_Id_Tcp_Opt_Ts_Repeated,
+    },
+    {
+        event_description::Evt_Tcp_Opt_WinScale_Repeated,
+        rule_ids::Rule_Id_Tcp_Opt_WinScale_Repeated,
+    },
 
     //
     // UDP rules

@@ -20,6 +20,9 @@ namespace firewall {
 #define EID_LEN 6
 #define GID_LEN 6
 
+/**
+ * @brief - List of DoIP messgae types.
+ */
 enum class Doip_Msg_Type {
     Generic_NACK = 0x0000,
     Veh_Id_Req = 0x0001,
@@ -235,20 +238,38 @@ struct doip_hdr {
     std::shared_ptr<doip_entity_status_resp> status_resp;
     std::shared_ptr<doip_routing_activation_req> route_req;
     std::shared_ptr<doip_generic_nack> generic_nack;
-    std::shared_ptr<doip_alive_check_resp> alive_Chk_resp;
+    std::shared_ptr<doip_alive_check_resp> alive_chk_resp;
     std::shared_ptr<doip_diag_powermode_info_resp> powermode_info_resp;
     std::shared_ptr<doip_routing_activation_resp> route_resp;
     std::shared_ptr<doip_diag_msg> diag_msg;
     std::shared_ptr<doip_diag_msg_ack> diag_msg_ack;
 
+    explicit doip_hdr() :
+                    veh_announce(nullptr),
+                    status_resp(nullptr),
+                    route_req(nullptr),
+                    generic_nack(nullptr),
+                    alive_chk_resp(nullptr),
+                    powermode_info_resp(nullptr),
+                    route_resp(nullptr),
+                    diag_msg(nullptr),
+                    diag_msg_ack(nullptr) { }
+    ~doip_hdr() { }
+
     int serialize(packet &p);
     /**
      * @brief - implements ARP deserialization.
-     * 
+     *
      * @param [in] p packet frame.
      * @return returns event_description type.
     */
     event_description deserialize(packet &p, logger *log, bool debug = false);
+
+    /**
+     * @brief - print doip packet.
+     *
+     * @param [in] log - logger.
+     */
     void print(logger *log)
     {
     #if defined(FW_ENABLE_DEBUG)
@@ -271,7 +292,7 @@ struct doip_hdr {
             generic_nack->print(log);
 
         if (alive_chk_resp)
-            alive_Chk_resp->print(log);
+            alive_chk_resp->print(log);
 
         if (powermode_info_resp)
             powermode_info_resp->print(log);

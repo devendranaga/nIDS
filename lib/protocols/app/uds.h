@@ -57,7 +57,7 @@ struct uds_hdr {
         log->verbose("UDS: {\n");
         log->verbose("\t service_id: %d\n", service_id);
         switch (static_cast<Diag_Service_Id>(service_id)) {
-            case Diag_Service_Id::Extended_Diag_Session: {
+            case Diag_Service_Id::Diag_Sess_Control: {
                 log->verbose("\t Diag_Sess_Control: {\n");
                 log->verbose("\t\t type: %d\n", sess_control.type);
                 log->verbose("\t }\n");

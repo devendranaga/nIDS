@@ -44,6 +44,11 @@ struct tcp_hdr_opt_win_scale {
     uint8_t len;
     uint8_t shift_count;
 
+    /**
+     * @brief - check if the length is in range.
+     * 
+     * this length including the header and the value (TLV).
+    */
     bool len_in_range() { return len == len_; }
     private:
         const int len_ = 3;
@@ -54,6 +59,13 @@ struct tcp_hdr_options {
     std::shared_ptr<tcp_hdr_opt_sack_permitted> sack_permitted;
     std::shared_ptr<tcp_hdr_opt_timestamp> ts;
     std::shared_ptr<tcp_hdr_opt_win_scale> win_scale;
+
+    explicit tcp_hdr_options() :
+                    mss(nullptr),
+                    sack_permitted(nullptr),
+                    ts(nullptr),
+                    win_scale(nullptr) { }
+    ~tcp_hdr_options() { }
 
     int serialize(packet &p);
     /**

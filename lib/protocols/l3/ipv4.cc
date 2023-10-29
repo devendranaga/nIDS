@@ -9,7 +9,76 @@ namespace firewall {
 
 int ipv4_hdr::serialize(packet &p)
 {
-    return -1;
+    uint8_t byte;
+    uint16_t byte_2;
+    uint8_t hdr_chksum_off = 0;
+
+    start_off = p.off;
+
+    //
+    // version and hdr length
+    byte = version << 4;
+    byte |= IPV4_HDR_NO_OPTIONS;
+
+    p.serialize(byte);
+
+    // DSCP and ECN
+    byte = dscp << 2;
+    byte |= ecn;
+
+    p.serialize(byte);
+
+    // total len
+    p.serialize(total_len);
+
+    // IDentification
+    p.serialize(identification);
+
+    // flags
+    byte = 0;
+    if (reserved) {
+        byte = 0x80;
+    }
+    if (dont_frag) {
+        byte |= 0x40;
+    }
+    if (more_frag) {
+        byte |= 0x20;
+    }
+
+    // fragmentation off
+    byte |= (frag_off & 0xFF00) >> 8;
+    p.serialize(byte);
+
+    byte = (frag_off & 0x00FF);
+    p.serialize(byte);
+
+    // TTL
+    p.serialize(ttl);
+
+    // Protocol
+    p.serialize(protocol);
+
+    byte_2 = 0;
+
+    // Header checksum
+    hdr_chksum_off = p.off;
+    p.serialize(byte_2);
+
+    // Source ipv4 address
+    p.serialize(src_addr);
+
+    // Destination ipv4 address
+    p.serialize(dst_addr);
+
+    end_off = p.off;
+
+    // Header checksum
+    hdr_chksum = this->generate_checksum(p);
+    p.buf[hdr_chksum_off] = (hdr_chksum & 0xFF00) >> 8;
+    p.buf[hdr_chksum_off + 1] = (hdr_chksum & 0x00FF);
+
+    return 0;
 }
 
 bool ipv4_hdr::validate_checksum(packet &p)
@@ -36,6 +105,22 @@ bool ipv4_hdr::validate_checksum(packet &p)
     }
 
     return false;
+}
+
+uint16_t ipv4_hdr::generate_checksum(packet &p)
+{
+    uint32_t csum = 0;
+    uint32_t carry = 0;
+    uint32_t i = 0;
+
+    for (i = start_off; i < end_off; i += 2) {
+        csum += (p.buf[i + 1] << 8) | p.buf[i];
+    }
+
+    carry = (csum & 0xFF0000) >> 16;
+    csum += carry;
+
+    return csum & 0xFFFF;
 }
 
 event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)

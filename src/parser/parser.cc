@@ -15,7 +15,7 @@ namespace firewall {
 parser::parser(const std::string ifname, logger *log) :
                         ifname_(ifname),
                         log_(log),
-                        pkt_dump_(false)
+                        pkt_dump_(true)
 { }
 parser::~parser() { }
 
@@ -147,14 +147,11 @@ bool parser::exploit_search(packet &pkt)
     return false;
 }
 
-event_description parser::parse_app(packet &pkt)
+event_description parser::parse_app_pkt(packet &pkt, Port_Numbers port)
 {
     event_description evt_desc = event_description::Evt_Unknown_Error;
-    Port_Numbers dst_port;
 
-    dst_port = this->get_dst_port();
-
-    switch (dst_port) {
+   switch (port) {
         case Port_Numbers::Port_Number_DHCP_Server:
         case Port_Numbers::Port_Number_DHCP_Client: {
             dhcp_h = std::make_shared<dhcp_hdr>();
@@ -180,9 +177,31 @@ event_description parser::parse_app(packet &pkt)
             evt_desc = tls_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_tls();
         } break;
+#if defined(FW_ENABLE_AUTOMOTIVE)
+        case Port_Numbers::Port_Number_DoIP: {
+            doip_h = std::make_shared<doip_hdr>();
+            if (!doip_h)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = doip_h->deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_doip();
+        } break;
+#endif
         default:
             evt_desc = event_description::Evt_Unknown_Error;
         break;
+    }
+
+    return evt_desc;
+}
+
+event_description parser::parse_app(packet &pkt)
+{
+    event_description evt_desc = event_description::Evt_Unknown_Error;
+
+    evt_desc = parse_app_pkt(pkt, this->get_dst_port());
+    if (evt_desc == event_description::Evt_Unknown_Error) {
+        evt_desc = parse_app_pkt(pkt, this->get_src_port());
     }
 
     return evt_desc;

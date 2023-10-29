@@ -1,6 +1,6 @@
 /**
  * @brief - implements parser
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #ifndef __FW_PARSER_H__
@@ -33,6 +33,10 @@
 #include <ntp.h>
 // TLS header
 #include <tls.h>
+#if defined(FW_ENABLE_AUTOMOTIVE)
+// DoIP header
+#include <doip.h>
+#endif
 // Known exploits
 #include <known_exploits.h>
 
@@ -61,6 +65,7 @@ struct protocol_bits {
                             icmp6(0),
                             dhcp(0),
                             ntp(0),
+                            doip(0),
                             tls(0)
         { }
         ~protocol_bits() { }
@@ -77,6 +82,7 @@ struct protocol_bits {
         void set_icmp6() { icmp6 = 1; }
         void set_dhcp() { dhcp = 1; }
         void set_ntp() { ntp = 1; }
+        void set_doip() { doip = 1; }
         void set_tls() { tls = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_macsec() const { return macsec == 1; }
@@ -90,6 +96,7 @@ struct protocol_bits {
         bool has_icmp6() const { return icmp6 == 1; }
         bool has_dhcp() const { return dhcp == 1; }
         bool has_ntp() const { return ntp == 1; }
+        bool has_doip() const { return doip == 1; }
         bool has_tls() const { return tls == 1; }
 
     private:
@@ -105,6 +112,7 @@ struct protocol_bits {
         uint32_t icmp6:1;
         uint32_t dhcp:1;
         uint32_t ntp:1;
+        uint32_t doip:1;
         uint32_t tls:1;
 };
 
@@ -151,6 +159,11 @@ struct parser {
 
         // NTP header
         std::shared_ptr<ntp_hdr> ntp_h;
+
+#if defined(FW_ENABLE_AUTOMOTIVE)
+        // DoIP header
+        std::shared_ptr<doip_hdr> doip_h;
+#endif
 
         // TLS header
         std::shared_ptr<tls_hdr> tls_h;
@@ -211,6 +224,7 @@ struct parser {
     private:
         void detect_os_signature();
         event_description parse_l4(packet &pkt);
+        event_description parse_app_pkt(packet &pkt, Port_Numbers port);
         event_description parse_app(packet &pkt);
         bool exploit_search(packet &pkt);
 

@@ -172,6 +172,12 @@ event_description tcp_hdr_options::deserialize(packet &p,
         switch (static_cast<Tcp_Options_Type>(p.buf[p.off])) {
             case Tcp_Options_Type::Mss: {
                 p.off ++;
+                //
+                // MSS cannot be repeated
+                if (mss != nullptr) {
+                    return event_description::Evt_Tcp_Opt_MSS_Repeated;
+                }
+
                 mss = std::make_shared<tcp_hdr_opt_mss>();
                 if (!mss) {
                     return event_description::Evt_Unknown_Error;
@@ -184,6 +190,12 @@ event_description tcp_hdr_options::deserialize(packet &p,
             } break;
             case Tcp_Options_Type::SACK_Permitted: {
                 p.off ++;
+                //
+                // SACK cannot be repeated
+                if (sack_permitted != nullptr) {
+                    return event_description::Evt_Tcp_Opt_SACK_Permitted_Repeated;
+                }
+
                 sack_permitted = std::make_shared<tcp_hdr_opt_sack_permitted>();
                 if (!sack_permitted) {
                     return event_description::Evt_Unknown_Error;
@@ -192,12 +204,22 @@ event_description tcp_hdr_options::deserialize(packet &p,
             } break;
             case Tcp_Options_Type::Timestamp: {
                 p.off ++;
+                //
+                // TS cannot be repeated
+                if (ts != nullptr) {
+                    return event_description::EvT_Tcp_Opt_Ts_Repeated;
+                }
+
                 ts = std::make_shared<tcp_hdr_opt_timestamp>();
                 if (!ts) {
                     return event_description::Evt_Unknown_Error;
                 }
                 p.deserialize(ts->len);
-                if (ts->len_in_range()) {
+
+                //
+                // discard if length is not what expected
+                // must be 10 including the header (type + len)
+                if (!ts->len_in_range()) {
                     return event_description::Evt_Tcp_Opt_Ts_Inval_Len;
                 }
                 p.deserialize(ts->ts_val);
@@ -205,12 +227,22 @@ event_description tcp_hdr_options::deserialize(packet &p,
             } break;
             case Tcp_Options_Type::Win_Scale: {
                 p.off ++;
+                //
+                // WinScale cannot be repeated
+                if (win_scale != nullptr) {
+                    return event_description::Evt_Tcp_Opt_WinScale_Repeated;
+                }
+
                 win_scale = std::make_shared<tcp_hdr_opt_win_scale>();
                 if (!win_scale) {
                     return event_description::Evt_Unknown_Error;
                 }
                 p.deserialize(win_scale->len);
-                if (win_scale->len_in_range()) {
+
+                //
+                // discard if the length is not what expected
+                // must be 10 including the header (type + len)
+                if (!win_scale->len_in_range()) {
                     return event_description::Evt_Tcp_Opt_Win_Scale_Inval_Len;
                 }
                 p.deserialize(win_scale->shift_count);

@@ -1,3 +1,8 @@
+/**
+ * @brief - implements DoIP serialize and deserialize.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #if defined(FW_ENABLE_AUTOMOTIVE)
 
 #include <doip.h>
@@ -68,12 +73,12 @@ event_description doip_hdr::deserialize(packet &p, logger *log, bool debug)
             evt_desc = event_description::Evt_Parse_Ok;
         } break;
         case Doip_Msg_Type::Alive_Check_Resp: {
-            alive_Chk_resp = std::make_shared<doip_alive_check_resp>();
-            if (!alive_Chk_resp) {
+            alive_chk_resp = std::make_shared<doip_alive_check_resp>();
+            if (!alive_chk_resp) {
                 return event_description::Evt_Unknown_Error;
             }
 
-            p.deserialize(alive_Chk_resp->source_addr);
+            p.deserialize(alive_chk_resp->source_addr);
             evt_desc = event_description::Evt_Parse_Ok;
         } break;
         case Doip_Msg_Type::Diag_PowerMode_Info_Response: {
@@ -97,6 +102,9 @@ event_description doip_hdr::deserialize(packet &p, logger *log, bool debug)
             return event_description::Evt_DoIP_Unsupported_Msg_Type;
         break;
     }
+
+    if (debug)
+        print(log);
 
     return evt_desc;
 }

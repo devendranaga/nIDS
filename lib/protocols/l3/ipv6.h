@@ -1,3 +1,8 @@
+/**
+ * @brief - implements ipv6 serialize and deserialize.
+ * 
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_PROTOCOLS_IPV6_H__
 #define __FW_PROTOCOLS_IPV6_H__
 
@@ -10,6 +15,9 @@ namespace firewall {
 #define IPV6_VERSION 6
 #define IPV6_ADDR_LEN 16
 
+/**
+ * @brief - implements ipv6 header.
+*/
 struct ipv6_hdr {
     uint32_t version:4;
     uint8_t priority;

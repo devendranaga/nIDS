@@ -164,7 +164,16 @@ struct ipv4_hdr {
      * @return false if not
     */
     bool is_a_frag() { return frag_off > 0; }
+
+    /**
+     * @brief - serialize the ipv4 packet.
+     * 
+     * @param [in] p - packet
+     * 
+     * @return 0 on success -1 on failure.
+    */
     int serialize(packet &p);
+
     /**
      * @brief - deserialize the ipv4 packet.
      *
@@ -175,7 +184,14 @@ struct ipv4_hdr {
      * @return returns the event description after parsing the frame.
     */
     event_description deserialize(packet &p, logger *log, bool debug = false);
+
+    /**
+     * @brief - prints the ipv4 header
+     *
+     * @param [in] log - logger.
+     */
     void print(logger *log);
+
     /**
      * @brief - validate the checksum.
      *
@@ -183,7 +199,23 @@ struct ipv4_hdr {
      * @return false if checksum is invalid
     */
     bool validate_checksum(packet &p);
+
+    /**
+     * @brief - get the ipv4 address in string format.
+     *
+     * @param [in] ipaddr - ipaddr in uint32_t
+     * @param [out] ipaddr_str - output ipaddr in string format
+     */
     void get_ipaddr_str(uint32_t ipaddr, std::string &ipaddr_str);
+
+    /**
+     * @brief - generate the ipv4 checksum
+     *
+     * @param [in] p - input frame
+     *
+     * return computed checksum
+     */
+    uint16_t generate_checksum(packet &p);
 };
 
 }

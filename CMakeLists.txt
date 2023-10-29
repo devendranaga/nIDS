@@ -56,7 +56,7 @@ include_directories(
 # Enable Debugging
 set(CMAKE_CXX_FLAGS "-DFW_ENABLE_DEBUG")
 # Enable Automotive protocols
-set(CMAKE_CXX_FLAGS "-DFW_ENABLE_AUTOMOTIVE")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFW_ENABLE_AUTOMOTIVE")
 
 # General C++ flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -g -ggdb")
