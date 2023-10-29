@@ -71,6 +71,7 @@ enum class rule_ids {
     Rule_Id_DoIP_Veh_Announce_Too_Small,
     Rule_Id_DoIP_Entity_Status_Response_Too_Small,
     Rule_Id_DoIP_Route_Activation_Req_Too_Small,
+    Rule_Id_Uds_Unknown_Service_Id,
     Rule_Id_Known_Exploit_Win32_Blaster,
     Rule_Id_Unknown,
 };
@@ -138,6 +139,7 @@ enum class event_description {
     Evt_DoIP_Veh_Announce_Too_Small,
     Evt_DoIP_Entity_Status_Response_Too_Small,
     Evt_DoIP_Route_Activation_Req_Too_Small,
+    Evt_Uds_Unknown_Service_Id,
     Evt_Known_Exploit_Win32_Blaster,
     Evt_Unknown_Error,
     Evt_Parse_Ok,

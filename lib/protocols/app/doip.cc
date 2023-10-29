@@ -1,3 +1,5 @@
+#if defined(FW_ENABLE_AUTOMOTIVE)
+
 #include <doip.h>
 
 namespace firewall {
@@ -34,11 +36,6 @@ event_description doip_hdr::deserialize(packet &p, logger *log, bool debug)
             }
 
             evt_desc = veh_announce->deserialize(p, log, debug);
-            if (evt_desc != event_description::Evt_Parse_Ok) {
-                return evt_desc;
-            }
-        } break;
-        case Doip_Msg_Type::DoIP_Entity_Status_Request: { // 0 length msg
         } break;
         case Doip_Msg_Type::DoIP_Entity_Status_Response: {
             status_resp = std::make_shared<doip_entity_status_resp>();
@@ -47,11 +44,6 @@ event_description doip_hdr::deserialize(packet &p, logger *log, bool debug)
             }
 
             evt_desc = status_resp->deserialize(p, log, debug);
-            if (evt_desc != event_description::Evt_Parse_Ok) {
-                return evt_desc;
-            }
-        } break;
-        case Doip_Msg_Type::Veh_Id_Req: {
         } break;
         case Doip_Msg_Type::Routing_Activation_Req: {
             route_req = std::make_shared<doip_routing_activation_req>();
@@ -60,16 +52,53 @@ event_description doip_hdr::deserialize(packet &p, logger *log, bool debug)
             }
 
             evt_desc = route_req->deserialize(p, log, debug);
-            if (evt_desc != event_description::Evt_Parse_Ok) {
-                return evt_desc;
+        } break;
+        case Doip_Msg_Type::DoIP_Entity_Status_Request:
+        case Doip_Msg_Type::Veh_Id_Req:
+        case Doip_Msg_Type::Alive_Check_Req:
+        case Doip_Msg_Type::Diag_PowerMode_Info_Request: // 0 byte content
+        break;
+        case Doip_Msg_Type::Generic_NACK: {
+            generic_nack = std::make_shared<doip_generic_nack>();
+            if (!generic_nack) {
+                return event_description::Evt_Unknown_Error;
             }
+
+            p.deserialize(generic_nack->code);
+            evt_desc = event_description::Evt_Parse_Ok;
+        } break;
+        case Doip_Msg_Type::Alive_Check_Resp: {
+            alive_Chk_resp = std::make_shared<doip_alive_check_resp>();
+            if (!alive_Chk_resp) {
+                return event_description::Evt_Unknown_Error;
+            }
+
+            p.deserialize(alive_Chk_resp->source_addr);
+            evt_desc = event_description::Evt_Parse_Ok;
+        } break;
+        case Doip_Msg_Type::Diag_PowerMode_Info_Response: {
+            powermode_info_resp = std::make_shared<doip_diag_powermode_info_resp>();
+            if (!powermode_info_resp) {
+                return event_description::Evt_Unknown_Error;
+            }
+
+            p.deserialize(powermode_info_resp->val);
+            evt_desc = event_description::Evt_Parse_Ok;
+        } break;
+        case Doip_Msg_Type::Routing_Activation_Resp: {
+            route_resp = std::make_shared<doip_routing_activation_resp>();
+            if (!route_resp) {
+                return event_description::Evt_Unknown_Error;
+            }
+
+            evt_desc = route_resp->deserialize(p, log, debug);
         } break;
         default:
             return event_description::Evt_DoIP_Unsupported_Msg_Type;
         break;
     }
 
-    return event_description::Evt_Parse_Ok;
+    return evt_desc;
 }
 
 event_description doip_veh_announce_msg::deserialize(packet &p, logger *log, bool debug)
@@ -115,4 +144,36 @@ event_description doip_routing_activation_req::deserialize(packet &p, logger *lo
     return event_description::Evt_Parse_Ok;
 }
 
+event_description doip_routing_activation_resp::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(tester_logical_addr);
+    p.deserialize(src_addr);
+    p.deserialize(resp_code);
+    p.deserialize(reserved);
+
+    return event_description::Evt_Parse_Ok;
 }
+
+event_description doip_diag_msg::deserialize(packet &p, logger *log, bool debug)
+{
+    event_description evt_desc;
+
+    p.deserialize(src_addr);
+    p.deserialize(target_addr);
+    evt_desc = uds.deserialize(p, log, debug);
+
+    return evt_desc;
+}
+
+event_description doip_diag_msg_ack::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(src_addr);
+    p.deserialize(target_addr);
+    p.deserialize(ack_code);
+
+    return event_description::Evt_Parse_Ok;
+}
+
+}
+
+#endif
