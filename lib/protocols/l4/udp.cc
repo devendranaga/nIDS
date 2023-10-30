@@ -31,6 +31,13 @@ event_description udp_hdr::deserialize(packet &p, logger *log, bool debug)
         return event_description::Evt_Udp_Dst_Port_Invalid;
     }
 
+    //
+    // UDP message length and the remaining frame data length are not matching
+    // given msg length in the header is bigger than the remaining frame length.
+    if (p.remaining_len() < length) {
+        return event_description::Evt_Udp_Hdr_Msg_Len_Too_Big;
+    }
+
     if (debug) {
         print(log);
     }

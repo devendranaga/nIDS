@@ -44,6 +44,8 @@
 #include <port_numbers.h>
 #include <rule_parser.h>
 #include <os_signatures.h>
+#include <packet_stats.h>
+#include <arp_filter.h>
 
 namespace firewall {
 
@@ -226,6 +228,7 @@ struct parser {
         event_description parse_l4(packet &pkt);
         event_description parse_app_pkt(packet &pkt, Port_Numbers port);
         event_description parse_app(packet &pkt);
+        event_description run_arp_filter(packet &pkt, logger *log, bool pkt_dump);
         bool exploit_search(packet &pkt);
 
         std::string ifname_;

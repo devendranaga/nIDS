@@ -15,6 +15,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/src/core/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/events/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/parser/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/stats/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/filters/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/filters/arp/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/logging/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/crypto/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/common/build.cmake)
@@ -38,7 +40,8 @@ set(SERVICE_SOURCES
 	${PARSER_SOURCES}
 	${EVENT_MGR_SOURCES}
 	${STATS_SOURCES}
-	./src/filters/filter.cc)
+	${FILTER_SOURCES}
+	${FILTER_ARP_SOURCES})
 
 set(TOOL_PACKET_GEN_SOURCES
 	${PKT_GEN_SOURCES})
@@ -51,7 +54,8 @@ include_directories(
 	./src/
 	./src/stats/
 	./src/config/
-	./src/filters/)
+	./src/filters/
+	./src/filters/arp/)
 
 # Enable Debugging
 set(CMAKE_CXX_FLAGS "-DFW_ENABLE_DEBUG")
@@ -59,7 +63,7 @@ set(CMAKE_CXX_FLAGS "-DFW_ENABLE_DEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFW_ENABLE_AUTOMOTIVE")
 
 # General C++ flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -g -ggdb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wformat -Wno-unused-parameter -Wno-unused-function -g -ggdb")
 
 add_library(packet_core ${LIB_SOURCES})
 

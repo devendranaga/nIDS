@@ -15,6 +15,11 @@
 
 namespace firewall {
 
+/**
+ * @brief - list of ICMP type.
+ * 
+ * See: https://datatracker.ietf.org/doc/html/rfc792.
+*/
 enum class Icmp_Type : uint32_t {
     Echo_Reply = 0,
     Dest_Unreachable = 3,
@@ -58,13 +63,13 @@ struct icmp_echo_req {
     uint16_t data_len;
     uint8_t *data;
 
-	explicit icmp_echo_req() : data_len(0), data(nullptr) { }
-	~icmp_echo_req()
-	{
-		if (data) {
-			free(data);
-		}
-	}
+    explicit icmp_echo_req() : data_len(0), data(nullptr) { }
+    ~icmp_echo_req()
+    {
+        if (data) {
+            free(data);
+        }
+    }
     void print(logger *log);
 };
 
@@ -74,13 +79,13 @@ struct icmp_echo_reply {
     uint16_t data_len;
     uint8_t *data;
 
-	explicit icmp_echo_reply() : data_len(0), data(nullptr) { }
-	~icmp_echo_reply()
-	{
-		if (data) {
-			free(data);
-		}
-	}
+    explicit icmp_echo_reply() : data_len(0), data(nullptr) { }
+    ~icmp_echo_reply()
+    {
+        if (data) {
+            free(data);
+        }
+    }
 
     void print(logger *log);
 };

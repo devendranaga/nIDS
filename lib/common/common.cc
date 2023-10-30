@@ -116,5 +116,11 @@ int parse_str_to_ipv4_addr(const std::string &v, uint32_t &ipaddr)
     return 0;
 }
 
+double diff_timespec(const struct timespec *time1, const struct timespec *time0)
+{
+    return ((time1->tv_sec - time0->tv_sec) * 1000000000.0) +
+            (time1->tv_nsec - time0->tv_nsec);
+}
+
 }
 

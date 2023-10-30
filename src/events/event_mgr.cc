@@ -144,6 +144,18 @@ const static struct {
         event_description::Evt_Tcp_Opt_WinScale_Repeated,
         rule_ids::Rule_Id_Tcp_Opt_WinScale_Repeated,
     },
+    {
+        event_description::Evt_Tcp_Flags_SYN_FIN_Set,
+        rule_ids::Rule_Id_Tcp_Flags_SYN_FIN_Set,
+    },
+    {
+        event_description::Evt_Tcp_Src_Port_Zero,
+        rule_ids::Rule_Id_Tcp_Src_Port_Zero,
+    },
+    {
+        event_description::Evt_Tcp_Dst_Port_Zero,
+        rule_ids::Rule_Id_Tcp_Dst_Port_Zero,
+    },
 
     //
     // UDP rules
@@ -162,6 +174,14 @@ const static struct {
     {
         event_description::Evt_Udp_Chksum_Invalid,
         rule_ids::Rule_Id_Udp_Chksum_Invalid
+    },
+    {
+        event_description::Evt_Udp_Bogus_Msg_Len,
+        rule_ids::Rule_Id_Udp_Bogus_Msg_Len,
+    },
+    {
+        event_description::Evt_Udp_Hdr_Msg_Len_Too_Big,
+        rule_ids::Rule_Id_Udp_Hdr_Msg_Len_Too_Big,
     },
 
     //
@@ -201,6 +221,26 @@ const static struct {
     {
         event_description::Evt_Icmp_Covert_Channel_Maybe_Active,
         rule_ids::Rule_Id_Icmp_Covert_Channel_Maybe_Active,
+    },
+    {
+        event_description::Evt_Icmp_Inval_Redir_Msg_Code,
+        rule_ids::Rule_Id_Icmp_Inval_Redir_Msg_Code,
+    },
+    {
+        event_description::Evt_Icmp_Inval_Echo_Req_Code,
+        rule_ids::Rule_Id_Icmp_Inval_Echo_Req_Code,
+    },
+    {
+        event_description::Evt_Icmp_Inval_Echo_Reply_Code,
+        rule_ids::Rule_Id_Icmp_Inval_Echo_Reply_Code,
+    },
+    {
+        event_description::Evt_Icmp_Inval_Ts_Code,
+        rule_ids::Rule_Id_Icmp_Inval_Ts_Code,
+    },
+    {
+        event_description::Evt_Icmp_Inval_Info_Code,
+        rule_ids::Rule_Id_Icmp_Inval_Info_Code,
     },
 
     //
@@ -266,6 +306,9 @@ const static struct {
     },
 };
 
+/**
+ * @brief - event_type to string matching.
+*/
 const struct {
     event_type type;
     std::string str;
@@ -423,7 +466,9 @@ void event_mgr::log_syslog(event &evt)
     int len = 0;
 
     len += snprintf(msg + len, sizeof(msg) - len,
-                    "[%s] from ", evt_type_str(evt.evt_type).c_str());
+                    "[%s], Rule_Id: %u, Event_Desc: %u  from ",
+                    evt_type_str(evt.evt_type).c_str(),
+                    evt.rule_id, static_cast<uint32_t>(evt.evt_details));
     len += snprintf(msg + len, sizeof(msg) - len,
                     "src_mac [%02x:%02x:%02x:%02x:%02x:%02x] "
                     "dst_mac [%02x:%02x:%02x:%02x:%02x:%02x] "

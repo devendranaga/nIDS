@@ -9,17 +9,26 @@
 #include <logger.h>
 #include <rule_parser.h>
 #include <packet.h>
+#include <arp_filter.h>
+#include <common.h>
 
 namespace firewall {
 
 class filter {
     public:
-        explicit filter(logger *log) : log_(log) { }
         ~filter() { }
 
+        static filter *instance()
+        {
+            static filter f;
+            return &f;
+        }
+
+        fw_error_type init();
         int run(packet &pkt, rule_config *rule_cfg);
 
     private:
+        explicit filter() { }
         logger *log_;
 };
 

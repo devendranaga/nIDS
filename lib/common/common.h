@@ -56,6 +56,9 @@ void get_ipaddr(uint32_t ipaddr, std::string &ipaddr_str);
 
 int parse_str_to_ipv4_addr(const std::string &v, uint32_t &ipaddr);
 
+double diff_timespec(const struct timespec *time1,
+                     const struct timespec *time0);
+
 }
 
 #endif

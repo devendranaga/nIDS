@@ -37,7 +37,11 @@ struct ipv4_opt_comm_sec {
     uint8_t tag_type;
     uint8_t sensitivity_level;
 
-    void print(logger *log);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+    #endif
+    }
 };
 
 struct ipv4_opt_ts_data {
@@ -120,15 +124,21 @@ struct ipv4_options {
     std::shared_ptr<ipv4_opt_router_alert> ra;
 
     explicit ipv4_options() :
-                    comm_sec(nullptr) { }
+                    comm_sec(nullptr),
+                    ts(nullptr),
+                    ra(nullptr) { }
     ~ipv4_options() { }
 
     event_description deserialize(packet &p, logger *log, uint32_t opt_len, bool debug);
     void print(logger *log)
     {
     #if defined(FW_ENABLE_DEBUG)
+        if (comm_sec)
+            comm_sec->print(log);
         if (ts)
             ts->print(log);
+        if (ra)
+            ra->print(log);
     #endif
     }
 };
@@ -156,6 +166,11 @@ struct ipv4_hdr {
     uint32_t end_off;
 
     ipv4_options opt;
+
+    explicit ipv4_hdr() :
+                start_off(0),
+                end_off(0) { }
+    ~ipv4_hdr() { }
 
     /**
      * @brief - check if an ipv4 packet is a fragment.

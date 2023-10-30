@@ -125,6 +125,12 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
                 return event_description::Evt_Icmp_Echo_Req_Hdr_Len_Too_Short;
             }
 
+            //
+            // Echo Request code must be 0.
+            if (code != 0) {
+                return event_description::Evt_Icmp_Inval_Echo_Req_Code;
+            }
+
             echo_req = std::make_shared<icmp_echo_req>();
             if (!echo_req) {
                 return event_description::Evt_Unknown_Error;
@@ -149,11 +155,17 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             }
             std::memcpy(echo_req->data, &p.buf[p.off], p.remaining_len());
         } break;
-        case Icmp_Type::Echo_Reply: {            
+        case Icmp_Type::Echo_Reply: {
             //
             // check the icmp echo request header length
             if (p.remaining_len() < 4) {
                 return event_description::Evt_Icmp_Echo_Reply_Hdr_Len_Too_Short;
+            }
+
+            //
+            // Echo Reply code must be 0.
+            if (code != 0) {
+                return event_description::Evt_Icmp_Inval_Echo_Reply_Code;
             }
 
             echo_reply = std::make_shared<icmp_echo_reply>();
@@ -182,8 +194,8 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
         case Icmp_Type::Dest_Unreachable: {
             //
             // valid destination unreachable code in range.
-            if ((type < static_cast<int>(Icmp_Code_Dest_Unreachable::Net_Unreachable)) ||
-                (type > static_cast<int>(Icmp_Code_Dest_Unreachable::Source_Route_Failed))) {
+            if ((code < static_cast<int>(Icmp_Code_Dest_Unreachable::Net_Unreachable)) ||
+                (code > static_cast<int>(Icmp_Code_Dest_Unreachable::Source_Route_Failed))) {
                 return event_description::Evt_Icmp_Dest_Unreachable_Invalid_Code;
             }
             dest_unreachable = std::make_shared<icmp_dest_unreachable>();
@@ -202,8 +214,8 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
         case Icmp_Type::Time_Exceeded: {
             //
             // validate time exceeded code in range.
-            if ((type < static_cast<int>(Icmp_Code_Time_Exceeded::TTL_Exceeded_In_Transit)) ||
-                (type > static_cast<int>(Icmp_Code_Time_Exceeded::Frag_Reassembly_Time_Exceeded))) {
+            if ((code < static_cast<int>(Icmp_Code_Time_Exceeded::TTL_Exceeded_In_Transit)) ||
+                (code > static_cast<int>(Icmp_Code_Time_Exceeded::Frag_Reassembly_Time_Exceeded))) {
                 return event_description::Evt_Icmp_Time_Exceeded_Invalid_Code;
             }
             time_exceeded = std::make_shared<icmp_dest_unreachable>();
@@ -220,6 +232,12 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             param_problem->parse(p, log, debug);
         } break;
         case Icmp_Type::Redirect: {
+            //
+            // check the code is in range
+            if ((code < static_cast<int>(Icmp_Code_Redir_Msg::Redir_For_Host)) ||
+                (code > static_cast<int>(Icmp_Code_Redir_Msg::Redir_For_Tos_Nw))) {
+                return event_description::Evt_Icmp_Inval_Redir_Msg_Code;
+            }
             redir_msg = std::make_shared<icmp_redir_msg>();
             if (!redir_msg) {
                 return event_description::Evt_Unknown_Error;
@@ -227,6 +245,9 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             redir_msg->parse(p, log, debug);
         } break;
         case Icmp_Type::Ts: {
+            if (code != 0) {
+                return event_description::Evt_Icmp_Inval_Ts_Code;
+            }
             ts = std::make_shared<icmp_timestamp_msg>();
             if (!ts) {
                 return event_description::Evt_Unknown_Error;
@@ -234,6 +255,9 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             ts->parse(p, log, debug);
         } break;
         case Icmp_Type::Ts_Reply: {
+            if (code != 0) {
+                return event_description::Evt_Icmp_Inval_Ts_Code;
+            }
             ts_reply = std::make_shared<icmp_timestamp_msg>();
             if (!ts_reply) {
                 return event_description::Evt_Unknown_Error;
@@ -241,6 +265,9 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             ts_reply->parse(p, log, debug);
         } break;
         case Icmp_Type::Info_Req: {
+            if (code != 0) {
+                return event_description::Evt_Icmp_Inval_Info_Code;
+            }
             info_req = std::make_shared<icmp_info_msg>();
             if (!info_req) {
                 return event_description::Evt_Unknown_Error;
@@ -248,6 +275,9 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             info_req->parse(p, log, debug);
         } break;
         case Icmp_Type::Info_Reply: {
+            if (code != 0) {
+                return event_description::Evt_Icmp_Inval_Info_Code;
+            }
             info_resp = std::make_shared<icmp_info_msg>();
             if (!info_resp) {
                 return event_description::Evt_Unknown_Error;
@@ -412,3 +442,4 @@ void icmp_redir_msg::print(logger *log)
 }
 
 }
+

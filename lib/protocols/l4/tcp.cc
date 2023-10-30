@@ -27,6 +27,18 @@ event_description tcp_hdr::deserialize(packet &p, logger *log, bool debug)
 
     p.deserialize(src_port);
     p.deserialize(dst_port);
+
+    //
+    // src port cannot be zero
+    if (src_port == 0) {
+        return event_description::Evt_Tcp_Src_Port_Zero;
+    }
+
+    //
+    // dst port cannot be zero
+    if (dst_port == 0) {
+        return event_description::Evt_Tcp_Dst_Port_Zero;
+    }
     p.deserialize(seq_no);
     p.deserialize(ack_no);
     p.deserialize(byte_1);
@@ -156,6 +168,11 @@ event_description tcp_hdr::check_flags()
         (fin == 0)) {
         // NULL scan in progress
         return event_description::Evt_Tcp_Flags_None_Set;
+    }
+
+    if ((syn == 1) && (fin == 1)) {
+        // Both SYN and FIN are set
+        return event_description::Evt_Tcp_Flags_SYN_FIN_Set;
     }
 
     return event_description::Evt_Parse_Ok;

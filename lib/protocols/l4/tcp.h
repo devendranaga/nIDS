@@ -111,10 +111,8 @@ struct tcp_hdr {
     // if options are set, this pointer is valid
     std::shared_ptr<tcp_hdr_options> opts;
 
-    explicit tcp_hdr() noexcept
-    {
-        opts = nullptr;
-    }
+    explicit tcp_hdr() noexcept :
+            opts(nullptr) { }
     ~tcp_hdr() { }
 
     int serialize(packet &p);

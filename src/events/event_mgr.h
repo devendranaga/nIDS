@@ -33,7 +33,22 @@ class event_mgr {
             return &mgr;
         }
 
+        /**
+         * @brief - init the event manager.
+         * 
+         * @param [in] log - logger
+         * 
+         * @return fw_error_type.
+        */
         fw_error_type init(logger *log);
+
+        /**
+         * @brief - store logs temporarily in the queue and pass it to the storage thread.
+         *
+         * Called by the parser or filter code.
+         *
+         * @param [in] evt - firewall event structure.
+        */
         void store(event &evt);
         uint32_t get_matching_rule(event_description evt_desc);
         void store(event_type evt_type,

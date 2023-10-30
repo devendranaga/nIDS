@@ -15,7 +15,7 @@ namespace firewall {
 parser::parser(const std::string ifname, logger *log) :
                         ifname_(ifname),
                         log_(log),
-                        pkt_dump_(true)
+                        pkt_dump_(false)
 { }
 parser::~parser() { }
 
@@ -257,17 +257,19 @@ int parser::run(packet &pkt)
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
             return -1;
         }
+
+        //
+        // We cannot decrypt the frame, we simply return the parse ok.
+        if (macsec_h->is_an_encrypted_frame()) {
+            return 0;
+        }
     }
 
     //
     // parse the rest of the l2 / l3 frames.
     switch (ether) {
         case ether_type::Ether_Type_ARP: {
-            arp_h = std::make_shared<arp_hdr>();
-            if (!arp_h)
-                return -1;
-
-            evt_desc = arp_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = run_arp_filter(pkt, log_, pkt_dump_);
             protocols_avail.set_arp();
         } break;
         case ether_type::Ether_Type_IPv4: {
@@ -276,6 +278,9 @@ int parser::run(packet &pkt)
                 return -1;
 
             evt_desc = ipv4_h->deserialize(pkt, log_, pkt_dump_);
+            if (evt_desc == event_description::Evt_IPV4_Hdr_Chksum_Invalid) {
+                firewall_pkt_stats::instance()->inc_n_ipv4_chksum_err(this->ifname_);
+            }
             protocols_avail.set_ipv4();
         } break;
         case ether_type::Ether_Type_IPv6: {
@@ -314,6 +319,32 @@ int parser::run(packet &pkt)
     detect_os_signature();
 
     return 0;
+}
+
+event_description parser::run_arp_filter(packet &pkt,
+                                         logger *log, bool pkt_dump)
+{
+    event_description evt_desc = event_description::Evt_Unknown_Error;
+    arp_filter *arp_f;
+
+    arp_h = std::make_shared<arp_hdr>();
+    if (!arp_h)
+        return event_description::Evt_Unknown_Error;
+
+    //
+    // deserialize ARP frame
+    evt_desc = arp_h->deserialize(pkt, log_, pkt_dump_);
+    if (evt_desc != event_description::Evt_Parse_Ok)
+       return evt_desc;
+
+    //
+    // run the filter
+    arp_f = arp_filter::instance();
+    evt_desc = arp_f->add_arp_frame(*this);
+
+    arp_f->print_arp_table(log);
+
+    return evt_desc;
 }
 
 }

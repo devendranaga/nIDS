@@ -24,6 +24,7 @@
 #include <parser.h>
 #include <event_mgr.h>
 #include <perf.h>
+#include <filter.h>
 
 namespace firewall {
 
