@@ -6,6 +6,8 @@
 #ifndef __FW_LIB_PROTOCOLS_ICMP6_H__
 #define __FW_LIB_PROTOCOLS_ICMP6_H__
 
+#include <vector>
+#include <memory>
 #include <packet.h>
 #include <logger.h>
 #include <event_def.h>
@@ -16,6 +18,7 @@ namespace firewall {
 // list of icmp6 types
 enum icmp6_types {
     Icmp6_Type_Router_Advertisement = 134,
+    Mcast_Listener_Report_Msg_V2 = 143,
     Icmp6_Type_Max = 255,
 };
 
@@ -62,6 +65,7 @@ struct icmp6_option_source_link_layer_addr {
 };
 
 struct icmp6_router_advertisement {
+    uint8_t cur_hoplimit;
     icmp6_flags flags;
     uint16_t router_lifetime;
     uint32_t reachable_time;
@@ -72,16 +76,68 @@ struct icmp6_router_advertisement {
     void print(logger *log);
 };
 
+struct icmp6_mcast_record {
+    uint8_t rec_type;
+    uint8_t aux_data_len;
+    uint16_t n_sources;
+    uint8_t addr[16];
+
+    explicit icmp6_mcast_record() { }
+    ~icmp6_mcast_record() { }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+        log->verbose("\t\t\t McastRecord: {\n");
+        log->verbose("\t\t\t\t rec_type: %d\n", rec_type);
+        log->verbose("\t\t\t\t aux_data_len: %d\n", aux_data_len);
+        log->verbose("\t\t\t\t n_sources: %d\n", n_sources);
+        log->verbose("\t\t\t\t addr: "
+                        "%02x%02x:%02x%02x:%02x%02x:%02x%02x:"
+                        "%02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
+                        addr[0], addr[1], addr[2], addr[3],
+                        addr[4], addr[5], addr[6], addr[7],
+                        addr[8], addr[9], addr[10], addr[11],
+                        addr[12], addr[13], addr[14], addr[15]);
+        log->verbose("\t\t\t }\n");
+    }
+
+    private:
+        const int len_ = 20;
+};
+
+struct icmp6_mcast_listener_report_msg_v2 {
+    uint16_t reserved;
+    uint16_t n_mcast_rec;
+
+    std::vector<icmp6_mcast_record> recs_;
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+        log->verbose("\t\t Mcast_Listener_Report_Msg_V2: {\n");
+        log->verbose("\t\t\t reserved: %d\n", reserved);
+        log->verbose("\t\t\t n_mcast_rec: %d\n", n_mcast_rec);
+        for (auto it : recs_) {
+            it.print(log);
+        }
+        log->verbose("\t\t }\n");
+    }
+
+    private:
+        const int len_ = 20;
+};
+
 struct icmp6_hdr {
     uint8_t type;
     uint8_t code;
     uint16_t checksum;
-    uint8_t cur_hoplimit;
-    icmp6_router_advertisement radv;
+    std::shared_ptr<icmp6_router_advertisement> radv;
+    std::shared_ptr<icmp6_mcast_listener_report_msg_v2> mcast_listener_v2;
 
-    icmp6_option_dns_search_list *dns_search_list;
-    icmp6_option_mtu *mtu;
-    icmp6_option_source_link_layer_addr *s_lladdr;
+    std::shared_ptr<icmp6_option_dns_search_list> dns_search_list;
+    std::shared_ptr<icmp6_option_mtu> mtu;
+    std::shared_ptr<icmp6_option_source_link_layer_addr> s_lladdr;
 
     explicit icmp6_hdr() :
                     dns_search_list(nullptr),

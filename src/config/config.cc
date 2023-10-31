@@ -29,6 +29,7 @@ fw_error_type firewall_config::parse(const std::string config_file)
 
         ifinfo.intf_name = it["interface"].asString();
         ifinfo.rule_file = it["rule_file"].asString();
+        ifinfo.log_pcaps = it["log_pcaps"].asBool();
 
         intf_list.emplace_back(ifinfo);
     }

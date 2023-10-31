@@ -15,6 +15,7 @@ namespace firewall {
 struct firewall_intf_info {
     std::string intf_name;
     std::string rule_file;
+    bool log_pcaps;
 };
 
 enum class event_file_format {

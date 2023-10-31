@@ -14,6 +14,8 @@ int icmp6_hdr::serialize(packet &p)
 
 event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
 {
+    event_description evt_desc = event_description::Evt_Unknown_Error;
+
     p.deserialize(type);
     if ((type < static_cast<uint8_t>(icmp6_types::Icmp6_Type_Router_Advertisement)) ||
         (type >= static_cast<uint8_t>(icmp6_types::Icmp6_Type_Max))) {
@@ -22,13 +24,26 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
 
     p.deserialize(code);
     p.deserialize(checksum);
-    p.deserialize(cur_hoplimit);
+
+    switch (type) {
+        case icmp6_types::Mcast_Listener_Report_Msg_V2: {
+            mcast_listener_v2 = std::make_shared<icmp6_mcast_listener_report_msg_v2>();
+            if (!mcast_listener_v2) {
+                return event_description::Evt_Unknown_Error;
+            }
+
+            evt_desc = mcast_listener_v2->deserialize(p, log, debug);
+        } break;
+        default:
+            evt_desc = event_description::Evt_Unknown_Error;
+        break;
+    }
 
     if (debug) {
         print(log);
     }
 
-    return event_description::Evt_Parse_Ok;
+    return evt_desc;
 }
 
 void icmp6_hdr::print(logger *log)
@@ -38,9 +53,47 @@ void icmp6_hdr::print(logger *log)
     log->verbose("\t type: %d\n", type);
     log->verbose("\t code: %d\n", code);
     log->verbose("\t checksum: 0x%04x\n", checksum);
-    log->verbose("\t cur_hoplimit: %d\n", cur_hoplimit);
     log->verbose("}\n");
 #endif
+}
+
+event_description icmp6_mcast_listener_report_msg_v2::deserialize(packet &p, logger *log, bool debug)
+{
+    event_description evt_desc;
+    int i;
+
+    p.deserialize(reserved);
+    p.deserialize(n_mcast_rec);
+
+    //
+    // remaining len is smaller than the multicast list given
+    if (p.remaining_len() < n_mcast_rec * len_) {
+        return event_description::Evt_Icmp6_Mcast_Listener_Inval_Rec_Len;
+    }
+
+    for (i = 0; i < n_mcast_rec; i ++) {
+        icmp6_mcast_record rec;
+
+        evt_desc = rec.deserialize(p, log, debug);
+        if (evt_desc != event_description::Evt_Parse_Ok)
+            return evt_desc;
+
+        recs_.push_back(rec);
+    }
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_mcast_record::deserialize(packet &p, logger *log, bool debug)
+{
+    //
+    // Range check is already taken care in the caller
+    p.deserialize(rec_type);
+    p.deserialize(aux_data_len);
+    p.deserialize(n_sources);
+    p.deserialize(addr, sizeof(addr));
+
+    return event_description::Evt_Parse_Ok;
 }
 
 }

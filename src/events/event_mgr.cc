@@ -275,6 +275,17 @@ const static struct {
     },
 
     //
+    // ICMP6 rules
+    {
+        event_description::Evt_Icmp6_Icmp6_Type_Unsupported,
+        rule_ids::Rule_Id_Icmp6_Icmp6_Type_Unsupported,
+    },
+    {
+        event_description::Evt_Icmp6_Mcast_Listener_Inval_Rec_Len,
+        rule_ids::Rule_Id_Icmp6_Mcast_Listener_Inval_Rec_Len,
+    },
+
+    //
     // DoIP rules
     {
         event_description::Evt_DoIP_Hdrlen_Too_Small,

@@ -69,7 +69,7 @@ fw_error_type fw_core::init(int argc, char **argv)
 
         //
         // initialize interface
-        ret = intf->init(it.intf_name, it.rule_file);
+        ret = intf->init(it.intf_name, it.rule_file, it.log_pcaps);
         if (ret != fw_error_type::eNo_Error) {
             log_->error("failed to init interface on %s\n", it.intf_name.c_str());
             return ret;
@@ -97,11 +97,13 @@ firewall_intf::firewall_intf(logger *log) : log_(log)
 firewall_intf::~firewall_intf() { }
 
 fw_error_type firewall_intf::init(const std::string ifname,
-                                  const std::string rule_file)
+                                  const std::string rule_file,
+                                  bool log_pcap)
 {
     fw_error_type ret;
 
     ifname_ = ifname;
+    log_pcap_ = log_pcap;
 
     // Parse rules file
     ret = rule_data_->parse(rule_file);

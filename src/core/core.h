@@ -38,7 +38,8 @@ class firewall_intf {
 
         // Initialize interface
         fw_error_type init(const std::string ifname,
-                           const std::string rule_file);
+                           const std::string rule_file,
+                           bool log_pcap);
 
     private:
         void rx_thread();
@@ -67,6 +68,7 @@ class firewall_intf {
         //
         // interface name
         std::string ifname_;
+        bool log_pcap_;
         perf perf_ctx_;
         std::shared_ptr<perf_item> pkt_perf_;
 };
