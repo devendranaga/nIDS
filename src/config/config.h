@@ -24,7 +24,13 @@ enum class event_file_format {
 };
 
 enum class event_encryption_algorithm {
+    AES_CTR_128,
+    AES_GCM_128,
     AES_GCM_128_W_SHA256,
+};
+
+enum class event_hash_algorithm {
+    SHA256,
 };
 
 struct firewall_event_info_config {
@@ -34,6 +40,7 @@ struct firewall_event_info_config {
     bool log_to_syslog;
     bool encrypt_log_file;
     std::string encryption_key;
+    event_hash_algorithm hash_alg;
     event_encryption_algorithm enc_alg;
 };
 

@@ -8,6 +8,7 @@
 #define __FW_LIB_CRYPTO_H__
 
 #include <stdint.h>
+#include <string>
 
 namespace firewall {
 
@@ -20,14 +21,19 @@ class crypto_hash {
                      const uint8_t *input, uint32_t input_len);
 };
 
-class crypto_aes_gcm {
+class crypto_aes_ctr {
     public:
-        explicit crypto_aes_gcm();
-        ~crypto_aes_gcm() { }
+        explicit crypto_aes_ctr();
+        ~crypto_aes_ctr();
 
-        int gcm_128(uint8_t *data_in, uint32_t data_len,
-                    uint8_t *data_out, uint32_t *data_out_len,
-                    uint8_t *tag, uint8_t *iv);
+        int load_key(const std::string &keyfile);
+        int ctr_128_encrypt(uint8_t *data_in, uint32_t data_in_len,
+                            uint8_t *data_out, uint32_t *data_out_len,
+                            uint8_t *iv);
+
+    private:
+        uint8_t key_[64];
+        uint32_t keysize_;
 };
 
 }

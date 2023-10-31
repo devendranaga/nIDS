@@ -68,7 +68,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wformat -Wno-unus
 add_library(packet_core ${LIB_SOURCES})
 
 add_executable(fwd ${SERVICE_SOURCES})
-target_link_libraries(fwd packet_core jsoncpp pthread)
+target_link_libraries(fwd packet_core jsoncpp pthread crypto)
 
 add_executable(packet_gen ${TOOL_PACKET_GEN_SOURCES})
 target_link_libraries(packet_gen packet_core jsoncpp pthread)

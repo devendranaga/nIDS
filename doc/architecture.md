@@ -41,7 +41,7 @@ To test the nIDS, i have written the following tools.
 
 1. Packet generator - This tool can do from replay of PCAPs to generation of frames of any types given a simple configuration.
                       This is a very dangerous tool and must not be used on any network of any scale for damaging purposes.
-					  **I AM NOT RESPONSIBLE FOR USE OF THIS TOOL ANYWHERE.**
+					  **I AM NOT RESPONSIBLE FOR THE USE OF THIS TOOL ANYWHERE.**
 2. controller - controls the nIDS dynamically at runtime or gets various stats and info.
 3. Event Reader - Reads event logs from the file.
 4. Event Listener - Listens to nIDS events on an MQTT connection and displays them.

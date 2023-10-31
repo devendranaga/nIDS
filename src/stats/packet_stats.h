@@ -1,6 +1,6 @@
 /**
  * @brief - Implements storage of packet statistics.
- * 
+ *
  * @copyright - 2023-present. Devendra Naga. All rights reserved.
 */
 #ifndef __FW_PACKET_STATS_H__
@@ -67,3 +67,4 @@ class firewall_pkt_stats {
 }
 
 #endif
+

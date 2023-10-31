@@ -2,7 +2,8 @@
 	"interface_info": [
 			{
 				"interface": "dummy0",
-				"rule_file": "./firewall_rules.json"
+				"rule_file": "./firewall_rules.json",
+				"log_pcaps": true
 			}
 	],
 	"events": {
@@ -12,7 +13,8 @@
 		"log_to_syslog": true,
 		"encrypt_log_file": true,
 		"encryption_key": "./aes_key.bin",
-		"encryption_algorithm": "aes_gcm_128_with_sha256"
+		"hash_algorithm": "SHA256",
+		"encryption_algorithm": "aes_ctr_128"
 	}
 }
 

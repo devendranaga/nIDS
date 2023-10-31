@@ -51,6 +51,16 @@ fw_error_type firewall_config::parse(const std::string config_file)
     auto enc_alg = root["events"]["encryption_algorithm"].asString();
     if (enc_alg == "aes_gcm_128_with_sha256") {
         evt_config.enc_alg = event_encryption_algorithm::AES_GCM_128_W_SHA256;
+    } else if (enc_alg == "aes_gcm_128") {
+        evt_config.enc_alg = event_encryption_algorithm::AES_GCM_128;
+    } else if (enc_alg == "aes_ctr_128") {
+        evt_config.enc_alg = event_encryption_algorithm::AES_CTR_128;
+    } else {
+        return fw_error_type::eConfig_Error;
+    }
+    auto hash_alg = root["events"]["hash_algorithm"].asString();
+    if (hash_alg == "SHA256") {
+        evt_config.hash_alg = event_hash_algorithm::SHA256;
     } else {
         return fw_error_type::eConfig_Error;
     }

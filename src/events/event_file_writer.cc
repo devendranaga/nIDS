@@ -4,10 +4,73 @@
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #include <config.h>
+#include <crypto.h>
 #include <ether_types.h>
+#include <event_file_writer_hdr.h>
 #include <event_file_writer.h>
 
 namespace firewall {
+
+static int hash_encrypt_and_write(uint8_t *evt_buf, uint32_t evt_buf_len, FILE *fp)
+{
+    firewall_config *conf = firewall_config::instance();
+    struct event_file_hdr *hdr;
+    uint8_t buf[4096];
+    uint8_t *evt_data_ptr;
+    int total_len = sizeof(event_file_hdr) + evt_buf_len;
+    crypto_hash hash;
+    crypto_aes_ctr aes_ctr;
+    int ret;
+
+    std::memset(buf, 0, sizeof(buf));
+
+    hdr = (struct event_file_hdr *)buf;
+    evt_data_ptr = buf + sizeof(struct event_file_hdr);
+
+    hdr->version = EVT_FILE_VERSION;
+    switch (conf->evt_config.hash_alg) {
+        case event_hash_algorithm::SHA256: {
+            uint32_t hash_len = 0;
+
+            hdr->hash_alg = Hash_Algorithm::SHA2;
+            hdr->hash_len = 32;
+            ret = hash.sha2_256(hdr->hash, &hash_len, evt_buf, evt_buf_len);
+            if (ret < 0) {
+                return -1;
+            }
+            hdr->hash_len = hash_len;
+        } break;
+        default: // unsecured
+            hdr->hash_alg = Hash_Algorithm::None;
+        break;
+    }
+    switch (conf->evt_config.enc_alg) {
+        case event_encryption_algorithm::AES_CTR_128: {
+            uint32_t enc_len = 0;
+
+            hdr->enc_alg = Encryption_Algorithm::AES_CTR_128;
+            ret = aes_ctr.load_key(conf->evt_config.encryption_key);
+            if (ret == -1) {
+                return -1;
+            }
+            ret = aes_ctr.ctr_128_encrypt(evt_buf, evt_buf_len,
+                                          evt_data_ptr, &enc_len, hdr->iv);
+            if (ret < 0) {
+                return -1;
+            }
+            hdr->enc_msg_len = enc_len;
+            total_len = sizeof(event_file_hdr) + hdr->enc_msg_len;
+        } break;
+        default: // unsecured
+            hdr->enc_alg = Encryption_Algorithm::None;
+        break;
+    }
+
+    fwrite(buf, total_len, 1, fp);
+    fflush(fp);
+
+    return 0;
+}
 
 //
 // create a filename with timestamp.
@@ -107,8 +170,7 @@ fw_error_type event_file_writer::write(const event &evt)
     }
 
     if (fp_) {
-        fwrite(msg, total_len, 1, fp_);
-        fflush(fp_);
+        hash_encrypt_and_write(buf, total_len, fp_);
         cur_size_ += total_len;
     }
 
