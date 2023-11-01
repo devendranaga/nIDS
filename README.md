@@ -13,10 +13,15 @@ This service have not been tested on all possible packets and hardware. Use it a
 
 ## Pre-requisites
 
-This project uses cmake for build and jsoncpp for configuration parsing.
+This project uses the following:
+
+1. cmake for build
+2. jsoncpp for configuration parsing
+3. openssl for AES and Hash operations
+4. pahomqtt for MQTT publish and subscribers
 
 ```bash
-sudo apt install cmake libjsoncpp-dev
+sudo apt install cmake libjsoncpp-dev libpaho-mqtt-dev libssl-dev
 ```
 
 ## Build macros
@@ -51,6 +56,12 @@ The supporting rules files must be present as well.
 
 ```bash
 sudo ./packet_gen -f packet_gen.json
+```
+
+3. Run fw_ctl to listen for the events:
+
+```bash
+./fw_ctl -m 127.0.0.1:1883 -t /nids/events -d aes_key.bin
 ```
 
 ## Supported Protocols
