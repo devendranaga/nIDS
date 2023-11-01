@@ -296,6 +296,11 @@ const static struct {
         rule_ids::Rule_Id_Icmp_Inval_Info_Code,
         "ICMP info has invalid code"
     },
+    {
+        event_description::Evt_Icmp_Inval_Chksum,
+        rule_ids::Rule_Id_Icmp_Inval_Chksum,
+        "ICMP checksum is invalid"
+    },
 
     //
     // DHCP rules
@@ -439,7 +444,7 @@ void event_mgr::create_evt(event &evt,
     }
 
     switch (evt.ethertype) {
-        case static_cast<uint16_t>(ether_type::Ether_Type_IPv4):
+        case static_cast<uint16_t>(Ether_Type::Ether_Type_IPv4):
             evt.protocol = pkt.ipv4_h->protocol;
             evt.ttl = pkt.ipv4_h->ttl;
         break;
@@ -593,8 +598,8 @@ void event_mgr::log_syslog(event &evt)
                     evt.dst_mac[2], evt.dst_mac[3],
                     evt.dst_mac[4], evt.dst_mac[5],
                     evt.ethertype);
-    switch (static_cast<ether_type>(evt.ethertype)) {
-        case ether_type::Ether_Type_IPv4: {
+    switch (static_cast<Ether_Type>(evt.ethertype)) {
+        case Ether_Type::Ether_Type_IPv4: {
             std::string src_ipaddr;
             std::string dst_ipaddr;
 

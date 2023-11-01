@@ -25,8 +25,8 @@ struct vlan_hdr {
     */
     event_description deserialize(packet &p, logger *log, bool debug = false);
 
-    ether_type get_ethertype()
-    { return static_cast<ether_type>(ethertype); }
+    Ether_Type get_ethertype()
+    { return static_cast<Ether_Type>(ethertype); }
 
     void print(logger *log);
 

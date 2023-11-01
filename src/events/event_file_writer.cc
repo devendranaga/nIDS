@@ -88,7 +88,7 @@ fw_error_type event_file_writer::write(const event &evt)
     total_len += sizeof(event_msg);
 
     switch (evt.ethertype) {
-        case static_cast<uint16_t>(ether_type::Ether_Type_IPv4): {
+        case static_cast<uint16_t>(Ether_Type::Ether_Type_IPv4): {
             event_ipv4_info *ipv4_evt = (event_ipv4_info *)msg->data;
 
             ipv4_evt->src_addr = evt.src_addr;
@@ -155,8 +155,8 @@ fw_error_type event_file_writer::write_json(const event &evt)
     len += snprintf(buf + len, sizeof(buf) - len,
                     "\t\"ethertype\": \"0x%04x\",\n", evt.ethertype);
 
-    switch (static_cast<ether_type>(evt.ethertype)) {
-        case ether_type::Ether_Type_IPv4: {
+    switch (static_cast<Ether_Type>(evt.ethertype)) {
+        case Ether_Type::Ether_Type_IPv4: {
             len += snprintf(buf + len, sizeof(buf) - len,
                             "\t\"src_addr\": %u,\n", evt.src_addr);
             len += snprintf(buf + len, sizeof(buf) - len,

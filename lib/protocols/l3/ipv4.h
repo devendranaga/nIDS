@@ -23,9 +23,12 @@ namespace firewall {
 #define IPV4_HDR_LEN_MAX 60
 
 enum class IPv4_Opt {
+    End_Of_Options = 0,
     Nop = 1,
+    Loose_Source_Route = 3,
     Timestamp = 4,
     Commercial_IP_Security = 6,
+    Strict_Source_Route = 9,
     Router_Alert = 20,
 };
 
@@ -37,6 +40,11 @@ struct ipv4_opt_comm_sec {
     uint8_t tag_type;
     uint8_t sensitivity_level;
 
+    explicit ipv4_opt_comm_sec(uint32_t copy_on_frag, uint32_t cls) :
+                                    copy_on_frag(copy_on_frag),
+                                    cls(cls) { }
+    ~ipv4_opt_comm_sec() { }
+    event_description deserialize(packet &p, logger *log, bool debug);
     void print(logger *log)
     {
     #if defined(FW_ENABLE_DEBUG)
@@ -56,6 +64,8 @@ struct ipv4_opt_ts_data {
  * @brief - implements timestamp option.
 */
 struct ipv4_opt_timestamp {
+#define IPV4_OPT_FLAG_TS_ONLY 0
+#define IPV4_OPT_FLAG_TS_AND_ADDR 1
     uint32_t copy_on_frag:1;
     uint32_t cls:2;
     uint8_t len;
@@ -115,6 +125,58 @@ struct ipv4_opt_router_alert {
     }
 };
 
+struct ipv4_opt_strict_source_route {
+    uint32_t copy_on_fragment:1;
+    uint32_t cls:2;
+    uint8_t len;
+    uint8_t pointer;
+    uint32_t dest_addr;
+
+    ipv4_opt_strict_source_route(uint32_t copy_on_frag, uint32_t cls) :
+                        copy_on_fragment(copy_on_frag), cls(cls) { }
+    ~ipv4_opt_strict_source_route() { }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t Strict_Source_Route: {\n");
+        log->verbose("\t\t copy_on_fragment: %d\n", copy_on_fragment);
+        log->verbose("\t\t cls: %d\n", cls);
+        log->verbose("\t\t len: %d\n", len);
+        log->verbose("\t\t pointer: %d\n", pointer);
+        log->verbose("\t\t dest_addr: %u\n", dest_addr);
+        log->verbose("\t }\n");
+    #endif
+    }
+};
+
+struct ipv4_opt_loose_source_route {
+    uint32_t copy_on_fragment:1;
+    uint32_t cls:2;
+    uint8_t len;
+    uint8_t pointer;
+    uint32_t dest_addr;
+
+    ipv4_opt_loose_source_route(uint32_t copy_on_frag, uint32_t cls) :
+                        copy_on_fragment(copy_on_frag), cls(cls) { }
+    ~ipv4_opt_loose_source_route() { }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t Loose_Source_Route: {\n");
+        log->verbose("\t\t copy_on_fragment: %d\n", copy_on_fragment);
+        log->verbose("\t\t cls: %d\n", cls);
+        log->verbose("\t\t len: %d\n", len);
+        log->verbose("\t\t pointer: %d\n", pointer);
+        log->verbose("\t\t dest_addr: %u\n", dest_addr);
+        log->verbose("\t }\n");
+    #endif
+    }
+};
+
 /**
  * @brief - parses list of ipv4 options.
 */
@@ -122,11 +184,15 @@ struct ipv4_options {
     std::shared_ptr<ipv4_opt_comm_sec> comm_sec;
     std::shared_ptr<ipv4_opt_timestamp> ts;
     std::shared_ptr<ipv4_opt_router_alert> ra;
+    std::shared_ptr<ipv4_opt_strict_source_route> ssr;
+    std::shared_ptr<ipv4_opt_loose_source_route> lsr;
 
     explicit ipv4_options() :
                     comm_sec(nullptr),
                     ts(nullptr),
-                    ra(nullptr) { }
+                    ra(nullptr),
+                    ssr(nullptr),
+                    lsr(nullptr) { }
     ~ipv4_options() { }
 
     event_description deserialize(packet &p, logger *log, uint32_t opt_len, bool debug);
@@ -139,6 +205,10 @@ struct ipv4_options {
             ts->print(log);
         if (ra)
             ra->print(log);
+        if (ssr)
+            ssr->print(log);
+        if (lsr)
+            lsr->print(log);
     #endif
     }
 };

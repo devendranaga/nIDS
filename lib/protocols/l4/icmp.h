@@ -151,6 +151,9 @@ struct icmp_hdr {
     uint8_t code;
     uint16_t checksum;
 
+    uint32_t start_off;
+    uint32_t end_off;
+
     // one or more of these are valid pointers upon parsing an icmp packet.
     std::shared_ptr<icmp_echo_req> echo_req;
     std::shared_ptr<icmp_echo_reply> echo_reply;
@@ -165,8 +168,19 @@ struct icmp_hdr {
     std::shared_ptr<icmp_info_msg> info_resp;
 
     explicit icmp_hdr() :
+                start_off(0),
+                end_off(0),
                 echo_req(nullptr),
-                echo_reply(nullptr)
+                echo_reply(nullptr),
+                dest_unreachable(nullptr),
+                time_exceeded(nullptr),
+                param_problem(nullptr),
+                source_quench(nullptr),
+                redir_msg(nullptr),
+                ts(nullptr),
+                ts_reply(nullptr),
+                info_req(nullptr),
+                info_resp(nullptr)
     { }
     ~icmp_hdr() { }
 
@@ -182,10 +196,11 @@ struct icmp_hdr {
     */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
+    int validate_checksum(const packet &p);
 
     private:
         const int icmp_hdr_len_ = 4;
-        const int icmp_max_data_len_ = 48;
+        const int icmp_max_data_len_ = 64;
 };
 
 }

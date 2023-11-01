@@ -42,7 +42,7 @@ class perf_item {
                     avg += it;
                 }
                 avg /= deltas_.size();
-                log->verbose("name: [%s] cur_diff %f usec avg: %f usec\n",
+                log->info("name: [%s] cur_diff %f usec avg: %f usec\n",
                                 item_name_.c_str(), diff / 1000.0, avg / 1000.0);
             }
         }

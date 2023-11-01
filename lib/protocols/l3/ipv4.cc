@@ -264,28 +264,61 @@ event_description ipv4_options::deserialize(packet &p, logger *log, uint32_t opt
         opt = static_cast<IPv4_Opt>(val & 0x1F);
 
         switch (opt) {
+            case IPv4_Opt::End_Of_Options: {
+                // 0 bytes in length - generally is 0
+                p.off ++;
+            } break;
             case IPv4_Opt::Nop: {
             } break;
             case IPv4_Opt::Timestamp: {
                 ts = std::make_shared<ipv4_opt_timestamp>(copy_on_frag, cls);
-                if (!ts) {
+                if (!ts)
                     return event_description::Evt_Unknown_Error;
-                }
+
                 evt_desc = ts->deserialize(p, log, debug);
             } break;
             case IPv4_Opt::Router_Alert: {
                 ra = std::make_shared<ipv4_opt_router_alert>(copy_on_frag, cls);
-                if (!ra) {
+                if (!ra)
                     return event_description::Evt_Unknown_Error;
-                }
+
                 evt_desc = ra->deserialize(p, log, debug);
             } break;
+            case IPv4_Opt::Commercial_IP_Security: {
+                comm_sec = std::make_shared<ipv4_opt_comm_sec>(copy_on_frag, cls);
+                if (!comm_sec)
+                    return event_description::Evt_Unknown_Error;
+
+                evt_desc = comm_sec->deserialize(p, log, debug);
+            } break;
+            case IPv4_Opt::Strict_Source_Route: {
+                ssr = std::make_shared<ipv4_opt_strict_source_route>(copy_on_frag, cls);
+                if (!ssr)
+                    return event_description::Evt_Unknown_Error;
+
+                evt_desc = ssr->deserialize(p, log, debug);
+            } break;
+            case IPv4_Opt::Loose_Source_Route: {
+                lsr = std::make_shared<ipv4_opt_loose_source_route>(copy_on_frag, cls);
+                if (!lsr)
+                    return event_description::Evt_Unknown_Error;
+
+                evt_desc = lsr->deserialize(p, log, debug);
+            } break;
             default:
-                evt_desc = event_description::Evt_IPV4_Unknown_Opt;
-            break;
+                return event_description::Evt_IPV4_Unknown_Opt;
         }
     }
     return evt_desc;
+}
+
+event_description ipv4_opt_comm_sec::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(len);
+
+    p.off += len - 2; // type = 1 byte len = 1 byte
+
+    return event_description::Evt_Parse_Ok;
 }
 
 event_description ipv4_opt_timestamp::deserialize(packet &p, logger *log, bool debug)
@@ -300,14 +333,20 @@ event_description ipv4_opt_timestamp::deserialize(packet &p, logger *log, bool d
     flag = (byte & 0x0F);
 
     while (len_parsed < len) {
-        if (flag == 0) {
+        if (flag == IPV4_OPT_FLAG_TS_ONLY) {
             ipv4_opt_ts_data ts_data;
 
             p.deserialize(ts_data.ts);
             ts_list.push_back(ts_data);
-        }
+            len_parsed += 4;
+        } else if (flag == IPV4_OPT_FLAG_TS_AND_ADDR) {
+            ipv4_opt_ts_data ts_data;
 
-        len_parsed += 4;
+            p.deserialize(ts_data.ipaddr);
+            p.deserialize(ts_data.ts);
+            ts_list.push_back(ts_data);
+            len_parsed += 8;
+        }
     }
 
     return event_description::Evt_Parse_Ok;
@@ -317,6 +356,24 @@ event_description ipv4_opt_router_alert::deserialize(packet &p, logger *log, boo
 {
     p.deserialize(len);
     p.deserialize(router_alert);
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description ipv4_opt_strict_source_route::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(len);
+    p.deserialize(pointer);
+    p.deserialize(dest_addr);
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description ipv4_opt_loose_source_route::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(len);
+    p.deserialize(pointer);
+    p.deserialize(dest_addr);
 
     return event_description::Evt_Parse_Ok;
 }

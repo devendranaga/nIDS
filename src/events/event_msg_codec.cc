@@ -16,8 +16,8 @@ int event_msg_codec::serialize(event &e, event_msg *evt_msg)
 
     total_len = sizeof(event_msg);
 
-    switch (static_cast<ether_type>(e.ethertype)) {
-        case ether_type::Ether_Type_IPv4: {
+    switch (static_cast<Ether_Type>(e.ethertype)) {
+        case Ether_Type::Ether_Type_IPv4: {
             event_ipv4_info *ipv4 = (event_ipv4_info *)evt_msg->data;
 
             ipv4->src_addr = e.src_addr;
@@ -41,8 +41,8 @@ int event_msg_codec::deserialize(event &e, event_msg *evt_msg)
     e.rule_id = evt_msg->rule_id;
     e.ethertype = evt_msg->ethertype;
 
-    switch (static_cast<ether_type>(evt_msg->ethertype)) {
-        case ether_type::Ether_Type_IPv4: {
+    switch (static_cast<Ether_Type>(evt_msg->ethertype)) {
+        case Ether_Type::Ether_Type_IPv4: {
             event_ipv4_info *ipv4 = (event_ipv4_info *)evt_msg->data;
 
             e.src_addr = ipv4->src_addr;

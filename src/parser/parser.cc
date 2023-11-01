@@ -210,7 +210,7 @@ event_description parser::parse_app(packet &pkt)
 int parser::run(packet &pkt)
 {
     event_mgr *evt_mgr = event_mgr::instance();
-    ether_type ether;
+    Ether_Type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
 
     eh = std::make_shared<eth_hdr>();
@@ -246,7 +246,7 @@ int parser::run(packet &pkt)
 
     //
     // Parse macsec frame.
-    if (ether == ether_type::Ether_Type_MACsec) {
+    if (ether == Ether_Type::Ether_Type_MACsec) {
         macsec_h = std::make_shared<ieee8021ae_hdr>();
         if (!macsec_h) {
             return -1;
@@ -268,11 +268,11 @@ int parser::run(packet &pkt)
     //
     // parse the rest of the l2 / l3 frames.
     switch (ether) {
-        case ether_type::Ether_Type_ARP: {
+        case Ether_Type::Ether_Type_ARP: {
             evt_desc = run_arp_filter(pkt, log_, pkt_dump_);
             protocols_avail.set_arp();
         } break;
-        case ether_type::Ether_Type_IPv4: {
+        case Ether_Type::Ether_Type_IPv4: {
             ipv4_h = std::make_shared<ipv4_hdr>();
             if (!ipv4_h)
                 return -1;
@@ -283,7 +283,7 @@ int parser::run(packet &pkt)
             }
             protocols_avail.set_ipv4();
         } break;
-        case ether_type::Ether_Type_IPv6: {
+        case Ether_Type::Ether_Type_IPv6: {
             ipv6_h = std::make_shared<ipv6_hdr>();
             if (!ipv6_h)
                 return -1;

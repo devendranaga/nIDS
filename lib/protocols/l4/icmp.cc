@@ -13,6 +13,28 @@ int icmp_hdr::serialize(packet &p)
     return -1;
 }
 
+int icmp_hdr::validate_checksum(const packet &p)
+{
+    uint32_t i = 0;
+    uint32_t csum = 0;
+    uint32_t carry = 0;
+
+    //
+    // ICMP checksum is calculated from the header till the
+    // end of the packet.
+    for (i = start_off; i < end_off; i += 2) {
+        csum += ((p.buf[i + 1] << 8) | p.buf[i]);
+    }
+    carry = (csum & 0XFF0000) >> 16;
+    csum = csum & 0x00FFFF;
+
+    if ((csum + carry) == 0xFFFF) {
+        return 0;
+    }
+
+    return -1;
+}
+
 event_description icmp_dest_unreachable::parse(packet &p, logger *log, bool debug)
 {
     event_description evt_desc;
@@ -112,6 +134,8 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
     if (p.remaining_len() <= icmp_hdr_len_) {
         return event_description::Evt_Icmp_Hdr_Len_Too_Short;
     }
+
+    start_off = p.off;
 
     p.deserialize(type);
     p.deserialize(code);
@@ -291,6 +315,12 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
 
     if (debug) {
         print(log);
+    }
+
+    end_off = p.off + p.remaining_len();
+
+    if (validate_checksum(p)) {
+        return event_description::Evt_Icmp_Inval_Chksum;
     }
 
     return event_description::Evt_Parse_Ok;

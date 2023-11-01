@@ -26,22 +26,22 @@ struct eth_hdr {
 
 	inline bool has_ethertype_ipv4()
 	{
-		return (ether_type)ethertype == ether_type::Ether_Type_IPv4;
+		return (Ether_Type)ethertype == Ether_Type::Ether_Type_IPv4;
 	}
 
 	inline bool has_ethertype_vlan()
 	{
-		return (ether_type)ethertype == ether_type::Ether_Type_VLAN;
+		return (Ether_Type)ethertype == Ether_Type::Ether_Type_VLAN;
 	}
 
 	inline bool has_ethertype_arp()
 	{
-		return (ether_type)ethertype == ether_type::Ether_Type_ARP;
+		return (Ether_Type)ethertype == Ether_Type::Ether_Type_ARP;
 	}
 
 	inline bool has_ethertype_ipv6()
 	{
-		return (ether_type)ethertype == ether_type::Ether_Type_IPv6;
+		return (Ether_Type)ethertype == Ether_Type::Ether_Type_IPv6;
 	}
 
 	//
@@ -58,9 +58,9 @@ struct eth_hdr {
 		return !!(mac[0] & 0x01);
 	}
 
-	ether_type get_ethertype()
+	Ether_Type get_ethertype()
 	{
-		return (ether_type)ethertype;
+		return (Ether_Type)ethertype;
 	}
 
 	void serialize(packet &p);

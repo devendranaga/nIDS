@@ -117,7 +117,22 @@ struct tcp_hdr {
 
     int serialize(packet &p);
     bool has_opts() { return opts != nullptr; }
+    /**
+     * @brief - deserialize TCP header.
+     *
+     * @param [in] p - packet
+     * @param [in] log - logger
+     * @param [in] debug - debug
+     *
+     * @return event_description.
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
+
+    /**
+     * @brief - print the TCP header.
+     *
+     * @param [in] log - logger
+    */
     void print(logger *log);
 
     private:

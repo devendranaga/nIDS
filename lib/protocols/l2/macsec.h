@@ -6,6 +6,7 @@
 #ifndef __FW_LIB_PROTOCOLS_MACSEC_H__
 #define __FW_LIB_PROTOCOLS_MACSEC_H__
 
+#include <cstring>
 #include <packet.h>
 #include <event_def.h>
 #include <logger.h>
@@ -22,11 +23,28 @@ struct ieee8021ae_tci {
     uint32_t e:1;
     uint32_t c:1;
     uint32_t an:2;
+
+    explicit ieee8021ae_tci() :
+                    ver(0),
+                    es(0),
+                    sc(0),
+                    scb(0),
+                    e(0),
+                    c(0),
+                    an(0) { }
+    ~ieee8021ae_tci() { }
 };
 
 struct ieee8021ae_sci {
     uint8_t mac[6];
     uint16_t port_id;
+
+    explicit ieee8021ae_sci()
+    {
+        std::memset(mac, 0, sizeof(mac));
+        port_id = 0;
+    }
+    ~ieee8021ae_sci() { }
 };
 
 /**
@@ -41,7 +59,10 @@ struct ieee8021ae_hdr {
     uint8_t *data;
     uint8_t icv[MACSEC_ICV_LEN];
 
-    explicit ieee8021ae_hdr() : data_len(0), data(nullptr) { }
+    explicit ieee8021ae_hdr() : data_len(0), data(nullptr)
+    {
+        std::memset(icv, 0, sizeof(icv));
+    }
     ~ieee8021ae_hdr()
     {
         if (data)

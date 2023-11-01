@@ -74,7 +74,7 @@ void packet_gen::run_arp_replay()
     std::memcpy(eh.dst_mac,
                 conf_->arp_conf.arp_h.target_hw_addr,
                 FW_MACADDR_LEN);
-    eh.ethertype = static_cast<uint16_t>(ether_type::Ether_Type_ARP);
+    eh.ethertype = static_cast<uint16_t>(Ether_Type::Ether_Type_ARP);
 
     eh.serialize(p);
     conf_->arp_conf.arp_h.serialize(p);

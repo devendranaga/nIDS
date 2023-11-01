@@ -101,6 +101,7 @@ enum class rule_ids : uint32_t {
     Rule_Id_Icmp_Inval_Echo_Reply_Code,
     Rule_Id_Icmp_Inval_Ts_Code,
     Rule_Id_Icmp_Inval_Info_Code,
+    Rule_Id_Icmp_Inval_Chksum,
 
     //
     // DHCP Rule Ids
@@ -230,6 +231,7 @@ enum class event_description : uint32_t {
     Evt_Icmp_Inval_Echo_Reply_Code,
     Evt_Icmp_Inval_Ts_Code,
     Evt_Icmp_Inval_Info_Code,
+    Evt_Icmp_Inval_Chksum,
 
     //
     // DHCP events
