@@ -24,15 +24,31 @@ enum class event_file_format {
 };
 
 enum class event_encryption_algorithm {
+    None,
     AES_CTR_128,
     AES_GCM_128,
     AES_GCM_128_W_SHA256,
 };
 
 enum class event_hash_algorithm {
+    None,
     SHA256,
 };
 
+enum class Event_Upload_Method_Type {
+    None,
+    MQTT,
+};
+
+struct firewall_event_upload_mqtt {
+    std::string ipaddr;
+    uint32_t port;
+    std::string topic_name;
+};
+
+/**
+ * @brief - implements event configuration.
+ */
 struct firewall_event_info_config {
     std::string event_file_path;
     uint32_t event_file_size_bytes;
@@ -42,6 +58,8 @@ struct firewall_event_info_config {
     std::string encryption_key;
     event_hash_algorithm hash_alg;
     event_encryption_algorithm enc_alg;
+    Event_Upload_Method_Type upload_method;
+    firewall_event_upload_mqtt mqtt;
 };
 
 /**

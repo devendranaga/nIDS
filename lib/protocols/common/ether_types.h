@@ -19,6 +19,7 @@ enum class ether_type : uint16_t {
     Ether_Type_ARP      = 0x0806,
     Ether_Type_IPv6     = 0x86DD,
     Ether_Type_MACsec   = 0x88E5,
+    Ether_Type_Unknown  = 0xFFFF,
 };
 
 }

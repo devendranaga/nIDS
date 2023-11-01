@@ -18,6 +18,8 @@
 #include <parser.h>
 #include <event.h>
 #include <event_file_writer.h>
+#include <event_mqtt.h>
+#include <event_msg_codec.h>
 
 namespace firewall {
 
@@ -64,11 +66,13 @@ class event_mgr {
                         const parser &pkt);
         void log_syslog(event &evt);
         const std::string evt_type_str(event_type type);
+        void mqtt_upload(event &evt);
 
         std::shared_ptr<std::thread> storage_thr_id_;
         event_file_writer evt_file_w_;
         std::mutex storage_thr_lock_;
         std::queue<event> event_list_;
+        mqtt_publisher mqtt_uploader_;
         logger *log_;
 };
 

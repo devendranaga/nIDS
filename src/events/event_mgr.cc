@@ -14,16 +14,19 @@ namespace firewall {
 const static struct {
     event_description evt;
     rule_ids rule_id;
+    std::string desc;
 } auto_det_rule_id_list[ ] = {
     //
     // ethernet rules
     {
         event_description::Evt_Eth_Ethertype_Unknown,
-        rule_ids::Rule_Id_Unsupported_Ethertype
+        rule_ids::Rule_Id_Unsupported_Ethertype,
+        "Unsupported Ethertype"
     },
     {
         event_description::Evt_Eth_Hdrlen_Too_Small,
-        rule_ids::Rule_Id_Eth_Hdrlen_Too_Small
+        rule_ids::Rule_Id_Eth_Hdrlen_Too_Small,
+        "Ethernet Header Length too small"
     },
 
     //
@@ -31,29 +34,35 @@ const static struct {
     {
         event_description::Evt_MACsec_TCI_ES_SC_Set,
         rule_ids::Rule_Id_MACsec_TCI_ES_SC_Set,
+        "MACsec TCI->ES TCI->SC cannot be set at the same time"
     },
     {
         event_description::Evt_MACsec_TCI_SC_SCB_Set,
         rule_ids::Rule_Id_MACsec_TCI_SC_SCB_Set,
+        "MACsec TCI->SC and TCI->SCB cannot be set at the same time"
     },
 
     //
     // arp rules
     {
         event_description::Evt_ARP_Hdrlen_Too_Small,
-        rule_ids::Rule_Id_ARP_Hdrlen_Too_Small
+        rule_ids::Rule_Id_ARP_Hdrlen_Too_Small,
+        "ARP Header length too small",
     },
     {
         event_description::Evt_ARP_HW_Addr_Len_Inval,
-        rule_ids::Rule_Id_ARP_HW_Addr_Len_Inval
+        rule_ids::Rule_Id_ARP_HW_Addr_Len_Inval,
+        "ARP Header Length invalid"
     },
     {
         event_description::Evt_ARP_Protocol_Addr_Len_Inval,
-        rule_ids::Rule_Id_ARP_Protocol_Addr_Len_Inval
+        rule_ids::Rule_Id_ARP_Protocol_Addr_Len_Inval,
+        "ARP protocol address length invalid"
     },
     {
         event_description::Evt_ARP_Inval_Operation,
-        rule_ids::Rule_Id_ARP_Inval_Operation
+        rule_ids::Rule_Id_ARP_Inval_Operation,
+        "ARP invalid op"
     },
 
     //
@@ -61,45 +70,55 @@ const static struct {
     {
         event_description::Evt_VLAN_Hdrlen_Too_Short,
         rule_ids::Rule_Id_Vlan_Hdrlen_Too_Small,
+        "VLAN header length too small"
     },
     {
         event_description::Evt_VLAN_Inval_VID,
         rule_ids::Rule_Id_Vlan_Id_Inval,
+        "VLAN ID invalid"
     },
 
     //
     // ipv4 rules
     {
         event_description::Evt_IPV4_Hdrlen_Too_Small,
-        rule_ids::Rule_Id_IPV4_Hdrlen_Too_Small
+        rule_ids::Rule_Id_IPV4_Hdrlen_Too_Small,
+        "IPv4 header length too small"
     },
     {
         event_description::Evt_IPV4_Hdrlen_Too_Big,
-        rule_ids::Rule_Id_IPV4_Hdrlen_Too_Big
+        rule_ids::Rule_Id_IPV4_Hdrlen_Too_Big,
+        "IPv4 header length too big"
     },
     {
         event_description::Evt_IPV4_Hdrlen_Inval,
-        rule_ids::Rule_Id_IPV4_Hdrlen_Inval
+        rule_ids::Rule_Id_IPV4_Hdrlen_Inval,
+        "IPv4 header length invalid"
     },
     {
         event_description::Evt_IPV4_Version_Invalid,
-        rule_ids::Rule_Id_IPV4_Version_Invalid
+        rule_ids::Rule_Id_IPV4_Version_Invalid,
+        "IPv4 version is invalid"
     },
     {
         event_description::Evt_IPV4_Flags_Invalid,
-        rule_ids::Rule_Id_IPV4_Flags_Invalid
+        rule_ids::Rule_Id_IPV4_Flags_Invalid,
+        "IPv4 flags invalid"
     },
     {
         event_description::Evt_IPV4_Hdr_Chksum_Invalid,
-        rule_ids::Rule_Id_IPV4_Hdr_Chksum_Invalid
+        rule_ids::Rule_Id_IPV4_Hdr_Chksum_Invalid,
+        "IPv4 header checksum invalid"
     },
     {
         event_description::Evt_IPV4_Protocol_Unsupported,
-        rule_ids::Rule_Id_IPV4_Protocol_Unsupported
+        rule_ids::Rule_Id_IPV4_Protocol_Unsupported,
+        "IPv4 protocol unsupported"
     },
     {
         event_description::Evt_IPV4_Unknown_Opt,
-        rule_ids::Rule_Id_IPV4_Unknown_Opt
+        rule_ids::Rule_Id_IPV4_Unknown_Opt,
+        "IPv4 unknown option"
     },
 
     //
@@ -107,81 +126,100 @@ const static struct {
     {
         event_description::Evt_Tcp_Hdrlen_Too_Short,
         rule_ids::Rule_Id_Tcp_Hdrlen_Too_Short,
+        "TCP header length too short"
     },
     {
         event_description::Evt_Tcp_Flags_All_Set,
         rule_ids::Rule_Id_Tcp_Flags_All_Set,
+        "TCP all flags are set"
     },
     {
         event_description::Evt_Tcp_Flags_None_Set,
         rule_ids::Rule_Id_Tcp_Flags_None_Set,
+        "TCP no flags are set"
     },
     {
         event_description::Evt_Tcp_Invalid_Option,
         rule_ids::Rule_Id_Tcp_Invalid_Option,
+        "TCP Invalid option"
     },
     {
         event_description::Evt_Tcp_Opt_Ts_Inval_Len,
         rule_ids::Rule_Id_Tcp_Opt_Ts_Inval_Len,
+        "TCP option Timestamp has invalid length"
     },
     {
         event_description::Evt_Tcp_Opt_Win_Scale_Inval_Len,
         rule_ids::Rule_Id_Tcp_Opt_Win_Scale_Inval_Len,
+        "TCP option window scale has invalid length"
     },
     {
         event_description::Evt_Tcp_Opt_MSS_Repeated,
         rule_ids::Rule_Id_Tcp_Opt_MSS_Repeated,
+        "TCP option MSS is repeated in the packet"
     },
     {
         event_description::Evt_Tcp_Opt_SACK_Permitted_Repeated,
         rule_ids::Rule_Id_Tcp_Opt_SACK_Permitted_Repeated,
+        "TCP option SACK_Permitted is repated in the packet"
     },
     {
         event_description::EvT_Tcp_Opt_Ts_Repeated,
         rule_ids::Rule_Id_Tcp_Opt_Ts_Repeated,
+        "TCP option TS repeated in the packet"
     },
     {
         event_description::Evt_Tcp_Opt_WinScale_Repeated,
         rule_ids::Rule_Id_Tcp_Opt_WinScale_Repeated,
+        "TCP option Window Scale is repeated in the packet"
     },
     {
         event_description::Evt_Tcp_Flags_SYN_FIN_Set,
         rule_ids::Rule_Id_Tcp_Flags_SYN_FIN_Set,
+        "TCP Flags SYN + FIN is set"
     },
     {
         event_description::Evt_Tcp_Src_Port_Zero,
         rule_ids::Rule_Id_Tcp_Src_Port_Zero,
+        "TCP source port is 0"
     },
     {
         event_description::Evt_Tcp_Dst_Port_Zero,
         rule_ids::Rule_Id_Tcp_Dst_Port_Zero,
+        "TCP destination port is 0"
     },
 
     //
     // UDP rules
     {
         event_description::Evt_Udp_Src_Port_Invalid,
-        rule_ids::Rule_Id_Udp_Src_Port_Invalid
+        rule_ids::Rule_Id_Udp_Src_Port_Invalid,
+        "UDP source port invalid"
     },
     {
         event_description::Evt_Udp_Dst_Port_Invalid,
-        rule_ids::Rule_Id_Udp_Dst_Port_Invalid
+        rule_ids::Rule_Id_Udp_Dst_Port_Invalid,
+        "UDP destination port invalid"
     },
     {
         event_description::Evt_Udp_Len_Too_Short,
-        rule_ids::Rule_Id_Udp_Len_Too_Short
+        rule_ids::Rule_Id_Udp_Len_Too_Short,
+        "UDP header length is too short"
     },
     {
         event_description::Evt_Udp_Chksum_Invalid,
-        rule_ids::Rule_Id_Udp_Chksum_Invalid
+        rule_ids::Rule_Id_Udp_Chksum_Invalid,
+        "UDP checksum is invalid"
     },
     {
         event_description::Evt_Udp_Bogus_Msg_Len,
         rule_ids::Rule_Id_Udp_Bogus_Msg_Len,
+        "UDP message length is bogus"
     },
     {
         event_description::Evt_Udp_Hdr_Msg_Len_Too_Big,
         rule_ids::Rule_Id_Udp_Hdr_Msg_Len_Too_Big,
+        "UDP message length in header is too big against actual message length"
     },
 
     //
@@ -189,89 +227,112 @@ const static struct {
     {
         event_description::Evt_Icmp_Hdr_Len_Too_Short,
         rule_ids::Rule_Id_Icmp_Hdr_Len_Too_Short,
+        "ICMP header length is too small"
     },
     {
         event_description::Evt_Icmp_Echo_Req_Hdr_Len_Too_Short,
         rule_ids::Rule_Id_Icmp_Echo_Req_Hdr_Len_Too_Short,
+        "ICMP echo request length is too small"
     },
     {
         event_description::Evt_Icmp_Echo_Reply_Hdr_Len_Too_Short,
         rule_ids::Rule_Id_Icmp_Echo_Reply_Hdr_Len_Too_Short,
+        "ICMP echo reply length is too small"
     },
     {
         event_description::Evt_Icmp_Ts_Msg_Hdr_Len_Too_Short,
         rule_ids::Rule_Id_Icmp_Ts_Msg_Hdr_Len_Too_Short,
+        "ICMP Timestamp message header length is too small"
     },
     {
         event_description::Evt_Icmp_Info_Msg_Hdr_Len_Too_Short,
         rule_ids::Rule_Id_Icmp_Info_Msg_Hdr_Len_Too_Short,
+        "ICMP info message header length is too small"
     },
     {
         event_description::Evt_Icmp_Invalid_Type,
         rule_ids::Rule_Id_Icmp_Invalid_Type,
+        "ICMP invalid type"
     },
     {
         event_description::Evt_Icmp_Time_Exceeded_Invalid_Code,
         rule_ids::Rule_Id_Icmp_Time_Exceeded_Invalid_Code,
+        "ICMP timestamp exceeed has invalid code"
     },
     {
         event_description::Evt_Icmp_Dest_Unreachable_Invalid_Code,
         rule_ids::Rule_Id_Icmp_Dest_Unreachable_Invalid_Code,
+        "ICMP destination unreachable has invalid code"
     },
     {
+        //
+        // attacker is using ICMP to pass the content in the echo-req and echo-reply frames.
         event_description::Evt_Icmp_Covert_Channel_Maybe_Active,
         rule_ids::Rule_Id_Icmp_Covert_Channel_Maybe_Active,
+        "ICMP covert channel may be active"
     },
     {
         event_description::Evt_Icmp_Inval_Redir_Msg_Code,
         rule_ids::Rule_Id_Icmp_Inval_Redir_Msg_Code,
+        "ICMP redirect type has invalid code"
     },
     {
         event_description::Evt_Icmp_Inval_Echo_Req_Code,
         rule_ids::Rule_Id_Icmp_Inval_Echo_Req_Code,
+        "ICMP echo request type has invalid code"
     },
     {
         event_description::Evt_Icmp_Inval_Echo_Reply_Code,
         rule_ids::Rule_Id_Icmp_Inval_Echo_Reply_Code,
+        "ICMP echo reply has invalid code"
     },
     {
         event_description::Evt_Icmp_Inval_Ts_Code,
         rule_ids::Rule_Id_Icmp_Inval_Ts_Code,
+        "ICMP timestamp has invalid code"
     },
     {
         event_description::Evt_Icmp_Inval_Info_Code,
         rule_ids::Rule_Id_Icmp_Inval_Info_Code,
+        "ICMP info has invalid code"
     },
 
     //
     // DHCP rules
     {
         event_description::Evt_DHCP_MAGIC_Invalid,
-        rule_ids::Rule_Id_DHCP_MAGIC_Invalid
+        rule_ids::Rule_Id_DHCP_MAGIC_Invalid,
+        "DHCP magic is invalid"
     },
     {
         event_description::Evt_DHCP_Opt_Client_Id_Len_Inval,
         rule_ids::Rule_Id_DHCP_Opt_Client_Id_Len_Inval,
+        "DHCP options: client id length is invalid"
     },
     {
         event_description::Evt_DHCP_Opt_SubnetMask_Len_Inval,
         rule_ids::Rule_Id_DHCP_Opt_SubnetMask_Len_Inval,
+        "DHCP options: subnet mask length is invalid"
     },
     {
         event_description::Evt_DHCP_Opt_Renewal_Time_Len_Inval,
         rule_ids::Rule_Id_DHCP_Opt_Renewal_Time_Len_Inval,
+        "DHCP options: renewal time length is invalid"
     },
     {
         event_description::Evt_DHCP_Opt_Ipaddr_Lease_Time_Len_Inval,
         rule_ids::Rule_Id_DHCP_Opt_Ipaddr_Lease_Time_Len_Inval,
+        "DHCP options: ipaddr lease time length is invalid"
     },
     {
         event_description::Evt_DHCP_Opt_Server_Id_Len_Inval,
         rule_ids::Rule_Id_DHCP_Opt_Server_Id_Len_Inval,
+        "DHCP options: server_id length is invalid"
     },
     {
         event_description::Evt_DHCP_Hdr_Len_Too_Short,
         rule_ids::Rule_Id_DHCP_Hdr_Len_Too_Short,
+        "DHCP default header length (no options) is too small"
     },
 
     //
@@ -279,10 +340,12 @@ const static struct {
     {
         event_description::Evt_Icmp6_Icmp6_Type_Unsupported,
         rule_ids::Rule_Id_Icmp6_Icmp6_Type_Unsupported,
+        "ICMP6 Type unsupported"
     },
     {
         event_description::Evt_Icmp6_Mcast_Listener_Inval_Rec_Len,
         rule_ids::Rule_Id_Icmp6_Mcast_Listener_Inval_Rec_Len,
+        "ICMP6 Invalid Mcast Listener record length"
     },
 
     //
@@ -290,18 +353,22 @@ const static struct {
     {
         event_description::Evt_DoIP_Hdrlen_Too_Small,
         rule_ids::Rule_Id_DoIP_Hdrlen_Too_Small,
+        "DoIP header length too small"
     },
     {
         event_description::Evt_DoIP_Unsupported_Msg_Type,
         rule_ids::Rule_Id_DoIP_Unsupported_Msg_Type,
+        "DoIP unsupported message type"
     },
     {
         event_description::Evt_DoIP_Veh_Announce_Too_Small,
         rule_ids::Rule_Id_DoIP_Veh_Announce_Too_Small,
+        "DoIP Veh Announcement length too small"
     },
     {
         event_description::Evt_DoIP_Version_Mismatch,
         rule_ids::Rule_Id_DoIP_Version_Mismatch,
+        "DoIP version mismatched"
     },
 
     //
@@ -309,11 +376,13 @@ const static struct {
     {
         event_description::Evt_Known_Exploit_Win32_Blaster,
         rule_ids::Rule_Id_Known_Exploit_Win32_Blaster,
+        "Suspected Win32.Blaster worm"
     },
 
     {
         event_description::Evt_Unknown_Error,
-        rule_ids::Rule_Id_Unknown
+        rule_ids::Rule_Id_Unknown,
+        "Unknown error"
     },
 };
 
@@ -372,6 +441,7 @@ void event_mgr::create_evt(event &evt,
     switch (evt.ethertype) {
         case static_cast<uint16_t>(ether_type::Ether_Type_IPv4):
             evt.protocol = pkt.ipv4_h->protocol;
+            evt.ttl = pkt.ipv4_h->ttl;
         break;
     }
     evt.pkt_len = pkt.pkt_len;
@@ -402,6 +472,14 @@ fw_error_type event_mgr::init(logger *log)
 
     log_->info("evt_mgr::init: create log file writer ok\n");
 
+    if (fw_conf->evt_config.upload_method == Event_Upload_Method_Type::MQTT) {
+        auto r = mqtt_uploader_.init();
+        if (r != 0) {
+            return fw_error_type::eInvalid;
+        }
+        log_->info("evt_mgr::init: create MQTT uploader\n");
+    }
+
     return fw_error_type::eNo_Error;
 }
 
@@ -422,6 +500,20 @@ uint32_t event_mgr::get_matching_rule(event_description evt_desc)
     }
 
     return static_cast<uint32_t>(rule_ids::Rule_Id_Unknown);
+}
+
+/**
+ * @brief - Get the matching event description string
+ */
+static std::string get_matching_event_desc_str(event_description evt_desc)
+{
+    for (auto i : auto_det_rule_id_list) {
+        if (i.evt == evt_desc) {
+            return i.desc;
+        }
+    }
+
+    return "Unknown";
 }
 
 /**
@@ -462,8 +554,16 @@ void event_mgr::storage_thread()
                     // Discard the event frame.
                 }
 
+                //
+                // if enabled, write to syslog as well
                 if (conf->evt_config.log_to_syslog) {
                     log_syslog(evt);
+                }
+
+                //
+                // if enabled, write to MQTT connection
+                if (conf->evt_config.upload_method == Event_Upload_Method_Type::MQTT) {
+                    mqtt_upload(evt);
                 }
                 event_list_.pop();
             }
@@ -477,9 +577,11 @@ void event_mgr::log_syslog(event &evt)
     int len = 0;
 
     len += snprintf(msg + len, sizeof(msg) - len,
-                    "[%s], Rule_Id: %u, Event_Desc: %u  from ",
+                    "[%s], Rule_Id: %u, Event_Desc: [%s](%u)  from ",
                     evt_type_str(evt.evt_type).c_str(),
-                    evt.rule_id, static_cast<uint32_t>(evt.evt_details));
+                    evt.rule_id,
+                    get_matching_event_desc_str(evt.evt_details).c_str(),
+                    static_cast<uint32_t>(evt.evt_details));
     len += snprintf(msg + len, sizeof(msg) - len,
                     "src_mac [%02x:%02x:%02x:%02x:%02x:%02x] "
                     "dst_mac [%02x:%02x:%02x:%02x:%02x:%02x] "
@@ -511,6 +613,28 @@ void event_mgr::log_syslog(event &evt)
     len += snprintf(msg + len, sizeof(msg) - len, "\n");
 
     syslog(LOG_ALERT, "%s", msg);
+}
+
+void event_mgr::mqtt_upload(event &e)
+{
+    event_msg *evt_msg;
+    uint8_t msg[4096];
+    uint8_t enc_msg[4096];
+    event_msg_codec codec;
+    int total_len;
+
+    evt_msg = (event_msg *)msg;
+
+    total_len = codec.serialize(e, evt_msg);
+    //
+    // nothing to be sent.. drop this event.
+    if (total_len <= 0) {
+        return;
+    }
+
+    total_len = codec.hash_and_encrypt(msg, total_len, enc_msg);
+    if (total_len > 0)
+        mqtt_uploader_.write(enc_msg, total_len);
 }
 
 }

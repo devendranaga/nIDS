@@ -14,7 +14,13 @@
 		"encrypt_log_file": true,
 		"encryption_key": "./aes_key.bin",
 		"hash_algorithm": "SHA256",
-		"encryption_algorithm": "aes_ctr_128"
+		"encryption_algorithm": "aes_ctr_128",
+		"event_upload_method": "mqtt",
+		"mqtt_config": {
+			"ip": "127.0.0.1",
+			"port": 1883,
+			"topic_name": "/nids/events"
+		}
 	}
 }
 

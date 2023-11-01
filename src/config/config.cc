@@ -65,6 +65,15 @@ fw_error_type firewall_config::parse(const std::string config_file)
         return fw_error_type::eConfig_Error;
     }
 
+    auto evt_upload_method = root["events"]["event_upload_method"].asString();
+    if (evt_upload_method == "mqtt") {
+        evt_config.upload_method = Event_Upload_Method_Type::MQTT;
+
+        evt_config.mqtt.ipaddr = root["events"]["mqtt_config"]["ip"].asString();
+        evt_config.mqtt.port = root["events"]["mqtt_config"]["port"].asUInt();
+        evt_config.mqtt.topic_name = root["events"]["mqtt_config"]["topic_name"].asString();
+    }
+
     return fw_error_type::eNo_Error;
 }
 

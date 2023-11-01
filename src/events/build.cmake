@@ -1,9 +1,6 @@
 project(firewall)
 cmake_minimum_required(VERSION 3.22)
 
-SET(EVENT_MGR_SOURCES
-	./src/events/event_mgr.cc
-	./src/events/event_file_writer.cc)
-
+file(GLOB EVENT_MGR_SOURCES ${PROJECT_SOURCE_DIR}/src/events/*.cc)
 include_directories(./src/events/)
 

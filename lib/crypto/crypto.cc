@@ -30,6 +30,8 @@ static int load_keyfile(const std::string &keyfile,
         return -1;
     }
 
+    //
+    // read the key length bytes and return it
     if (fread(key, s.st_size, 1, fp) == 0) {
         ret = -1;
     } else {
@@ -117,6 +119,44 @@ int crypto_aes_ctr::ctr_128_encrypt(uint8_t *data_in, uint32_t data_in_len,
     EVP_CIPHER_CTX_free(ctx);
     return 0;
 
+deinit:
+    EVP_CIPHER_CTX_free(ctx);
+    return -1;
+}
+
+int crypto_aes_ctr::ctr_128_decrypt(uint8_t *data_in, uint32_t data_in_len,
+                                    uint8_t *data_out, uint32_t *data_out_len,
+                                    uint8_t *iv)
+{
+    EVP_CIPHER_CTX *ctx;
+    const EVP_CIPHER *cipher = EVP_aes_128_ctr();
+    int out_len = 0;
+    int ret;
+
+    ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        return -1;
+    }
+
+    ret = EVP_DecryptInit_ex(ctx, cipher, nullptr, key_, iv);
+    if (ret != 1) {
+        goto deinit;
+    }
+
+    ret = EVP_DecryptUpdate(ctx, data_out, &out_len, data_in, data_in_len);
+    if (ret != 1) {
+        goto deinit;
+    }
+
+    *data_out_len = out_len;
+
+    ret = EVP_DecryptFinal_ex(ctx, data_out + out_len, &out_len);
+    if (ret != 1) {
+        goto deinit;
+    }
+
+    *data_out_len += out_len;
+    EVP_CIPHER_CTX_free(ctx);
     return 0;
 
 deinit:

@@ -46,6 +46,11 @@ set(SERVICE_SOURCES
 set(TOOL_PACKET_GEN_SOURCES
 	${PKT_GEN_SOURCES})
 
+set(FW_CTL_SOURCES
+	./tools/fw_ctl/fw_ctl.cc
+	./tools/fw_ctl/fw_ctl_mqtt.cc
+	./src/events/event_msg_codec.cc)
+
 include_directories(
 	./lib
 	./src/parser/
@@ -55,7 +60,8 @@ include_directories(
 	./src/stats/
 	./src/config/
 	./src/filters/
-	./src/filters/arp/)
+	./src/filters/arp/
+	./tools/fw_ctl/)
 
 # Enable Debugging
 set(CMAKE_CXX_FLAGS "-DFW_ENABLE_DEBUG")
@@ -68,10 +74,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wformat -Wno-unus
 add_library(packet_core ${LIB_SOURCES})
 
 add_executable(fwd ${SERVICE_SOURCES})
-target_link_libraries(fwd packet_core jsoncpp pthread crypto)
+target_link_libraries(fwd packet_core jsoncpp pthread crypto paho-mqtt3c)
 
 add_executable(packet_gen ${TOOL_PACKET_GEN_SOURCES})
 target_link_libraries(packet_gen packet_core jsoncpp pthread)
 
+add_executable(fw_ctl ${FW_CTL_SOURCES})
+target_link_libraries(fw_ctl packet_core crypto paho-mqtt3c)
 
 
