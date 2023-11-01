@@ -44,6 +44,16 @@ make -j12
 
 ## Running
 
+### Generating Encryption key
+
+For encryption feature in event logging and MQTT eventing, one needs the encryption key.
+
+```bash
+openssl rand -out aes_key.bin 16
+```
+
+### Running the services and tools
+
 1. Firewall daemon can be started the following way:
 
 ```bash
