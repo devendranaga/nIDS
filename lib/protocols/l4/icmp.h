@@ -32,6 +32,8 @@ enum class Icmp_Type : uint32_t {
     Ts_Reply = 14,
     Info_Req = 15,
     Info_Reply = 16,
+    Address_Mask_Request = 17,
+    Address_Mask_Reply = 18,
 };
 
 enum class Icmp_Code_Dest_Unreachable :  uint32_t {
@@ -143,6 +145,18 @@ struct icmp_info_msg {
         const int info_len = 4;
 };
 
+struct icmp_address_mask {
+    uint16_t id;
+    uint16_t seq_no;
+    uint32_t addres_mask;
+
+    event_description parse(packet &p, logger *log, bool debug);
+    void print(const std::string str, logger *log);
+
+    private:
+        const int len_ = 8;
+};
+
 /**
  * @brief - Implements icmp header serialize and deserialize.
 */
@@ -166,6 +180,8 @@ struct icmp_hdr {
     std::shared_ptr<icmp_timestamp_msg> ts_reply;
     std::shared_ptr<icmp_info_msg> info_req;
     std::shared_ptr<icmp_info_msg> info_resp;
+    std::shared_ptr<icmp_address_mask> addr_mask_req;
+    std::shared_ptr<icmp_address_mask> addr_mask_reply;
 
     explicit icmp_hdr() :
                 start_off(0),

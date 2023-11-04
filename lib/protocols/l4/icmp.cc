@@ -127,6 +127,19 @@ event_description icmp_info_msg::parse(packet &p, logger *log, bool debug)
     return event_description::Evt_Parse_Ok;
 }
 
+event_description icmp_address_mask::parse(packet &p, logger *log, bool debug)
+{
+    if (p.remaining_len() < len_) {
+        return event_description::Evt_Icmp_Addr_Mask_Len_Inval;
+    }
+
+    p.deserialize(id);
+    p.deserialize(seq_no);
+    p.deserialize(addres_mask);
+
+    return event_description::Evt_Parse_Ok;
+}
+
 event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
 {
     //
@@ -308,6 +321,20 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             }
             info_resp->parse(p, log, debug);
         } break;
+        case Icmp_Type::Address_Mask_Request: {
+            addr_mask_req = std::make_shared<icmp_address_mask>();
+            if (!addr_mask_req)
+                return event_description::Evt_Unknown_Error;
+
+            addr_mask_req->parse(p, log, debug);
+        } break;
+        case Icmp_Type::Address_Mask_Reply: {
+            addr_mask_reply = std::make_shared<icmp_address_mask>();
+            if (!addr_mask_reply)
+                return event_description::Evt_Unknown_Error;
+
+            addr_mask_reply->parse(p, log, debug);
+        } break;
         default:
             return event_description::Evt_Icmp_Invalid_Type;
         break;
@@ -356,6 +383,10 @@ void icmp_hdr::print(logger *log)
         time_exceeded->print("Time_Exceeded", log);
     if (source_quench)
         source_quench->print("Source_Quench", log);
+    if (addr_mask_req)
+        addr_mask_req->print("Address_Mask_Request", log);
+    if (addr_mask_reply)
+        addr_mask_reply->print("Address_Mask_Reply", log);
 
     log->verbose("}\n");
 #endif
@@ -467,6 +498,17 @@ void icmp_redir_msg::print(logger *log)
                     original_datagram[5],
                     original_datagram[6],
                     original_datagram[7]);
+    log->verbose("\t }\n");
+#endif
+}
+
+void icmp_address_mask::print(const std::string str, logger *log)
+{
+#if defined(FW_ENABLE_DEBUG)
+    log->verbose("\t %s: {\n", str.c_str());
+    log->verbose("\t\t id: %04x\n", id);
+    log->verbose("\t\t seq_no: %04x\n", seq_no);
+    log->verbose("\t\t address_mask: %x\n", addres_mask);
     log->verbose("\t }\n");
 #endif
 }

@@ -21,6 +21,9 @@ namespace firewall {
 #define IPV4_IHL_LEN 4
 #define IPV4_HDR_NO_OPTIONS 20
 #define IPV4_HDR_LEN_MAX 60
+#define IPV4_MCAST_ADDR_START 224
+#define IPV4_MCAST_ADDR_END 239
+#define IPV4_BROADCAST_ADDR 0xFFFFFFFF
 
 enum class IPv4_Opt {
     End_Of_Options = 0,
@@ -301,6 +304,43 @@ struct ipv4_hdr {
      * return computed checksum
      */
     uint16_t generate_checksum(packet &p);
+
+    inline bool is_dst_multicast()
+    {
+        return is_multicast(dst_addr);
+    }
+
+    inline bool is_src_multicast()
+    {
+        return is_multicast(src_addr);
+    }
+
+    inline bool is_dst_broadcast()
+    {
+        return is_broadcast(dst_addr);
+    }
+
+    inline bool is_src_broadcast()
+    {
+        return is_broadcast(src_addr);
+    }
+
+    private:
+    inline bool is_multicast(uint32_t ip_addr)
+    {
+        uint8_t byte = (ip_addr & 0x000000FF);
+
+        if ((byte >= IPV4_MCAST_ADDR_START) && (byte <= IPV4_MCAST_ADDR_END))
+            return true;
+
+        return false;
+    }
+    
+    inline bool is_broadcast(uint32_t ipaddr)
+    {
+        return ipaddr == 0xFFFFFFFF;
+    }
+
 };
 
 }

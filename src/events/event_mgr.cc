@@ -301,6 +301,26 @@ const static struct {
         rule_ids::Rule_Id_Icmp_Inval_Chksum,
         "ICMP checksum is invalid"
     },
+    {
+        event_description::Evt_Icmp_Pkt_Fragmented,
+        rule_ids::Rule_Id_Icmp_Pkt_Fragmented,
+        "ICMP packet is fragmented"
+    },
+    {
+        event_description::Evt_Icmp_Dest_Addr_Multicast_In_IPv4,
+        rule_ids::Rule_Id_Icmp_Dest_Addr_Multicast_In_IPv4,
+        "ICMP destination address is Multicast in IPv4 Packet"
+    },
+    {
+        event_description::Evt_Icmp_Dest_Addr_Broadcast_In_IPv4,
+        rule_ids::Rule_Id_Icmp_Dest_Addr_Broadcast_In_IPv4,
+        "ICMP destination address is Broadcast in IPv4 Packet"
+    },
+    {
+        event_description::Evt_Icmp_Addr_Mask_Len_Inval,
+        rule_ids::Rule_Id_Icmp_Addr_Mask_Len_Inval,
+        "ICMP Address Mask length invalid"
+    },
 
     //
     // DHCP rules

@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements ARP filter.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+ */
 #include <common.h>
 #include <parser.h>
 #include <arp_filter.h>
@@ -52,3 +57,4 @@ event_description arp_filter::add_arp_frame(parser &p)
 }
 
 }
+

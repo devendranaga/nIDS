@@ -15,7 +15,7 @@ namespace firewall {
 parser::parser(const std::string ifname, logger *log) :
                         ifname_(ifname),
                         log_(log),
-                        pkt_dump_(false)
+                        pkt_dump_(true)
 { }
 parser::~parser() { }
 
@@ -66,11 +66,8 @@ event_description parser::parse_l4(packet &pkt)
             protocols_avail.set_udp();
         } break;
         case protocols_types::Protocol_Icmp: {
-            icmp_h = std::make_shared<icmp_hdr>();
-            if (!icmp_h)
-                return event_description::Evt_Unknown_Error;
-
-            evt_desc = icmp_h->deserialize(pkt, log_, pkt_dump_);
+            icmp_filter *icmp_f = icmp_filter::instance();
+            evt_desc = icmp_f->run_filter(*this, pkt, log_, pkt_dump_);
             protocols_avail.set_icmp();
         } break;
         case protocols_types::Protocol_Icmp6: {

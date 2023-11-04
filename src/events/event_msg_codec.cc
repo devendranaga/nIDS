@@ -1,5 +1,6 @@
 #include <config.h>
 #include <ether_types.h>
+#include <protocols_types.h>
 #include <event_msg_codec.h>
 #include <crypto.h>
 
@@ -26,6 +27,17 @@ int event_msg_codec::serialize(event &e, event_msg *evt_msg)
             ipv4->protocol = e.protocol;
 
             total_len += sizeof(event_ipv4_info);
+
+            switch (static_cast<protocols_types>(e.protocol)) {
+                case protocols_types::Protocol_Udp: {
+                    event_tcp_info *tcp = (event_tcp_info *)ipv4->data;
+
+                    tcp->src_port = e.src_port;
+                    tcp->dst_port = e.dst_port;
+                } break;
+                default:
+                break;
+            }
         } break;
         default:
         break;

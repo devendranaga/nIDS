@@ -46,6 +46,7 @@
 #include <os_signatures.h>
 #include <packet_stats.h>
 #include <arp_filter.h>
+#include <icmp_filter.h>
 
 namespace firewall {
 
@@ -189,6 +190,14 @@ struct parser {
             }
 
             return static_cast<protocols_types>(protocols_types::Protocol_Max);
+        }
+
+        bool contain_ipv4()
+        {
+            if (static_cast<Ether_Type>(eh->ethertype) == Ether_Type::Ether_Type_IPv4)
+                return true;
+
+            return false;
         }
 
         bool has_port()
