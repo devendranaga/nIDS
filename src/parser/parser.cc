@@ -276,7 +276,7 @@ int parser::run(packet &pkt)
 
             evt_desc = ipv4_h->deserialize(pkt, log_, pkt_dump_);
             if (evt_desc == event_description::Evt_IPV4_Hdr_Chksum_Invalid) {
-                firewall_pkt_stats::instance()->inc_n_ipv4_chksum_err(this->ifname_);
+                firewall_pkt_stats::instance()->stats_update(evt_desc, ifname_);
             }
             protocols_avail.set_ipv4();
         } break;

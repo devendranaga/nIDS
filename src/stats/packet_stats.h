@@ -10,6 +10,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <event_def.h>
 
 namespace firewall {
 
@@ -34,6 +35,13 @@ struct firewall_intf_stats {
     ~firewall_intf_stats() { }
 };
 
+enum class Pktstats_Type {
+    Type_Rx,
+    Type_Deny,
+    Type_Allowed,
+    Type_Events,
+};
+
 /**
  * @brief - defines packet statistics
 */
@@ -45,12 +53,10 @@ class firewall_pkt_stats {
             return &stats;
         }
 
-        void inc_n_rx(const std::string ifname);
-        void inc_n_deny(const std::string ifname);
-        void inc_n_allowed(const std::string ifname);
-        void inc_n_events(const std::string ifname);
-        void inc_n_icmp_chksum_err(const std::string ifname);
-        void inc_n_ipv4_chksum_err(const std::string ifname);
+        void stats_update(event_description evt_desc,
+                          const std::string &ifname);
+        void stats_update(Pktstats_Type type,
+                          const std::string &ifname);
 
         firewall_pkt_stats(const firewall_pkt_stats &) = delete;
         const firewall_pkt_stats &operator=(const firewall_pkt_stats &) = delete;
@@ -62,6 +68,25 @@ class firewall_pkt_stats {
     private:
         explicit firewall_pkt_stats() { }
         std::vector<firewall_intf_stats> stats_;
+
+        /**
+         * @brief - increment rx count for the given interface.
+         *
+         * @param [in] ifname - interface name.
+         */
+        void inc_n_rx(const std::string ifname);
+
+        /**
+         * @brief - increment denied packet count.
+         *
+         * @param [in] ifname -interface name.
+         */
+        void inc_n_deny(const std::string ifname);
+
+        void inc_n_allowed(const std::string ifname);
+        void inc_n_events(const std::string ifname);
+        void inc_n_icmp_chksum_err(const std::string ifname);
+        void inc_n_ipv4_chksum_err(const std::string ifname);
 };
 
 }

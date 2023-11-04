@@ -120,6 +120,41 @@ const static struct {
         rule_ids::Rule_Id_IPV4_Unknown_Opt,
         "IPv4 unknown option"
     },
+    {
+        event_description::Evt_IPv4_Zero_TTL,
+        rule_ids::Rule_Id_IPv4_Zero_TTL,
+        "IPv4 packet TTL is zero"
+    },
+    {
+        event_description::Evt_IPv4_Reserved_Set,
+        rule_ids::Rule_Id_IPv4_Reserved_Set,
+        "IPv4 Reserved bit is set"
+    },
+    {
+        event_description::Evt_IPv4_Src_And_Dst_Addr_Same,
+        rule_ids::Rule_Id_IPv4_Src_And_Dst_Addr_Same,
+        "IPv4 Src and Dst Addresses are same"
+    },
+    {
+        event_description::Evt_IPv4_Src_Is_Broadcast,
+        rule_ids::Rule_Id_IPv4_Src_Is_Broadcast,
+        "IPv4 Src is a broadcast address"
+    },
+    {
+        event_description::Evt_IPv4_Src_Is_Multicast,
+        rule_ids::Rule_Id_IPv4_Src_Is_Multicast,
+        "IPv4 Src is a multicast address"
+    },
+    {
+        event_description::Evt_IPv4_Src_Is_Reserved,
+        rule_ids::Rule_Id_IPv4_Src_Is_Reserved,
+        "IPv4 Src is a reserved address"
+    },
+    {
+        event_description::Evt_IPv4_Dst_Is_Reserved,
+        rule_ids::Rule_Id_IPv4_Dst_Is_Reserved,
+        "IPv4 Dst is a reserved address"
+    },
 
     //
     // TCP rules

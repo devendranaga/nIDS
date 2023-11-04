@@ -163,6 +163,11 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
     p.deserialize(byte_1);
 
     reserved = !!(byte_1 & 0x80);
+    //
+    // IPv4 Reserved bit is set
+    if (reserved != 0) {
+        return event_description::Evt_IPv4_Reserved_Set;
+    }
     dont_frag = !!(byte_1 & 0x40);
     more_frag = !!(byte_1 & 0x20);
 
@@ -180,10 +185,41 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
     frag_off |= byte_1;
 
     p.deserialize(ttl);
+    //
+    // TTL zero means that packet lifetime is expired.
+    if (ttl == 0) {
+        return event_description::Evt_IPv4_Zero_TTL;
+    }
+
     p.deserialize(protocol);
     p.deserialize(hdr_chksum);
     p.deserialize(src_addr);
     p.deserialize(dst_addr);
+    //
+    // Source and Destination IPv4 addresses are same
+    if (src_addr == dst_addr) {
+        return event_description::Evt_IPv4_Src_And_Dst_Addr_Same;
+    }
+    //
+    // drop if Src IPv4 address is a broadcast address
+    if (is_broadcast(src_addr)) {
+        return event_description::Evt_IPv4_Src_Is_Broadcast;
+    }
+    //
+    // drop if Src IPv4 address is a multicast address
+    if (is_multicast(src_addr)) {
+        return event_description::Evt_IPv4_Src_Is_Multicast;
+    }
+    //
+    // IPv4 Src address is reserved
+    if (is_reserved(src_addr)) {
+        return event_description::Evt_IPv4_Src_Is_Reserved;
+    }
+    //
+    // IPv4 Dst address is reserved
+    if (is_reserved(dst_addr)) {
+        return event_description::Evt_IPv4_Dst_Is_Reserved;
+    }
 
     //
     // parse options

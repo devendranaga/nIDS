@@ -23,6 +23,8 @@ namespace firewall {
 #define IPV4_HDR_LEN_MAX 60
 #define IPV4_MCAST_ADDR_START 224
 #define IPV4_MCAST_ADDR_END 239
+#define IPV4_RESERVED_ADDR_START 240
+#define IPV4_RESERVED_ADDR_END 255
 #define IPV4_BROADCAST_ADDR 0xFFFFFFFF
 
 enum class IPv4_Opt {
@@ -325,17 +327,37 @@ struct ipv4_hdr {
         return is_broadcast(src_addr);
     }
 
+    inline bool is_src_reserved()
+    {
+        return is_reserved(src_addr);
+    }
+
+    inline bool is_dst_reserved()
+    {
+        return is_reserved(dst_addr);
+    }
+
     private:
     inline bool is_multicast(uint32_t ip_addr)
     {
-        uint8_t byte = (ip_addr & 0x000000FF);
+        uint32_t byte = (ip_addr & 0x000000FF);
 
         if ((byte >= IPV4_MCAST_ADDR_START) && (byte <= IPV4_MCAST_ADDR_END))
             return true;
 
         return false;
     }
-    
+
+    inline bool is_reserved(uint32_t ip_addr)
+    {
+        uint32_t byte = (ip_addr & 0x000000FF);
+
+        if ((byte >= IPV4_RESERVED_ADDR_START) && (byte <= IPV4_RESERVED_ADDR_END))
+            return true;
+
+        return false;
+    }
+
     inline bool is_broadcast(uint32_t ipaddr)
     {
         return ipaddr == 0xFFFFFFFF;

@@ -152,7 +152,7 @@ void firewall_intf::rx_thread()
         pkt.buf_len = ret;
 
         // increment rx frame count
-        firewall_pkt_stats::instance()->inc_n_rx(ifname_);
+        firewall_pkt_stats::instance()->stats_update(Pktstats_Type::Type_Rx,ifname_);
 
         {
             // queue the frame
@@ -180,7 +180,7 @@ void firewall_intf::run_filter(packet &pkt)
 
     ret = p.run(pkt);
     if (ret != 0) {
-        firewall_pkt_stats::instance()->inc_n_deny(ifname_);
+        firewall_pkt_stats::instance()->stats_update(Pktstats_Type::Type_Deny, ifname_);
     }
 
     pkt_perf_->stop(true);

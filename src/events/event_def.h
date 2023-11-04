@@ -54,6 +54,13 @@ enum class rule_ids : uint32_t {
     Rule_Id_IPV4_Protocol_Unsupported,
     Rule_Id_IPV4_Unknown_Opt,
     Rule_Id_IPV4_Inval_Src_Addr,
+    Rule_Id_IPv4_Zero_TTL,
+    Rule_Id_IPv4_Reserved_Set,
+    Rule_Id_IPv4_Src_And_Dst_Addr_Same,
+    Rule_Id_IPv4_Src_Is_Broadcast,
+    Rule_Id_IPv4_Src_Is_Multicast,
+    Rule_Id_IPv4_Src_Is_Reserved,
+    Rule_Id_IPv4_Dst_Is_Reserved,
 
     //
     // ICMP6 Rule Ids
@@ -183,6 +190,13 @@ enum class event_description : uint32_t {
     Evt_IPV4_Protocol_Unsupported,
     Evt_IPV4_Unknown_Opt,
     Evt_IPV4_Inval_Src_Addr,
+    Evt_IPv4_Zero_TTL,
+    Evt_IPv4_Reserved_Set,
+    Evt_IPv4_Src_And_Dst_Addr_Same,
+    Evt_IPv4_Src_Is_Broadcast,
+    Evt_IPv4_Src_Is_Multicast,
+    Evt_IPv4_Src_Is_Reserved,
+    Evt_IPv4_Dst_Is_Reserved,
 
     //
     // IPv6 events
