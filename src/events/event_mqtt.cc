@@ -1,7 +1,14 @@
+/**
+ * @brief - implements MQTT publisher.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #include <config.h>
 #include <event_mqtt.h>
 
 namespace firewall {
+
+#define MQTT_PUBLISHER_NAME "mqtt_pub: "
 
 mqtt_publisher::mqtt_publisher() : init_ok_(false) { }
 
@@ -9,13 +16,17 @@ mqtt_publisher::~mqtt_publisher()
 {
     if (init_ok_)
         MQTTClient_disconnect(client_, timeout_ms_);
+
+    init_ok_ = false;
 }
 
-int mqtt_publisher::init()
+int mqtt_publisher::init(logger *log)
 {
     firewall_config *conf = firewall_config::instance();
     std::string server_uri;
     int ret;
+
+    log_ = log;
 
     conn_opts_ = MQTTClient_connectOptions_initializer;
 
@@ -28,6 +39,9 @@ int mqtt_publisher::init()
                             MQTTCLIENT_PERSISTENCE_NONE,
                             nullptr);
     if (ret != MQTTCLIENT_SUCCESS) {
+        log_->error("%s: failed to create "
+                    "the MQTT client %s with client_id : %s\n",
+                    MQTT_PUBLISHER_NAME, server_uri.c_str(), client_id_.c_str());
         return -1;
     }
 
@@ -35,6 +49,7 @@ int mqtt_publisher::init()
     conn_opts_.cleansession = 1;
     ret = MQTTClient_connect(client_, &conn_opts_);
     if (ret != MQTTCLIENT_SUCCESS) {
+        log_->error("%s: failed to connect with the broker\n", MQTT_PUBLISHER_NAME);
         return -1;
     }
 
@@ -57,11 +72,13 @@ int mqtt_publisher::write(uint8_t *evt_msg, uint32_t evt_msg_len)
 
     ret = MQTTClient_publishMessage(client_, conf->evt_config.mqtt.topic_name.c_str(), &msg, &token);
     if (ret != MQTTCLIENT_SUCCESS) {
+        log_->error("%s: publishing message failed\n", MQTT_PUBLISHER_NAME);
         return -1;
     }
 
     ret = MQTTClient_waitForCompletion(client_, token, timeout_ms_);
     if (ret != MQTTCLIENT_SUCCESS) {
+        log_->error("%s: failed to publish message. timeout.\n", MQTT_PUBLISHER_NAME);
         return -1;
     }
 

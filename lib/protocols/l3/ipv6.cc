@@ -1,3 +1,8 @@
+/**
+ * @brief - implements IPv6 serialize and deserialize.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+ */
 #include <ipv6.h>
 
 namespace firewall {
@@ -9,6 +14,8 @@ int ipv6_hdr::serialize(packet &p)
 
 event_description ipv6_hdr::deserialize(packet &p, logger *log, bool debug)
 {
+    event_description evt_desc;
+
     //
     // check if the ipv6 frame is malformed / too short in length
     if (p.remaining_len() < hdrlen_) {
@@ -32,10 +39,38 @@ event_description ipv6_hdr::deserialize(packet &p, logger *log, bool debug)
     p.off += 2;
 
     p.deserialize(payload_len);
+    //
+    // too short remaining payload compared to the ipv6->payload_len
+    if (p.remaining_len() < payload_len) {
+        return event_description::Evt_IPv6_Payload_Truncated;
+    }
+
     p.deserialize(nh);
     p.deserialize(hop_limit);
     p.deserialize(src_addr, IPV6_ADDR_LEN);
     p.deserialize(dst_addr, IPV6_ADDR_LEN);
+
+    opts = std::make_shared<ipv6_opts>();
+    if (!opts)
+        return event_description::Evt_Unknown_Error;
+
+    //
+    // we cannot use switch statement here because,
+    // we can only parse certain nh options.
+    if (static_cast<IPv6_NH_Type>(nh) == IPv6_NH_Type::AH) {
+        opts->ah_hdr = std::make_shared<ipv6_ah_hdr>();
+        if (!opts->ah_hdr)
+            return event_description::Evt_Unknown_Error;
+
+        evt_desc = opts->ah_hdr->deserialize(p, log, debug);
+        if (evt_desc != event_description::Evt_Parse_Ok)
+            return evt_desc;
+
+        //
+        // set nh to parse in the caller as IPv6_Encap.
+        nh = opts->ah_hdr->nh;
+    }
+
     if (debug) {
         print(log);
     }
@@ -67,6 +102,10 @@ void ipv6_hdr::print(logger *log)
                  dst_addr[4], dst_addr[5], dst_addr[6], dst_addr[7],
                  dst_addr[8], dst_addr[9], dst_addr[10], dst_addr[11],
                  dst_addr[12], dst_addr[13], dst_addr[14], dst_addr[15]);
+    if (opts) {
+        if (opts->ah_hdr)
+            opts->ah_hdr->print(log);
+    }
     log->verbose("}\n");
 #endif
 }

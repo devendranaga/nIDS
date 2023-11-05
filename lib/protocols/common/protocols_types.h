@@ -19,6 +19,10 @@ enum class protocols_types {
     Protocol_IPIP = 4,
     Protocol_Tcp = 6,
     Protocol_Udp = 17,
+    Protocol_IPv6_Encapsulation = 41,
+    // Encapsulated Security Payload
+    Protocol_ESP = 50,
+    Protocol_AH = 51,
     Protocol_Icmp6 = 58,
     Protocol_Max,
 };

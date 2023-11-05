@@ -14,6 +14,9 @@
 
 namespace firewall {
 
+/**
+ * @brief - implements firewall_interface stats.
+*/
 struct firewall_intf_stats {
     std::string ifname;
     uint64_t n_rx;
@@ -53,10 +56,24 @@ class firewall_pkt_stats {
             return &stats;
         }
 
+        /**
+         * @brief - update the stats based on the input event.
+         * 
+         * @param [in] evt_desc - event description
+         * @param [in] ifname - interface name
+        */
         void stats_update(event_description evt_desc,
                           const std::string &ifname);
+
+        /**
+         * @brief - update the stats based on the counters.
+         * 
+         * @param [in] type - packet stats type
+         * @param [in] ifname - interface name
+        */
         void stats_update(Pktstats_Type type,
                           const std::string &ifname);
+        void get(const std::string &ifname, firewall_intf_stats &if_stats);
 
         firewall_pkt_stats(const firewall_pkt_stats &) = delete;
         const firewall_pkt_stats &operator=(const firewall_pkt_stats &) = delete;
@@ -83,9 +100,32 @@ class firewall_pkt_stats {
          */
         void inc_n_deny(const std::string ifname);
 
+        /**
+         * @brief - increment n_allowed.
+         *
+         * @param [in] ifname - interface name.
+        */
         void inc_n_allowed(const std::string ifname);
+
+        /**
+         * @brief - increment n_events.
+         *
+         * @param [in] ifname - interface name.
+        */
         void inc_n_events(const std::string ifname);
+
+        /**
+         * @brief - increment icmp checksum errors.
+         *
+         * @param [in] ifname - interface name.
+        */
         void inc_n_icmp_chksum_err(const std::string ifname);
+
+        /**
+         * @brief - increment ipv4 checksum errors.
+         *
+         * @param [in] ifname - interface name.
+        */
         void inc_n_ipv4_chksum_err(const std::string ifname);
 };
 

@@ -1,3 +1,8 @@
+/**
+ * @brief - implements event message format.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_EVENT_MSG_H__
 #define __FW_EVENT_MSG_H__
 

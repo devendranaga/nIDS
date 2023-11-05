@@ -16,7 +16,9 @@ namespace firewall {
 
 //
 // list of icmp6 types
-enum icmp6_types {
+enum Icmp6_Types {
+    Echo_Request = 128,
+    Echo_Reply = 129,
     Icmp6_Type_Router_Advertisement = 134,
     Mcast_Listener_Report_Msg_V2 = 143,
     Icmp6_Type_Max = 255,
@@ -115,6 +117,7 @@ struct icmp6_mcast_listener_report_msg_v2 {
     event_description deserialize(packet &p, logger *log, bool debug);
     void print(logger *log)
     {
+    #if defined(FW_ENABLE_DEBUG)
         log->verbose("\t\t Mcast_Listener_Report_Msg_V2: {\n");
         log->verbose("\t\t\t reserved: %d\n", reserved);
         log->verbose("\t\t\t n_mcast_rec: %d\n", n_mcast_rec);
@@ -122,10 +125,63 @@ struct icmp6_mcast_listener_report_msg_v2 {
             it.print(log);
         }
         log->verbose("\t\t }\n");
+    #endif
     }
 
     private:
         const int len_ = 20;
+};
+
+struct icmp6_echo_req {
+    uint16_t id;
+    uint16_t seq_no;
+    uint16_t data_len;
+    uint8_t *data;
+
+    explicit icmp6_echo_req() : data(nullptr) { }
+    ~icmp6_echo_req()
+    {
+        if (data)
+            free(data);
+    }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t Echo_Req: {\n");
+        log->verbose("\t\t id: %04x\n", id);
+        log->verbose("\t\t seq_no: %d\n", seq_no);
+        log->verbose("\t\t data_len: %d\n", data_len);
+        log->verbose("\t }\n");
+    #endif
+    }
+};
+
+struct icmp6_echo_reply {
+    uint16_t id;
+    uint16_t seq_no;
+    uint16_t data_len;
+    uint8_t *data;
+
+    explicit icmp6_echo_reply() : data(nullptr) { }
+    ~icmp6_echo_reply()
+    {
+        if (data)
+            free(data);
+    }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t Echo_Reply: {\n");
+        log->verbose("\t\t id: %04x\n", id);
+        log->verbose("\t\t seq_no: %d\n", seq_no);
+        log->verbose("\t\t data_len: %d\n", data_len);
+        log->verbose("\t }\n");
+    #endif
+    }
 };
 
 struct icmp6_hdr {
@@ -138,11 +194,15 @@ struct icmp6_hdr {
     std::shared_ptr<icmp6_option_dns_search_list> dns_search_list;
     std::shared_ptr<icmp6_option_mtu> mtu;
     std::shared_ptr<icmp6_option_source_link_layer_addr> s_lladdr;
+    std::shared_ptr<icmp6_echo_req> echo_req;
+    std::shared_ptr<icmp6_echo_reply> echo_reply;
 
     explicit icmp6_hdr() :
                     dns_search_list(nullptr),
                     mtu(nullptr),
-                    s_lladdr(nullptr)
+                    s_lladdr(nullptr),
+                    echo_req(nullptr),
+                    echo_reply(nullptr)
     { }
     ~icmp6_hdr() { }
 

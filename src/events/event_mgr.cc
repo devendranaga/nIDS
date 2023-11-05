@@ -155,6 +155,19 @@ const static struct {
         rule_ids::Rule_Id_IPv4_Dst_Is_Reserved,
         "IPv4 Dst is a reserved address"
     },
+    {
+        event_description::Evt_IPv4_Strict_Source_Route_Len_Truncated,
+        rule_ids::Rule_Id_IPv4_Strict_Source_Route_Len_Truncated,
+        "IPv4 options: strict source route length is truncated"
+    },
+
+    //
+    // IPv6 rules
+    {
+        event_description::Evt_IPv6_Payload_Truncated,
+        rule_ids::Rule_Id_IPv6_Payload_Truncated,
+        "IPv6 payload truncated"
+    },
 
     //
     // TCP rules
@@ -533,7 +546,7 @@ fw_error_type event_mgr::init(logger *log)
     log_->info("evt_mgr::init: create log file writer ok\n");
 
     if (fw_conf->evt_config.upload_method == Event_Upload_Method_Type::MQTT) {
-        auto r = mqtt_uploader_.init();
+        auto r = mqtt_uploader_.init(log_);
         if (r != 0) {
             return fw_error_type::eInvalid;
         }

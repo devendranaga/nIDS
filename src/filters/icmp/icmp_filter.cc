@@ -1,3 +1,8 @@
+/**
+ * @brief - implements ICMP filter.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #include <parser.h>
 #include <event_def.h>
 #include <icmp_filter.h>

@@ -61,6 +61,12 @@ enum class rule_ids : uint32_t {
     Rule_Id_IPv4_Src_Is_Multicast,
     Rule_Id_IPv4_Src_Is_Reserved,
     Rule_Id_IPv4_Dst_Is_Reserved,
+    Rule_Id_IPv4_Strict_Source_Route_Len_Truncated,
+
+    //
+    // IPv6 Rule Ids
+    Rule_Id_IPv6_Payload_Truncated,
+    Rule_Id_IPv6_Unsupported_NH,
 
     //
     // ICMP6 Rule Ids
@@ -197,11 +203,14 @@ enum class event_description : uint32_t {
     Evt_IPv4_Src_Is_Multicast,
     Evt_IPv4_Src_Is_Reserved,
     Evt_IPv4_Dst_Is_Reserved,
+    Evt_IPv4_Strict_Source_Route_Len_Truncated,
 
     //
     // IPv6 events
     Evt_IPV6_Hdrlen_Too_Small = 501,
     Evt_IPV6_Version_Invalid,
+    Evt_IPv6_Payload_Truncated,
+    Evt_IPv6_Unsupported_NH,
 
     //
     // ICMP6 events

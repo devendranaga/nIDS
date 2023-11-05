@@ -154,6 +154,9 @@ struct ipv4_opt_strict_source_route {
         log->verbose("\t }\n");
     #endif
     }
+
+    private:
+        const int len_ = 6;
 };
 
 struct ipv4_opt_loose_source_route {

@@ -103,4 +103,13 @@ void firewall_pkt_stats::stats_update(Pktstats_Type type,
     }
 }
 
+void firewall_pkt_stats::get(const std::string &ifname, firewall_intf_stats &if_stats)
+{
+    for (auto it : stats_) {
+        if (it.ifname == ifname) {
+            if_stats = it;
+        }
+    }
+}
+
 }

@@ -56,6 +56,35 @@ event_description parser::parse_l4(packet &pkt)
     //
     // parse the rest of l4 frames.
     proto = get_protocol_type();
+
+    //
+    // special cases
+    //
+    // 1. ipv6 in ipv6 due to ipv6-ah
+    //
+    // we get ipv6 header and the nh points to ipv6-ah
+    // once we decode ipv6-ah, the nh points to ipv6 or ipv4
+    // for now we parsed ipv6 frame due to the fact that the availability
+    // of the replay file to test this out.
+    //
+    // so once ipv6 is parsed below, we set the proto to
+    // further parse the next protocol.
+    //
+    // So the call comes from the ipv6 parsing the ipv6-ah.
+    // ipv6-ah sets the nh of the original ipv6 packet so
+    // that we can parse.
+    if (proto == protocols_types::Protocol_IPv6_Encapsulation) {
+        ipv6_encap_h = std::make_shared<ipv6_hdr>();
+        if (!ipv6_encap_h)
+            return event_description::Evt_Unknown_Error;
+
+        evt_desc = ipv6_encap_h->deserialize(pkt, log_, pkt_dump_);
+        if (evt_desc != event_description::Evt_Parse_Ok)
+            return evt_desc;
+
+        proto = static_cast<protocols_types>(ipv6_encap_h->nh);
+    }
+
     switch (proto) {
         case protocols_types::Protocol_Udp: {
             udp_h = std::make_shared<udp_hdr>();
@@ -85,6 +114,12 @@ event_description parser::parse_l4(packet &pkt)
 
             evt_desc = tcp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_tcp();
+        } break;
+        //
+        // Since ESP is an encrypted frame and we cannot track it
+        // Pass this frame.
+        case protocols_types::Protocol_ESP: {
+            evt_desc = event_description::Evt_Parse_Ok;
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;

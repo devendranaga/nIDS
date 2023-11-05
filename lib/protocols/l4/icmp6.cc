@@ -17,8 +17,8 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
     event_description evt_desc = event_description::Evt_Unknown_Error;
 
     p.deserialize(type);
-    if ((type < static_cast<uint8_t>(icmp6_types::Icmp6_Type_Router_Advertisement)) ||
-        (type >= static_cast<uint8_t>(icmp6_types::Icmp6_Type_Max))) {
+    if ((type < static_cast<uint8_t>(Icmp6_Types::Echo_Request)) ||
+        (type >= static_cast<uint8_t>(Icmp6_Types::Icmp6_Type_Max))) {
         return event_description::Evt_Icmp6_Icmp6_Type_Unsupported;
     }
 
@@ -26,13 +26,27 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
     p.deserialize(checksum);
 
     switch (type) {
-        case icmp6_types::Mcast_Listener_Report_Msg_V2: {
+        case Icmp6_Types::Mcast_Listener_Report_Msg_V2: {
             mcast_listener_v2 = std::make_shared<icmp6_mcast_listener_report_msg_v2>();
             if (!mcast_listener_v2) {
                 return event_description::Evt_Unknown_Error;
             }
 
             evt_desc = mcast_listener_v2->deserialize(p, log, debug);
+        } break;
+        case Icmp6_Types::Echo_Request: {
+            echo_req = std::make_shared<icmp6_echo_req>();
+            if (!echo_req)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = echo_req->deserialize(p, log, debug);
+        } break;
+        case Icmp6_Types::Echo_Reply: {
+            echo_reply = std::make_shared<icmp6_echo_reply>();
+            if (!echo_reply)
+                return event_description::Evt_Unknown_Error;
+
+            evt_desc = echo_reply->deserialize(p, log, debug);
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
@@ -53,6 +67,10 @@ void icmp6_hdr::print(logger *log)
     log->verbose("\t type: %d\n", type);
     log->verbose("\t code: %d\n", code);
     log->verbose("\t checksum: 0x%04x\n", checksum);
+    if (echo_reply)
+        echo_reply->print(log);
+    if (echo_req)
+        echo_req->print(log);
     log->verbose("}\n");
 #endif
 }
@@ -92,6 +110,34 @@ event_description icmp6_mcast_record::deserialize(packet &p, logger *log, bool d
     p.deserialize(aux_data_len);
     p.deserialize(n_sources);
     p.deserialize(addr, sizeof(addr));
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_echo_req::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(id);
+    p.deserialize(seq_no);
+    data_len = p.remaining_len();
+    data = (uint8_t *)calloc(1, data_len);
+    if (!data)
+        return event_description::Evt_Unknown_Error;
+
+    p.deserialize(data, data_len);
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_echo_reply::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(id);
+    p.deserialize(seq_no);
+    data_len = p.remaining_len();
+    data = (uint8_t *)calloc(1, data_len);
+    if (!data)
+        return event_description::Evt_Unknown_Error;
+
+    p.deserialize(data, data_len);
 
     return event_description::Evt_Parse_Ok;
 }

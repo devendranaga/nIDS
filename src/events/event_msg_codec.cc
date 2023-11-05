@@ -29,7 +29,7 @@ int event_msg_codec::serialize(event &e, event_msg *evt_msg)
             total_len += sizeof(event_ipv4_info);
 
             switch (static_cast<protocols_types>(e.protocol)) {
-                case protocols_types::Protocol_Udp: {
+                case protocols_types::Protocol_Tcp: {
                     event_tcp_info *tcp = (event_tcp_info *)ipv4->data;
 
                     tcp->src_port = e.src_port;

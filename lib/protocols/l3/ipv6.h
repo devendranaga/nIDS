@@ -1,6 +1,6 @@
 /**
  * @brief - implements ipv6 serialize and deserialize.
- * 
+ *
  * @copyright - 2023-present. Devendra Naga. All rights reserved.
 */
 #ifndef __FW_PROTOCOLS_IPV6_H__
@@ -10,6 +10,7 @@
 #include <packet.h>
 #include <logger.h>
 #include <event_def.h>
+#include <ipv6_ah.h>
 
 namespace firewall {
 
@@ -18,6 +19,9 @@ namespace firewall {
 
 enum class IPv6_NH_Type {
     Hop_By_Hop_Opt = 0,
+    IPv6 = 41,
+    ESP = 50,
+    AH = 51,
 };
 
 enum class IPv6_Opt {
@@ -46,6 +50,7 @@ struct ipv6_hop_by_hop_hdr {
 
 struct ipv6_opts {
     std::shared_ptr<ipv6_hop_by_hop_hdr> hh;
+    std::shared_ptr<ipv6_ah_hdr> ah_hdr;
 
     explicit ipv6_opts() :
                 hh(nullptr) { }
@@ -66,9 +71,9 @@ struct ipv6_opts {
 */
 struct ipv6_hdr {
     uint32_t version:4;
-    uint8_t priority;
-    uint32_t flow_label;
-    uint16_t payload_len;
+    uint8_t priority; // 4 bits
+    uint32_t flow_label; // 24 bits
+    uint16_t payload_len; // 16 bits
     uint8_t nh;
     uint8_t hop_limit;
     uint8_t src_addr[IPV6_ADDR_LEN];

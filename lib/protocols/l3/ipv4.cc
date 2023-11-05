@@ -398,6 +398,11 @@ event_description ipv4_opt_router_alert::deserialize(packet &p, logger *log, boo
 
 event_description ipv4_opt_strict_source_route::deserialize(packet &p, logger *log, bool debug)
 {
+    //
+    // truncated SSR length
+    if (p.remaining_len() < len_)
+        return event_description::Evt_IPv4_Strict_Source_Route_Len_Truncated;
+
     p.deserialize(len);
     p.deserialize(pointer);
     p.deserialize(dest_addr);
