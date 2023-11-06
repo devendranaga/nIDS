@@ -62,11 +62,19 @@ struct firewall_event_info_config {
     firewall_event_upload_mqtt mqtt;
 };
 
+struct firewall_debugging {
+    bool log_to_console;
+    bool log_to_file;
+    std::string log_file_path;
+    bool log_to_syslog;
+};
+
 /**
  * @brief - parses the json configuration of firewall service
 */
 struct firewall_config {
     std::vector<firewall_intf_info> intf_list;
+    firewall_debugging debug;
     firewall_event_info_config evt_config;
 
     ~firewall_config() { }

@@ -25,6 +25,7 @@
 #include <event_mgr.h>
 #include <perf.h>
 #include <filter.h>
+#include <pcap_intf.h>
 
 namespace firewall {
 
@@ -45,6 +46,8 @@ class firewall_intf {
         void rx_thread();
         void filter_thread();
         void run_filter(packet &pkt);
+        void init_pcap_writer();
+
         //
         // receive thread for each interface
         std::shared_ptr<std::thread> rx_thr_id_;
@@ -71,6 +74,7 @@ class firewall_intf {
         bool log_pcap_;
         perf perf_ctx_;
         std::shared_ptr<perf_item> pkt_perf_;
+        std::shared_ptr<pcap_writer> pcap_w_;
 };
 
 /**

@@ -1,26 +1,32 @@
 {
-	"interface_info": [
-			{
-				"interface": "dummy0",
-				"rule_file": "./firewall_rules.json",
-				"log_pcaps": true
-			}
-	],
-	"events": {
-		"event_file_path": "./events/",
-		"event_file_size_bytes": 1024,
-		"event_file_format": "json",
-		"log_to_syslog": true,
-		"encrypt_log_file": true,
-		"encryption_key": "./aes_key.bin",
-		"hash_algorithm": "SHA256",
-		"encryption_algorithm": "aes_ctr_128",
-		"event_upload_method": "mqtt",
-		"mqtt_config": {
-			"ip": "127.0.0.1",
-			"port": 1883,
-			"topic_name": "/nids/events"
-		}
-	}
+    "interface_info": [
+            {
+                "interface": "dummy0",
+                "rule_file": "./firewall_rules.json",
+                "log_pcaps": true
+            }
+    ],
+    "debugging": {
+        "log_to_console": true,
+        "log_to_file": false,
+        "log_file_path": "./logs/",
+        "log_to_syslog": false
+    },
+    "events": {
+        "event_file_path": "./events/",
+        "event_file_size_bytes": 1024,
+        "event_file_format": "json",
+        "log_to_syslog": true,
+        "encrypt_log_file": true,
+        "encryption_key": "./aes_key.bin",
+        "hash_algorithm": "SHA256",
+        "encryption_algorithm": "aes_ctr_128",
+        "event_upload_method": "mqtt",
+        "mqtt_config": {
+            "ip": "127.0.0.1",
+            "port": 1883,
+            "topic_name": "/nids/events"
+        }
+    }
 }
 

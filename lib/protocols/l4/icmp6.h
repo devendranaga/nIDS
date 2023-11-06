@@ -184,6 +184,9 @@ struct icmp6_echo_reply {
     }
 };
 
+/**
+ * @brief - implements ICMP6 serialize and deserialize.
+*/
 struct icmp6_hdr {
     uint8_t type;
     uint8_t code;
@@ -207,6 +210,13 @@ struct icmp6_hdr {
     ~icmp6_hdr() { }
 
     int serialize(packet &p);
+    /**
+     * @brief - deserialize ICMP6 header.
+     *
+     * @param [in] p - received packet
+     * @param [in] log - logger
+     * @param [in] debug - enable/ diable printing packet on console
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
 };

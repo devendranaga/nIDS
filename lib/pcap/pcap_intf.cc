@@ -29,6 +29,7 @@ pcap_writer::pcap_writer(const std::string &filename)
 pcap_writer::~pcap_writer()
 {
     if (fp != nullptr) {
+        fflush(fp);
         fclose(fp);
     }
 }
@@ -62,6 +63,35 @@ int pcap_writer::write_packet(pcaprec_hdr_t *rec, uint8_t *buf)
     if (ret != 1) {
         return -1;
     }
+
+    return 0;
+}
+
+int pcap_writer::write_packet(uint8_t *buf, uint32_t buf_len)
+{
+    pcaprec_hdr_t rec_hdr;
+    struct timeval tv;
+    int ret;
+
+    std::memset(&rec_hdr, 0, sizeof(rec_hdr));
+    gettimeofday(&tv, 0);
+
+    rec_hdr.ts_sec = tv.tv_sec;
+    rec_hdr.ts_usec = tv.tv_usec;
+    rec_hdr.incl_len = buf_len;
+    rec_hdr.orig_len = buf_len;
+
+    ret = fwrite(&rec_hdr, sizeof(rec_hdr), 1, fp);
+    if (ret != 1) {
+        return -1;
+    }
+
+    ret = fwrite(buf, rec_hdr.incl_len, 1, fp);
+    if (ret != 1) {
+        return -1;
+    }
+
+    fflush(fp);
 
     return 0;
 }

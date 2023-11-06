@@ -34,6 +34,13 @@ fw_error_type firewall_config::parse(const std::string config_file)
         intf_list.emplace_back(ifinfo);
     }
 
+    //
+    // Debugging configuration
+    debug.log_to_console = root["debugging"]["log_to_console"].asBool();
+    debug.log_to_file = root["debugging"]["log_to_file"].asBool();
+    debug.log_file_path = root["debugging"]["log_file_path"].asString();
+    debug.log_to_syslog = root["debugging"]["log_to_syslog"].asBool();
+
     evt_config.event_file_path = root["events"]["event_file_path"].asString();
     evt_config.event_file_size_bytes = root["events"]["event_file_size_bytes"].asUInt();
     auto evt_file_fmt = root["events"]["event_file_format"].asString();

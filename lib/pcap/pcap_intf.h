@@ -34,11 +34,25 @@ typedef struct pcaprec_hdr_s {
 /* writer interface */
 class pcap_writer {
     public:
+        /**
+         * @brief - create pcap writer.
+         *
+         * @param [in] filename - pcap filename
+         */
         pcap_writer(const std::string &filename);
         ~pcap_writer();
 
         pcaprec_hdr_t format_pcap_pkthdr(size_t pktsize);
         int write_packet(pcaprec_hdr_t *rec, uint8_t *buf);
+        /**
+         * @brief - write pcap record.
+         *
+         * @param [in] buf - packet buffer
+         * @param [in] buf_len - packet length
+         *
+         * @return 0 on success -1 on failure.
+         */
+        int write_packet(uint8_t *buf, uint32_t buf_len);
 
     private:
         FILE *fp;

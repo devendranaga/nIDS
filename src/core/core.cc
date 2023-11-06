@@ -41,13 +41,18 @@ fw_error_type fw_core::init(int argc, char **argv)
         }
     }
 
-    log_->info("parsing configuration %s\n", filename);
-
     ret = conf->parse(filename);
     if (ret != fw_error_type::eNo_Error) {
-        log_->error("failed to parse configuration %s\n", filename);
+        fprintf(stderr, "failed to parse configuration %s\n", filename);
         return ret;
     }
+
+    //
+    // init the logging interface
+    log_->init(conf->debug.log_to_file,
+               conf->debug.log_file_path,
+               conf->debug.log_to_syslog,
+               conf->debug.log_to_console);
 
     ret = filter::instance()->init();
     if (ret != fw_error_type::eNo_Error) {
@@ -96,6 +101,24 @@ firewall_intf::firewall_intf(logger *log) : log_(log)
 
 firewall_intf::~firewall_intf() { }
 
+void firewall_intf::init_pcap_writer()
+{
+    const std::string filename = "./logs/" + ifname_;
+    time_t now = time(0);
+    struct tm *t;
+    char pcap_file[1024];
+
+    t = gmtime(&now);
+
+    snprintf(pcap_file, sizeof(pcap_file),
+                "%s_%04d_%02d_%02d_%02d_%02d_%02d.pcap",
+                filename.c_str(),
+                t->tm_year + 1900, t->tm_mon + 1,
+                t->tm_mday, t->tm_hour,
+                t->tm_min, t->tm_sec);
+    pcap_w_ = std::make_shared<pcap_writer>(pcap_file);
+}
+
 fw_error_type firewall_intf::init(const std::string ifname,
                                   const std::string rule_file,
                                   bool log_pcap)
@@ -133,6 +156,12 @@ fw_error_type firewall_intf::init(const std::string ifname,
 
     pkt_perf_ = perf_ctx_.new_perf("pkt_perf");
 
+    //
+    // if log pcap is enabled, initialize pcap writer
+    if (log_pcap_) {
+        init_pcap_writer();
+    }
+
     return fw_error_type::eNo_Error;
 }
 
@@ -159,6 +188,10 @@ void firewall_intf::rx_thread()
             std::unique_lock<std::mutex> lock(rx_thr_lock_);
             rx_thr_cond_.notify_one();
             pkt_q_.push(pkt);
+        }
+
+        if (log_pcap_) {
+            pcap_w_->write_packet(pkt.buf, pkt.buf_len);
         }
     }
 }
