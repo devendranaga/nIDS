@@ -1,6 +1,6 @@
 /**
  * @brief - Writes event logs to disk
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #include <config.h>
@@ -205,3 +205,4 @@ fw_error_type event_file_writer::write_json(const event &evt)
 }
 
 }
+

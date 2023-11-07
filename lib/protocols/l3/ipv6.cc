@@ -41,14 +41,25 @@ event_description ipv6_hdr::deserialize(packet &p, logger *log, bool debug)
     p.deserialize(payload_len);
     //
     // too short remaining payload compared to the ipv6->payload_len
+    // one case could be that there is padding.. so this could be a false positive.
     if (p.remaining_len() < payload_len) {
         return event_description::Evt_IPv6_Payload_Truncated;
     }
 
     p.deserialize(nh);
     p.deserialize(hop_limit);
+    //
+    // Zero hop limit packet
+    if (hop_limit == 0)
+        return event_description::Evt_IPv6_Zero_Hop_Limit;
+
     p.deserialize(src_addr, IPV6_ADDR_LEN);
     p.deserialize(dst_addr, IPV6_ADDR_LEN);
+
+    //
+    // check if IPv6 destination address is zero
+    if (is_dst_zero())
+        return event_description::Evt_IPv6_Dst_Is_Zero;
 
     opts = std::make_shared<ipv6_opts>();
     if (!opts)

@@ -1,6 +1,6 @@
 /**
  * @brief - Implements event file writer.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #ifndef __FW_EVENT_FILE_WRITER_H__
@@ -37,7 +37,7 @@ class event_file_writer {
 
         /**
          * @brief - initializes the event file writer.
-         * 
+         *
          * @param [in] filepath - filepath of the event.
          * @param [in] filesize_bytes - filesize to rotate.
          *
@@ -47,9 +47,9 @@ class event_file_writer {
 
         /**
          * @brief - writes events to the event log. Right now no encryption.
-         * 
+         *
          * @param [in] evt - firewall event.
-         * 
+         *
          * @return fw_error_type::eNo_Error.
         */
         fw_error_type write(const event &evt);

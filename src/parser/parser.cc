@@ -219,6 +219,14 @@ event_description parser::parse_app_pkt(packet &pkt, Port_Numbers port)
             protocols_avail.set_doip();
         } break;
 #endif
+        case Port_Numbers::Port_Number_MQTT: {
+            mqtt_h = std::make_shared<mqtt_hdr>();
+            if (!mqtt_h)
+                return event_description::Evt_Out_Of_Memory;
+
+            evt_desc = mqtt_h->deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_mqtt();
+        } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
         break;

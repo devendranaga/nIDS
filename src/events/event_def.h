@@ -65,12 +65,14 @@ enum class rule_ids : uint32_t {
 
     //
     // IPv6 Rule Ids
-    Rule_Id_IPv6_Payload_Truncated,
+    Rule_Id_IPv6_Payload_Truncated = 501,
     Rule_Id_IPv6_Unsupported_NH,
+    Rule_Id_IPv6_Dst_Is_Zero,
+    Rule_Id_IPv6_Zero_Hop_Limit,
 
     //
     // ICMP6 Rule Ids
-    Rule_Id_Icmp6_Icmp6_Type_Unsupported = 501,
+    Rule_Id_Icmp6_Icmp6_Type_Unsupported = 601,
     Rule_Id_Icmp6_Mcast_Listener_Inval_Rec_Len,
 
     //
@@ -211,6 +213,8 @@ enum class event_description : uint32_t {
     Evt_IPV6_Version_Invalid,
     Evt_IPv6_Payload_Truncated,
     Evt_IPv6_Unsupported_NH,
+    Evt_IPv6_Dst_Is_Zero,
+    Evt_IPv6_Zero_Hop_Limit,
 
     //
     // ICMP6 events
@@ -292,10 +296,17 @@ enum class event_description : uint32_t {
     // UDS events
     Evt_Uds_Unknown_Service_Id = 1401,
 
+    Evt_MQTT_Inval_Msg_Type = 1501,
+
     //
     // Known virus / exploit / worm / malware events
-    Evt_Known_Exploit_Win32_Blaster = 1501,
+    Evt_Known_Exploit_Win32_Blaster = 10000,
     Evt_Unknown_Error,
+
+    //
+    // Device the firewall runs is out of memory
+    Evt_Out_Of_Memory = 0x10101010,
+
     //
     // Parsed ok.. all good
     Evt_Parse_Ok = 0xA0B0C0D0,

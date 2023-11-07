@@ -168,6 +168,21 @@ const static struct {
         rule_ids::Rule_Id_IPv6_Payload_Truncated,
         "IPv6 payload truncated"
     },
+    {
+        event_description::Evt_IPv6_Dst_Is_Zero,
+        rule_ids::Rule_Id_IPv6_Dst_Is_Zero,
+        "IPv6 Destination address is zero"
+    },
+    {
+        event_description::Evt_IPv6_Unsupported_NH,
+        rule_ids::Rule_Id_IPv6_Unsupported_NH,
+        "IPv6 unsupported next hop"
+    },
+    {
+        event_description::Evt_IPv6_Zero_Hop_Limit,
+        rule_ids::Rule_Id_IPv6_Zero_Hop_Limit,
+        "IPv6 Hoplimit is zero"
+    },
 
     //
     // TCP rules

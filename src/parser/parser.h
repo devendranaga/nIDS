@@ -37,6 +37,8 @@
 // DoIP header
 #include <doip.h>
 #endif
+// MQTT header
+#include <mqtt.h>
 // Known exploits
 #include <known_exploits.h>
 
@@ -69,7 +71,8 @@ struct protocol_bits {
                             dhcp(0),
                             ntp(0),
                             doip(0),
-                            tls(0)
+                            tls(0),
+                            mqtt(0)
         { }
         ~protocol_bits() { }
 
@@ -87,6 +90,7 @@ struct protocol_bits {
         void set_ntp() { ntp = 1; }
         void set_doip() { doip = 1; }
         void set_tls() { tls = 1; }
+        void set_mqtt() { mqtt = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_macsec() const { return macsec == 1; }
         bool has_ipv4() const { return ipv4 == 1; }
@@ -101,6 +105,7 @@ struct protocol_bits {
         bool has_ntp() const { return ntp == 1; }
         bool has_doip() const { return doip == 1; }
         bool has_tls() const { return tls == 1; }
+        bool has_mqtt() const { return mqtt == 1; }
 
     private:
         uint32_t eth:1;
@@ -117,6 +122,7 @@ struct protocol_bits {
         uint32_t ntp:1;
         uint32_t doip:1;
         uint32_t tls:1;
+        uint32_t mqtt:1;
 };
 
 /**
@@ -176,6 +182,9 @@ struct parser {
 
         // TLS header
         std::shared_ptr<tls_hdr> tls_h;
+
+        // MQTT header
+        std::shared_ptr<mqtt_hdr> mqtt_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;

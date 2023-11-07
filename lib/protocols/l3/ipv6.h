@@ -85,8 +85,22 @@ struct ipv6_hdr {
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
 
+    inline bool is_dst_zero()
+    {
+        return is_zero_addr(dst_addr);
+    }
+
     private:
         const int hdrlen_ = 40;
+
+        inline bool is_zero_addr(uint8_t *addr)
+        {
+            uint8_t z_addr[IPV6_ADDR_LEN] = {
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+            };
+            return std::memcmp(addr, z_addr, sizeof(z_addr));
+        }
 };
 
 }
