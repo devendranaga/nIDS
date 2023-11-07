@@ -24,6 +24,8 @@ event_description mqtt_hdr::deserialize(packet &p, logger *log, bool debug)
     p.deserialize(byte);
     msg_len = byte;
 
+    parse_off = p.off;
+
     switch (static_cast<Mqtt_Msg_Type>(msg_type)) {
         case Mqtt_Msg_Type::Connect: {
             conn = std::make_shared<mqtt_connect>();
@@ -59,7 +61,7 @@ event_description mqtt_hdr::deserialize(packet &p, logger *log, bool debug)
             if (!pub)
                 return event_description::Evt_Out_Of_Memory;
 
-            evt_desc = pub->deserialize(p, log, debug);
+            evt_desc = pub->deserialize(msg_len, parse_off, p, log, debug);
         } break;
         case Mqtt_Msg_Type::Ping_Req:
         case Mqtt_Msg_Type::Ping_Response: {
@@ -68,6 +70,9 @@ event_description mqtt_hdr::deserialize(packet &p, logger *log, bool debug)
         default:
             evt_desc = event_description::Evt_MQTT_Inval_Msg_Type;
     }
+
+    if (debug)
+        print(log);
 
     return evt_desc;
 }
@@ -141,7 +146,9 @@ event_description mqtt_subscriber_ack::deserialize(packet &p, logger *log, bool 
     return event_description::Evt_Parse_Ok;
 }
 
-event_description mqtt_publish::deserialize(packet &p, logger *log, bool debug)
+event_description mqtt_publish::deserialize(uint32_t mqtt_pkt_len,
+                                            uint32_t parse_off,
+                                            packet &p, logger *log, bool debug)
 {
     p.deserialize(topic_len);
 
@@ -150,11 +157,15 @@ event_description mqtt_publish::deserialize(packet &p, logger *log, bool debug)
         return event_description::Evt_Out_Of_Memory;
 
     // may be bogus .. check against total length of MQTT frame.
-    msg_len = p.remaining_len();
+    msg_len = mqtt_pkt_len - (p.off - parse_off);
 
-    msg = (uint8_t *)calloc(1, topic_len);
-    if (!msg)
-        return event_description::Evt_Out_Of_Memory;
+    if (msg_len > 0) {
+        msg = (uint8_t *)calloc(1, msg_len);
+        if (!msg)
+            return event_description::Evt_Out_Of_Memory;
+
+        p.deserialize(msg, msg_len);
+    }
 
     return event_description::Evt_Parse_Ok;
 }

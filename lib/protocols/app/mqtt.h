@@ -38,9 +38,17 @@ struct mqtt_publish {
                 topic(nullptr),
                 msg_len(0),
                 msg(nullptr) { }
-    ~mqtt_publish() { }
+    ~mqtt_publish()
+    {
+        if (topic)
+            free(topic);
+        if (msg)
+            free(msg);
+    }
 
-    event_description deserialize(packet &p, logger *log, bool debug);
+    event_description deserialize(uint32_t mqtt_pkt_len,
+                                  uint32_t parse_off,
+                                  packet &p, logger *log, bool debug);
     void print(logger *log)
     {
     #if defined(FW_ENABLE_DEBUG)
@@ -59,7 +67,11 @@ struct mqtt_subscribe_req {
     uint8_t req_qos;
 
     explicit mqtt_subscribe_req() : topic_len(0), topic(nullptr) { }
-    ~mqtt_subscribe_req() { }
+    ~mqtt_subscribe_req()
+    {
+        if (topic)
+            free(topic);
+    }
 
     event_description deserialize(packet &p, logger *log, bool debug);
     void print(logger *log)
@@ -81,7 +93,12 @@ struct mqtt_subscriber_ack {
     event_description deserialize(packet &p, logger *log, bool debug);
     void print(logger *log)
     {
-
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t Subscriber_ack: {\n");
+        log->verbose("\t\t msg_id: %d\n", msg_id);
+        log->verbose("\t\t granted_qos: %d\n", granted_qos);
+        log->verbose("\t }\n");
+    #endif
     }
 };
 
@@ -155,6 +172,7 @@ struct mqtt_hdr {
     uint32_t qos_level:2; // 2 bits
     uint32_t retain:1; // 1 bit
     uint32_t msg_len; // variable length msg_len
+    uint32_t parse_off;
 
     std::shared_ptr<mqtt_connect> conn;
     std::shared_ptr<mqtt_connect_ack> conn_ack;
@@ -194,6 +212,9 @@ struct mqtt_hdr {
 
         if (sub_ack)
             sub_ack->print(log);
+
+        if (pub)
+            pub->print(log);
 
         log->verbose("}\n");
     #endif
