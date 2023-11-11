@@ -7,6 +7,8 @@ namespace firewall {
 static std::string mqtt_ipaddr_port;
 static std::string topicname;
 static std::string keyfile;
+static bool mqtt_option = false;
+static bool console_mode = false;
 
 static void usage(std::string progname)
 {
@@ -17,16 +19,20 @@ int fw_ctl::init(int argc, char **argv)
 {
     int ret;
 
-    while ((ret = getopt(argc, argv, "m:t:d:")) != -1) {
+    while ((ret = getopt(argc, argv, "m:t:d:p:")) != -1) {
         switch (ret) {
             case 'm':
                 mqtt_ipaddr_port = optarg;
+                mqtt_option = true;
             break;
             case 't':
-                topicname = optarg;
+                mqtt_option = true;
             break;
             case 'd':
                 keyfile = optarg;
+            break;
+            case 'p':
+                console_mode = true;
             break;
             default:
                 usage(argv[0]);
@@ -34,8 +40,11 @@ int fw_ctl::init(int argc, char **argv)
         }
     }
 
-    mqtt_thr_ = std::make_shared<std::thread>(&fw_ctl::listen_for_mqtt_msgs, this);
-    mqtt_thr_->detach();
+    if (mqtt_option) {
+        mqtt_thr_ = std::make_shared<std::thread>(&fw_ctl::listen_for_mqtt_msgs, this);
+        mqtt_thr_->detach();
+    } if (console_mode) {
+    }
 
     return 0;
 }

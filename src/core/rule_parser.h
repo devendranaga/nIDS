@@ -93,6 +93,18 @@ struct udp_rule_config {
     void print(logger *log);
 };
 
+struct someip_rule_config {
+    uint16_t service_id;
+    uint16_t method_id;
+
+    explicit someip_rule_config() noexcept :
+            service_id(0),
+            method_id(0)
+    { }
+    ~someip_rule_config() { }
+    void print(logger *log);
+};
+
 struct eth_sig_bitmask {
     uint32_t from_src:1;
     uint32_t to_dst:1;
@@ -151,12 +163,25 @@ struct udp_sig_bitmask {
     void init();
 };
 
+struct someip_sig_bitmask {
+    uint32_t service_id:1;
+    uint32_t method_id:1;
+
+    explicit someip_sig_bitmask() :
+                    service_id(0),
+                    method_id(0) { }
+    ~someip_sig_bitmask() { }
+
+    void init();
+};
+
 struct signature_id_bitmask {
     eth_sig_bitmask eth_sig;
     vlan_sig_bitmask vlan_sig;
     ipv4_sig_bitmask ipv4_sig;
     icmp_sig_bitmask icmp_sig;
     udp_sig_bitmask udp_sig;
+    someip_sig_bitmask someip_sig;
 
     explicit signature_id_bitmask() { }
     ~signature_id_bitmask() { }
@@ -180,6 +205,7 @@ struct rule_config_item {
     ipv4_rule_config ipv4_rule;
     icmp_rule_config icmp_rule;
     udp_rule_config udp_rule;
+    someip_rule_config someip_rule;
     signature_id_bitmask sig_mask;
     signature_id_bitmask sig_detected;
 
@@ -227,6 +253,7 @@ struct rule_config {
         void parse_ipv4_rule(Json::Value &it, rule_config_item &item);
         void parse_icmp_rule(Json::Value &it, rule_config_item &item);
         void parse_udp_rule(Json::Value &it, rule_config_item &item);
+        void parse_someip_rule(Json::Value &it, rule_config_item &item);
 };
 
 }

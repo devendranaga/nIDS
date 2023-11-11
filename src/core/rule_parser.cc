@@ -170,6 +170,39 @@ void udp_rule_config::print(logger *log)
 #endif
 }
 
+void rule_config::parse_someip_rule(Json::Value &rule_cfg_data,
+                                    rule_config_item &rule)
+{
+    int ret;
+
+    auto someip_rule_config_data = rule_cfg_data["someip"];
+    if (someip_rule_config_data.isNull()) {
+        return;
+    }
+
+    ret = parse_str_to_uint16_h(rule_cfg_data["someip"]["service_id"].asString(),
+                                rule.someip_rule.service_id);
+    if (ret == 0) {
+        rule.sig_mask.someip_sig.service_id = 1;
+    }
+
+    ret = parse_str_to_uint16(rule_cfg_data["someip"]["method_id"].asString(),
+                              rule.someip_rule.method_id);
+    if (ret == 0) {
+        rule.sig_mask.someip_sig.method_id = 1;
+    }
+}
+
+void someip_rule_config::print(logger *log)
+{
+#if defined(FW_ENABLE_DEBUG)
+    log->verbose("\tSomeIP_rules: {\n");
+    log->verbose("\t\t service_id: 0x%04x\n", service_id);
+    log->verbose("\t\t method_id: 0x%04x\n", method_id);
+    log->verbose("\t}\n");
+#endif
+}
+
 void rule_config_item::print()
 {
 #if defined(FW_ENABLE_DEBUG)
@@ -215,6 +248,7 @@ fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
     parse_ipv4_rule(rule_cfg_data, rule);
     parse_icmp_rule(rule_cfg_data, rule);
     parse_udp_rule(rule_cfg_data, rule);
+    parse_someip_rule(rule_cfg_data, rule);
 
     rule.print();
 
@@ -239,6 +273,7 @@ fw_error_type rule_config::parse(const std::string rules_file)
 
 void signature_id_bitmask::print(logger *log)
 {
+#if defined(FW_ENABLE_DEBUG)
     log->verbose("\t signature_mask: {\n");
     log->verbose("\t\t eth.from_src: %d\n", eth_sig.from_src);
     log->verbose("\t\t eth.to_dst: %d\n", eth_sig.to_dst);
@@ -249,7 +284,10 @@ void signature_id_bitmask::print(logger *log)
     log->verbose("\t\t ipv4.ipv4_protocol: %d\n", ipv4_sig.ipv4_protocol);
     log->verbose("\t\t icmp.icmp_non_zero_payload: %d\n", icmp_sig.icmp_non_zero_payload);
     log->verbose("\t\t udp_sig.port: %d\n", udp_sig.port);
+    log->verbose("\t\t someip.service_id: %d\n", someip_sig.service_id);
+    log->verbose("\t\t someip.method_id: %d\n", someip_sig.method_id);
     log->verbose("\t }\n");
+#endif
 }
 
 void signature_id_bitmask::init()
@@ -288,6 +326,12 @@ void icmp_sig_bitmask::init()
 void udp_sig_bitmask::init()
 {
     port = 0;
+}
+
+void someip_sig_bitmask::init()
+{
+    service_id = 0;
+    method_id = 0;
 }
 
 }

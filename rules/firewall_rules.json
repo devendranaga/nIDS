@@ -58,6 +58,15 @@
 			"port": 36191,
 			"app_type": "someip"
 		}
+	},
+	{
+		"rule_name": "filter someip frames with service and method id",
+		"rule_id": 10007,
+		"rule_type": "allow",
+		"someip": {
+			"service_id": "0x1000",
+			"method_id": "0x8001"
+		}
 	}
 ]
 

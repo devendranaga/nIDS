@@ -93,6 +93,15 @@ struct someip_hdr {
     ~someip_hdr() { }
 
     int serialize(packet &p);
+    /**
+     * @brief - parse the SOME/IP data.
+     * 
+     * @param [in] p - input pkt
+     * @param [in] log - logger
+     * @param [in] debug - debug flag
+     * 
+     * @return event_description event.
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log)
     {

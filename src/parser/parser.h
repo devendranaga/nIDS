@@ -49,6 +49,7 @@
 #include <rule_parser.h>
 #include <os_signatures.h>
 #include <packet_stats.h>
+#include <ethertype_filter.h>
 #include <arp_filter.h>
 #include <icmp_filter.h>
 
@@ -258,6 +259,8 @@ struct parser {
             return Port_Numbers::Port_Number_Max;
         }
 
+        rule_config *get_rules() { return rule_list_; }
+
     private:
         void detect_os_signature();
         event_description parse_l4(packet &pkt);
@@ -285,3 +288,4 @@ struct parser {
 }
 
 #endif
+

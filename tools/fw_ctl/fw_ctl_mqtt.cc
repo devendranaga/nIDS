@@ -33,20 +33,20 @@ int mqtt_listen(const std::string &uri, const std::string &topic)
 {
     MQTTClient client;
     MQTTClient_connectOptions conn_opt = MQTTClient_connectOptions_initializer;
-    const std::string client_id = "FWCTL";
+    const std::string client_id = "FWCTL1";
     const int qos = 1;
     int ret;
 
     ret = MQTTClient_create(&client,
                             uri.c_str(),
                             client_id.c_str(),
-                            MQTTCLIENT_PERSISTENCE_NONE,
+                            MQTTCLIENT_PERSISTENCE_DEFAULT,
                             nullptr);
     if (ret != MQTTCLIENT_SUCCESS) {
         return -1;
     }
 
-    ret = MQTTClient_setCallbacks(client, nullptr, connection_lost, msg_rx, nullptr);
+    ret = MQTTClient_setCallbacks(client, nullptr, nullptr, msg_rx, nullptr);
     if (ret != MQTTCLIENT_SUCCESS) {
         return -1;
     }

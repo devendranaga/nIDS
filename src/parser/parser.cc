@@ -259,6 +259,7 @@ int parser::run(packet &pkt)
     event_mgr *evt_mgr = event_mgr::instance();
     Ether_Type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
+    int ret;
 
     eh = std::make_shared<eth_hdr>();
     if (!eh)
@@ -288,16 +289,23 @@ int parser::run(packet &pkt)
             return -1;
         }
         protocols_avail.set_vlan();
-        ether = eh->get_ethertype();
+        ether = vh->get_ethertype();
+    }
+
+    //
+    // run ethertype match
+    ret = ethertype_filter::instance()->run(*this, log_, pkt_dump_);
+    if (ret != 0) {
+        printf("deny rule\n");
+        return ret;
     }
 
     //
     // Parse macsec frame.
     if (ether == Ether_Type::Ether_Type_MACsec) {
         macsec_h = std::make_shared<ieee8021ae_hdr>();
-        if (!macsec_h) {
+        if (!macsec_h)
             return -1;
-        }
 
         evt_desc = macsec_h->deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {

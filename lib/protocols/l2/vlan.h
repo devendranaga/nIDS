@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements VLAN serialize and deserialize.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+ */
 #ifndef __FW_PROTOCOLS_VLAN_H__
 #define __FW_PROTOCOLS_VLAN_H__
 
@@ -10,6 +15,9 @@
 
 namespace firewall {
 
+/**
+ * @brief - Implements VLAN header.
+ */
 struct vlan_hdr {
     uint8_t pri:3;
     uint8_t dei:1;
@@ -19,12 +27,17 @@ struct vlan_hdr {
     int serialize(packet &p);
     /**
      * @brief - implements VLAN deserialization.
-     * 
+     *
      * @param [in] p packet frame.
      * @return returns event_description type.
     */
     event_description deserialize(packet &p, logger *log, bool debug = false);
 
+    /**
+     * @brief - return the ethertype
+     *
+     * @return returns ethertype.
+    */
     Ether_Type get_ethertype()
     { return static_cast<Ether_Type>(ethertype); }
 

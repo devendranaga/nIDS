@@ -1,6 +1,6 @@
 # Supported Protocols
 
-The following protocol parsing is currently supported.
+The following protocols are supported.
 
 | S.No | Protocol Name | Layer |
 |------|---------------|-------|
@@ -17,11 +17,20 @@ The following protocol parsing is currently supported.
 | 11 | DHCP | APP |
 | 12 | NTP | APP |
 | 13 | TLS | APP (only version matching!) |
+| 14 | MQTT | APP |
+| 15 | IPv6-ESP | L3 / L4 |
+| 16 | IPv6-AH | L3 / L4 |
+| 17 | IPv6-in-IPv6 | L3 / L4 |
 
 Below are some of the supported Automotive protocols.
 
 | S.No | Protocol Name | Layer |
 |------|---------------|-------|
 | 1 | DoIP | APP |
+| 2 | UDS | APP |
+| 3 | SOME/IP | APP |
+
+DoIP tunnels in the UDS frames during diagnostics requests.
+
 
 
