@@ -124,6 +124,31 @@ void icmp_rule_config::print(logger *log)
 #endif
 }
 
+void rule_config::parse_udp_rule(Json::Value &rule_cfg_data,
+                                 rule_config_item &rule)
+{
+    auto direction = rule_cfg_data["udp"]["direction"];
+    if (direction.asString() == "in") {
+        rule.udp_rule.dir = Packet_Direction::In;
+    } else if (direction.asString() == "out") {
+        rule.udp_rule.dir = Packet_Direction::Out;
+    } else {
+        rule.udp_rule.dir = Packet_Direction::None;
+    }
+
+    rule.udp_rule.port = rule_cfg_data["udp"]["port"].asUInt();
+    rule.sig_mask.udp_sig.port = 1;
+}
+
+void udp_rule_config::print(logger *log)
+{
+#if defined(FW_ENABLE_DEBUG)
+    log->verbose("UDP_rules: {\n");
+    log->verbose("\t port: %d\n", port);
+    log->verbose("}\n");
+#endif
+}
+
 void rule_config_item::print()
 {
 #if defined(FW_ENABLE_DEBUG)
@@ -137,6 +162,7 @@ void rule_config_item::print()
     vlan_rule.print(log);
     ipv4_rule.print(log);
     icmp_rule.print(log);
+    udp_rule.print(log);
 #endif
 }
 
@@ -162,6 +188,7 @@ fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
     parse_vlan_rule(rule_cfg_data, rule);
     parse_ipv4_rule(rule_cfg_data, rule);
     parse_icmp_rule(rule_cfg_data, rule);
+    parse_udp_rule(rule_cfg_data, rule);
 
     rule.print();
 
@@ -190,6 +217,7 @@ void signature_id_bitmask::init()
     vlan_sig.init();
     ipv4_sig.init();
     icmp_sig.init();
+    udp_sig.init();
 }
 
 void eth_sig_bitmask::init()
@@ -214,6 +242,11 @@ void ipv4_sig_bitmask::init()
 void icmp_sig_bitmask::init()
 {
     icmp_non_zero_payload = 0;
+}
+
+void udp_sig_bitmask::init()
+{
+    port = 0;
 }
 
 }

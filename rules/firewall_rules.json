@@ -47,6 +47,16 @@
 		"icmp": {
 			"non_zero_payload": true
 		}
+	},
+	{
+		"rule_name": "allow someip frames on this port",
+		"rule_id": 10006,
+		"rule_type": "allow",
+		"protocol": "udp",
+		"udp": {
+			"direction": "in",
+			"port": 36191
+		}
 	}
 ]
 

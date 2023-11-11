@@ -68,6 +68,24 @@ struct icmp_rule_config {
     void print(logger *log);
 };
 
+enum class Packet_Direction {
+    None,
+    In,
+    Out,
+};
+
+struct udp_rule_config {
+    Packet_Direction dir;
+    uint32_t port;
+
+    explicit udp_rule_config() noexcept :
+            dir(Packet_Direction::None),
+            port(0)
+    { }
+    ~udp_rule_config() { }
+    void print(logger *log);
+};
+
 struct eth_sig_bitmask {
     uint32_t from_src:1;
     uint32_t to_dst:1;
@@ -116,11 +134,22 @@ struct icmp_sig_bitmask {
     void init();
 };
 
+struct udp_sig_bitmask {
+    uint32_t port:1;
+
+    explicit udp_sig_bitmask() :
+                    port(0) { }
+    ~udp_sig_bitmask() { }
+
+    void init();
+};
+
 struct signature_id_bitmask {
     eth_sig_bitmask eth_sig;
     vlan_sig_bitmask vlan_sig;
     ipv4_sig_bitmask ipv4_sig;
     icmp_sig_bitmask icmp_sig;
+    udp_sig_bitmask udp_sig;
 
     explicit signature_id_bitmask() { }
     ~signature_id_bitmask() { }
@@ -141,6 +170,7 @@ struct rule_config_item {
     vlan_rule_config vlan_rule;
     ipv4_rule_config ipv4_rule;
     icmp_rule_config icmp_rule;
+    udp_rule_config udp_rule;
     signature_id_bitmask sig_mask;
     signature_id_bitmask sig_detected;
 
@@ -185,6 +215,7 @@ struct rule_config {
         void parse_vlan_rule(Json::Value &it, rule_config_item &item);
         void parse_ipv4_rule(Json::Value &it, rule_config_item &item);
         void parse_icmp_rule(Json::Value &it, rule_config_item &item);
+        void parse_udp_rule(Json::Value &it, rule_config_item &item);
 };
 
 }
