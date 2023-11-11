@@ -12,8 +12,11 @@
 
 namespace firewall {
 
-parser::parser(const std::string ifname, logger *log) :
+parser::parser(const std::string ifname,
+               rule_config *rule_list,
+               logger *log) :
                         ifname_(ifname),
+                        rule_list_(rule_list),
                         log_(log),
                         pkt_dump_(true)
 { }
@@ -358,6 +361,10 @@ int parser::run(packet &pkt)
     // detect the OS signature
     detect_os_signature();
 
+    //
+    // run the rule filters
+    run_rule_filters(pkt, rule_list_, log_, pkt_dump_);
+
     return 0;
 }
 
@@ -387,4 +394,12 @@ event_description parser::run_arp_filter(packet &pkt,
     return evt_desc;
 }
 
+void parser::run_rule_filters(packet &p,
+                              rule_config *rule_list,
+                              logger *log,
+                              bool pkt_dump)
+{
 }
+
+}
+

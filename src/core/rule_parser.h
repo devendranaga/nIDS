@@ -68,30 +68,64 @@ struct icmp_rule_config {
     void print(logger *log);
 };
 
-struct signature_id_bitmask {
+struct eth_sig_bitmask {
     uint32_t from_src:1;
     uint32_t to_dst:1;
     uint32_t ethertype:1;
-    uint8_t vlan_pri:1;
-    uint8_t vid:1;
-    uint8_t ipv4_check_options:1;
-    uint8_t ipv4_protocol:1;
-    uint8_t icmp_non_zero_payload:1;
 
-    explicit signature_id_bitmask()
-    {
-        from_src = 0;
-        to_dst = 0;
-        ethertype = 0;
-        vlan_pri = 0;
-        vid = 0;
-        ipv4_check_options = 0;
-        ipv4_protocol = 0;
-        icmp_non_zero_payload = 0;
-    }
+    explicit eth_sig_bitmask() :
+                    from_src(0),
+                    to_dst(0),
+                    ethertype(0) { }
+    ~eth_sig_bitmask() { }
 
-    ~signature_id_bitmask()
-    { }
+    void init();
+};
+
+struct vlan_sig_bitmask {
+    uint32_t vlan_pri:1;
+    uint32_t vid:1;
+
+    explicit vlan_sig_bitmask() :
+                    vlan_pri(0),
+                    vid(0) { }
+    ~vlan_sig_bitmask() { }
+
+    void init();
+};
+
+struct ipv4_sig_bitmask {
+    uint32_t ipv4_check_options:1;
+    uint32_t ipv4_protocol:1;
+
+    explicit ipv4_sig_bitmask() :
+                    ipv4_check_options(0),
+                    ipv4_protocol(0) { }
+    ~ipv4_sig_bitmask() { }
+
+    void init();
+};
+
+struct icmp_sig_bitmask {
+    uint32_t icmp_non_zero_payload:1;
+
+    explicit icmp_sig_bitmask() :
+                    icmp_non_zero_payload(0) { }
+    ~icmp_sig_bitmask() { }
+
+    void init();
+};
+
+struct signature_id_bitmask {
+    eth_sig_bitmask eth_sig;
+    vlan_sig_bitmask vlan_sig;
+    ipv4_sig_bitmask ipv4_sig;
+    icmp_sig_bitmask icmp_sig;
+
+    explicit signature_id_bitmask() { }
+    ~signature_id_bitmask() { }
+
+    void init();
 
     bool operator==(const signature_id_bitmask &m)
     {
@@ -108,6 +142,7 @@ struct rule_config_item {
     ipv4_rule_config ipv4_rule;
     icmp_rule_config icmp_rule;
     signature_id_bitmask sig_mask;
+    signature_id_bitmask sig_detected;
 
     explicit rule_config_item() :
                 rule_name(""),
@@ -117,16 +152,6 @@ struct rule_config_item {
     ~rule_config_item() { }
 
     void print();
-};
-
-struct signature_item {
-    rule_config_item rule_item_;
-    signature_id_bitmask matched_sig_bits_sofar_;
-
-    explicit signature_item(rule_config_item &rule_item) :
-                                    rule_item_(rule_item)
-    { }
-    ~signature_item() { }
 };
 
 /**
@@ -160,21 +185,6 @@ struct rule_config {
         void parse_vlan_rule(Json::Value &it, rule_config_item &item);
         void parse_ipv4_rule(Json::Value &it, rule_config_item &item);
         void parse_icmp_rule(Json::Value &it, rule_config_item &item);
-};
-
-struct signature_list {
-    std::vector<signature_item> signatures_;
-
-    explicit signature_list(rule_config *rule_cfg)
-    {
-        for (auto it : rule_cfg->instance()->rules_cfg_) {
-            signature_item s(it);
-
-            signatures_.push_back(s);
-        }
-    }
-
-    ~signature_list() { }
 };
 
 }

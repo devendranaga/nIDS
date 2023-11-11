@@ -18,19 +18,19 @@ void rule_config::parse_eth_rule(Json::Value &rule_cfg_data,
     ret = parse_str_to_mac(rule_cfg_data["from_src"].asString(),
                      rule.eth_rule.from_src);
     if (ret == 0) {
-        rule.sig_mask.from_src = 1;
+        rule.sig_mask.eth_sig.from_src = 1;
     }
 
     ret = parse_str_to_mac(rule_cfg_data["to_dst"].asString(),
                      rule.eth_rule.to_dst);
     if (ret == 0) {
-        rule.sig_mask.to_dst = 1;
+        rule.sig_mask.eth_sig.to_dst = 1;
     }
 
     ret = parse_str_to_uint16_h(rule_cfg_data["ethertype"].asString(),
                         rule.eth_rule.ethertype);
     if (ret == 0) {
-        rule.sig_mask.ethertype = 1;
+        rule.sig_mask.eth_sig.ethertype = 1;
     }
 }
 
@@ -57,13 +57,13 @@ void rule_config::parse_vlan_rule(Json::Value &rule_cfg_data,
     auto pri = rule_cfg_data["vlan"]["pri"];
     if (!pri.isNull()) {
         rule.vlan_rule.pri = pri.asUInt();
-        rule.sig_mask.vlan_pri = 1;
+        rule.sig_mask.vlan_sig.vlan_pri = 1;
     }
 
     auto vid = rule_cfg_data["vlan"]["vid"];
     if (!vid.isNull()) {
         rule.vlan_rule.vid = rule_cfg_data["vlan"]["vid"].asUInt();
-        rule.sig_mask.vid = 1;
+        rule.sig_mask.vlan_sig.vid = 1;
     }
 }
 
@@ -83,14 +83,14 @@ void rule_config::parse_ipv4_rule(Json::Value &rule_cfg_data,
     auto chk_options = rule_cfg_data["ipv4"]["check_options"];
     if (!chk_options.isNull()) {
         rule.ipv4_rule.check_options = chk_options.asBool();
-        rule.sig_mask.ipv4_check_options = 1;
+        rule.sig_mask.ipv4_sig.ipv4_check_options = 1;
     }
 
     auto protocol = rule_cfg_data["ipv4"]["protocol"];
     if (!protocol.isNull()) {
         if (protocol.asString() == "icmp") {
             rule.ipv4_rule.protocol = protocols_types::Protocol_Icmp;
-            rule.sig_mask.ipv4_protocol = 1;
+            rule.sig_mask.ipv4_sig.ipv4_protocol = 1;
         }
     }
 }
@@ -111,7 +111,7 @@ void rule_config::parse_icmp_rule(Json::Value &rule_cfg_data,
     auto non_zero_pl_str = rule_cfg_data["icmp"]["non_zero_payload"];
     if (!non_zero_pl_str.isNull()) {
         rule.icmp_rule.non_zero_payload = non_zero_pl_str.asBool();
-        rule.sig_mask.icmp_non_zero_payload = 1;
+        rule.sig_mask.icmp_sig.icmp_non_zero_payload = 1;
     }
 }
 
@@ -182,6 +182,38 @@ fw_error_type rule_config::parse(const std::string rules_file)
     }
 
     return fw_error_type::eNo_Error;
+}
+
+void signature_id_bitmask::init()
+{
+    eth_sig.init();
+    vlan_sig.init();
+    ipv4_sig.init();
+    icmp_sig.init();
+}
+
+void eth_sig_bitmask::init()
+{
+    from_src = 0;
+    to_dst = 0;
+    ethertype = 0;
+}
+
+void vlan_sig_bitmask::init()
+{
+    vlan_pri = 0;
+    vid = 0;
+}
+
+void ipv4_sig_bitmask::init()
+{
+    ipv4_check_options = 0;
+    ipv4_protocol = 0;
+}
+
+void icmp_sig_bitmask::init()
+{
+    icmp_non_zero_payload = 0;
 }
 
 }

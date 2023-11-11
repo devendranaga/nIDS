@@ -130,7 +130,9 @@ struct protocol_bits {
 */
 struct parser {
     public:
-        explicit parser(const std::string ifname, logger *log);
+        explicit parser(const std::string ifname,
+                        rule_config *rule_list,
+                        logger *log);
         ~parser();
 
         // ethernet header
@@ -253,9 +255,14 @@ struct parser {
         event_description parse_app_pkt(packet &pkt, Port_Numbers port);
         event_description parse_app(packet &pkt);
         event_description run_arp_filter(packet &pkt, logger *log, bool pkt_dump);
+        void run_rule_filters(packet &pkt,
+                              rule_config *rule_list,
+                              logger *log,
+                              bool pkt_dump);
         bool exploit_search(packet &pkt);
 
         std::string ifname_;
+        rule_config *rule_list_;
         logger *log_;
         exploit_match expl_;
         bool pkt_dump_;

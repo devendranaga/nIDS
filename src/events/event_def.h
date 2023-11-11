@@ -151,6 +151,14 @@ enum class rule_ids : uint32_t {
     Rule_Id_Uds_Unknown_Service_Id = 1501,
 
     //
+    // MQTT Rule Ids
+    Rule_Id_MQTT_Inval_Msg_Type = 1601,
+
+    //
+    // SOME/IP Rule Ids
+    Rule_Id_SomeIP_Hdr_Len_Too_Small = 1701,
+
+    //
     // Known Malware / Virus / Explit Rule Ids
     Rule_Id_Known_Exploit_Win32_Blaster = 1601,
 
@@ -296,7 +304,13 @@ enum class event_description : uint32_t {
     // UDS events
     Evt_Uds_Unknown_Service_Id = 1401,
 
+    //
+    // MQTT events
     Evt_MQTT_Inval_Msg_Type = 1501,
+
+    //
+    // SOMEIP events
+    Evt_SomeIP_Hdr_Len_Too_Small = 1601,
 
     //
     // Known virus / exploit / worm / malware events

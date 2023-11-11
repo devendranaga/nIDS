@@ -460,6 +460,22 @@ const static struct {
     },
 
     //
+    // MQTT rules
+    {
+        event_description::Evt_MQTT_Inval_Msg_Type,
+        rule_ids::Rule_Id_MQTT_Inval_Msg_Type,
+        "MQTT invalid message type"
+    },
+
+    //
+    // SOME/IP rules
+    {
+        event_description::Evt_SomeIP_Hdr_Len_Too_Small,
+        rule_ids::Rule_Id_SomeIP_Hdr_Len_Too_Small,
+        "SOME/IP header length is too small"
+    },
+
+    //
     // Rules matched by the Exploit filter
     {
         event_description::Evt_Known_Exploit_Win32_Blaster,

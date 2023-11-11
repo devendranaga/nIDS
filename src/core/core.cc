@@ -204,7 +204,7 @@ void firewall_intf::rx_thread()
 */
 void firewall_intf::run_filter(packet &pkt)
 {
-    parser p(ifname_, log_);
+    parser p(ifname_, rule_data_, log_);
     int ret;
 
     pkt_perf_->start();
