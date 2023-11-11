@@ -15,22 +15,31 @@ void rule_config::parse_eth_rule(Json::Value &rule_cfg_data,
 {
     int ret;
 
-    ret = parse_str_to_mac(rule_cfg_data["from_src"].asString(),
-                     rule.eth_rule.from_src);
-    if (ret == 0) {
-        rule.sig_mask.eth_sig.from_src = 1;
+    //
+    // check for validity and then only parse each below rule
+
+    if (!rule_cfg_data["from_src"].isNull()) {
+        ret = parse_str_to_mac(rule_cfg_data["from_src"].asString(),
+                               rule.eth_rule.from_src);
+        if (ret == 0) {
+            rule.sig_mask.eth_sig.from_src = 1;
+        }
     }
 
-    ret = parse_str_to_mac(rule_cfg_data["to_dst"].asString(),
-                     rule.eth_rule.to_dst);
-    if (ret == 0) {
-        rule.sig_mask.eth_sig.to_dst = 1;
+    if (!rule_cfg_data["to_dst"].isNull()) {
+        ret = parse_str_to_mac(rule_cfg_data["to_dst"].asString(),
+                               rule.eth_rule.to_dst);
+        if (ret == 0) {
+            rule.sig_mask.eth_sig.to_dst = 1;
+        }
     }
 
-    ret = parse_str_to_uint16_h(rule_cfg_data["ethertype"].asString(),
-                        rule.eth_rule.ethertype);
-    if (ret == 0) {
-        rule.sig_mask.eth_sig.ethertype = 1;
+    if (!rule_cfg_data["ethertype"].isNull()) {
+        ret = parse_str_to_uint16_h(rule_cfg_data["ethertype"].asString(),
+                                    rule.eth_rule.ethertype);
+        if (ret == 0) {
+            rule.sig_mask.eth_sig.ethertype = 1;
+        }
     }
 }
 
