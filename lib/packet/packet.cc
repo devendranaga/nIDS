@@ -145,10 +145,10 @@ fw_error_type packet::deserialize(uint32_t &bytes)
         return fw_error_type::eOut_Of_Bounds;
     }
 
-    bytes = ((buf[off + 3] << 24) |
-             (buf[off + 2] << 16) |
-             (buf[off + 1] << 8) |
-             buf[off]);
+    bytes = ((buf[off + 3]) |
+             (buf[off + 2] << 8) |
+             (buf[off + 1] << 16) |
+             (buf[off] << 24));
     off += 4;
 
     return fw_error_type::eNo_Error;
@@ -192,6 +192,22 @@ fw_error_type packet::deserialize(uint8_t *bufout, uint32_t buflen_to_copy)
     }
 
     memcpy(bufout, &buf[off], buflen_to_copy);
+    off += buflen_to_copy;
+
+    return fw_error_type::eNo_Error;
+}
+
+fw_error_type packet::deserialize(std::vector<uint8_t> &bufout, uint32_t buflen_to_copy)
+{
+    uint32_t i;
+
+    if (packet_assert_length(off + buflen_to_copy, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    for (i = 0; i < buflen_to_copy; i ++)
+        bufout.push_back(buf[off + i]);
+
     off += buflen_to_copy;
 
     return fw_error_type::eNo_Error;

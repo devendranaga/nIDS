@@ -39,6 +39,8 @@
 #endif
 // MQTT header
 #include <mqtt.h>
+// SOME/IP header
+#include <some_ip.h>
 // Known exploits
 #include <known_exploits.h>
 
@@ -72,7 +74,8 @@ struct protocol_bits {
                             ntp(0),
                             doip(0),
                             tls(0),
-                            mqtt(0)
+                            mqtt(0),
+                            someip(0)
         { }
         ~protocol_bits() { }
 
@@ -91,6 +94,7 @@ struct protocol_bits {
         void set_doip() { doip = 1; }
         void set_tls() { tls = 1; }
         void set_mqtt() { mqtt = 1; }
+        void set_someip() { someip = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_macsec() const { return macsec == 1; }
         bool has_ipv4() const { return ipv4 == 1; }
@@ -106,6 +110,7 @@ struct protocol_bits {
         bool has_doip() const { return doip == 1; }
         bool has_tls() const { return tls == 1; }
         bool has_mqtt() const { return mqtt == 1; }
+        bool has_someip() const { return someip == 1; }
 
     private:
         uint32_t eth:1;
@@ -123,6 +128,7 @@ struct protocol_bits {
         uint32_t doip:1;
         uint32_t tls:1;
         uint32_t mqtt:1;
+        uint32_t someip:1;
 };
 
 /**
@@ -187,6 +193,9 @@ struct parser {
 
         // MQTT header
         std::shared_ptr<mqtt_hdr> mqtt_h;
+
+        // SOME/IP header
+        std::shared_ptr<someip_hdr> someip_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;
@@ -254,6 +263,11 @@ struct parser {
         event_description parse_l4(packet &pkt);
         event_description parse_app_pkt(packet &pkt, Port_Numbers port);
         event_description parse_app(packet &pkt);
+        event_description parse_custom_ports(packet &pkt);
+        event_description parse_custom_app_ports(packet &pkt,
+                                                 Packet_Direction dir,
+                                                 App_Type type,
+                                                 int port);
         event_description run_arp_filter(packet &pkt, logger *log, bool pkt_dump);
         void run_rule_filters(packet &pkt,
                               rule_config *rule_list,

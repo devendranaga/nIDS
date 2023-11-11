@@ -74,13 +74,20 @@ enum class Packet_Direction {
     Out,
 };
 
+enum class App_Type {
+    None,
+    SomeIP,
+};
+
 struct udp_rule_config {
     Packet_Direction dir;
     uint32_t port;
+    App_Type app_type;
 
     explicit udp_rule_config() noexcept :
             dir(Packet_Direction::None),
-            port(0)
+            port(0),
+            app_type(App_Type::None)
     { }
     ~udp_rule_config() { }
     void print(logger *log);
@@ -160,6 +167,8 @@ struct signature_id_bitmask {
     {
         return memcmp(this, &m, sizeof(*this));
     }
+
+    void print(logger *log);
 };
 
 struct rule_config_item {
@@ -178,7 +187,9 @@ struct rule_config_item {
                 rule_name(""),
                 rule_id(0),
                 type(rule_type::Deny)
-    { }
+    {
+        sig_mask.init();
+    }
     ~rule_config_item() { }
 
     void print();

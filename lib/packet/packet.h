@@ -10,6 +10,7 @@
 #include <cstring>
 #include <stdint.h>
 #include <stdlib.h>
+#include <vector>
 #include <common.h>
 
 namespace firewall {
@@ -36,6 +37,7 @@ struct packet {
     fw_error_type deserialize(uint64_t &bytes);
     fw_error_type deserialize(uint8_t *mac);
     fw_error_type deserialize(uint8_t *buf, uint32_t buf_len);
+    fw_error_type deserialize(std::vector<uint8_t> &buf, uint32_t buf_len);
     void hexdump()
     {
         uint32_t i;

@@ -55,7 +55,8 @@
 		"protocol": "udp",
 		"udp": {
 			"direction": "in",
-			"port": 36191
+			"port": 36191,
+			"app_type": "someip"
 		}
 	}
 ]

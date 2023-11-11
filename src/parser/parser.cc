@@ -231,9 +231,13 @@ event_description parser::parse_app_pkt(packet &pkt, Port_Numbers port)
             protocols_avail.set_mqtt();
         } break;
         default:
-            evt_desc = event_description::Evt_Unknown_Error;
+            evt_desc = event_description::Evt_Unknown_Port;
         break;
     }
+
+   if (evt_desc == event_description::Evt_Unknown_Port) {
+       evt_desc = parse_custom_ports(pkt);
+   }
 
     return evt_desc;
 }
@@ -399,6 +403,52 @@ void parser::run_rule_filters(packet &p,
                               logger *log,
                               bool pkt_dump)
 {
+}
+
+event_description parser::parse_custom_app_ports(packet &pkt,
+                                                 Packet_Direction dir,
+                                                 App_Type app_type,
+                                                 int port)
+{
+    event_description evt_desc = event_description::Evt_Unknown_Error;
+
+    if (((udp_h->dst_port == port) ||
+         (udp_h->src_port == port)) &&
+         (app_type == App_Type::SomeIP)) {
+        someip_h = std::make_shared<someip_hdr>();
+        if (!someip_h)
+            return event_description::Evt_Out_Of_Memory;
+
+        evt_desc = someip_h->deserialize(pkt, log_, pkt_dump_);
+    }
+
+    return evt_desc;
+}
+
+event_description parser::parse_custom_ports(packet &pkt)
+{
+    event_description evt_desc = event_description::Evt_Unknown_Port;
+    Packet_Direction dir;
+    App_Type app_type;
+    int port = -1;
+
+    for (auto it : rule_list_->rules_cfg_) {
+        port = -1;
+
+        if (udp_h && it.sig_mask.udp_sig.port) {
+            dir = it.udp_rule.dir;
+            app_type = it.udp_rule.app_type;
+            port = it.udp_rule.port;
+        }
+
+        if (port != -1) {
+            evt_desc = parse_custom_app_ports(pkt, dir, app_type, port);
+            if (evt_desc != event_description::Evt_Parse_Ok)
+                return evt_desc;
+        }
+    }
+
+   return evt_desc;
 }
 
 }

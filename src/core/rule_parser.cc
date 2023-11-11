@@ -37,17 +37,17 @@ void rule_config::parse_eth_rule(Json::Value &rule_cfg_data,
 void eth_rule_config::print(logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
-    log->verbose("eth_rules: {\n");
-    log->verbose("\tfrom_src: %02x:%02x:%02x:%02x:%02x:%02x\n",
+    log->verbose("\t eth_rules: {\n");
+    log->verbose("\t\t from_src: %02x:%02x:%02x:%02x:%02x:%02x\n",
                     from_src[0], from_src[1],
                     from_src[2], from_src[3],
                     from_src[4], from_src[5]);
-    log->verbose("\tto_dst: %02x:%02x:%02x:%02x:%02x:%02x\n",
+    log->verbose("\t\t to_dst: %02x:%02x:%02x:%02x:%02x:%02x\n",
                     to_dst[0], to_dst[1],
                     to_dst[2], to_dst[3],
                     to_dst[4], to_dst[5]);
-    log->verbose("\tethertype: %04x\n", ethertype);
-    log->verbose("}\n");
+    log->verbose("\t\t ethertype: %04x\n", ethertype);
+    log->verbose("\t }\n");
 #endif
 }
 
@@ -70,10 +70,10 @@ void rule_config::parse_vlan_rule(Json::Value &rule_cfg_data,
 void vlan_rule_config::print(logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
-    log->verbose("vlan_rules: {\n");
-    log->verbose("\tpri: %d\n", pri);
-    log->verbose("\tvid: %d\n", vid);
-    log->verbose("}\n");
+    log->verbose("\t vlan_rules: {\n");
+    log->verbose("\t\t pri: %d\n", pri);
+    log->verbose("\t\t vid: %d\n", vid);
+    log->verbose("\t }\n");
 #endif
 }
 
@@ -98,10 +98,10 @@ void rule_config::parse_ipv4_rule(Json::Value &rule_cfg_data,
 void ipv4_rule_config::print(logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
-    log->verbose("ipv4_rules: {\n");
-    log->verbose("\tcheck_options: %d\n", check_options);
-    log->verbose("\tprotocol: %d\n", static_cast<int>(protocol));
-    log->verbose("}\n");
+    log->verbose("\t ipv4_rules: {\n");
+    log->verbose("\t\t check_options: %d\n", check_options);
+    log->verbose("\t\t protocol: %d\n", static_cast<int>(protocol));
+    log->verbose("\t }\n");
 #endif
 }
 
@@ -118,19 +118,24 @@ void rule_config::parse_icmp_rule(Json::Value &rule_cfg_data,
 void icmp_rule_config::print(logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
-    log->verbose("icmp_rules: {\n");
-    log->verbose("\tnon_zero_payload: %d\n", non_zero_payload);
-    log->verbose("}\n");
+    log->verbose("\t icmp_rules: {\n");
+    log->verbose("\t\t non_zero_payload: %d\n", non_zero_payload);
+    log->verbose("\t }\n");
 #endif
 }
 
 void rule_config::parse_udp_rule(Json::Value &rule_cfg_data,
                                  rule_config_item &rule)
 {
-    auto direction = rule_cfg_data["udp"]["direction"];
-    if (direction.asString() == "in") {
+    auto udp_rule_config_data = rule_cfg_data["udp"];
+    if (udp_rule_config_data.isNull()) {
+        return;
+    }
+
+    auto direction = rule_cfg_data["udp"]["direction"].asString();
+    if (direction == "in") {
         rule.udp_rule.dir = Packet_Direction::In;
-    } else if (direction.asString() == "out") {
+    } else if (direction == "out") {
         rule.udp_rule.dir = Packet_Direction::Out;
     } else {
         rule.udp_rule.dir = Packet_Direction::None;
@@ -138,14 +143,21 @@ void rule_config::parse_udp_rule(Json::Value &rule_cfg_data,
 
     rule.udp_rule.port = rule_cfg_data["udp"]["port"].asUInt();
     rule.sig_mask.udp_sig.port = 1;
+
+    auto app_type = rule_cfg_data["udp"]["app_type"].asString();
+    if (app_type == "someip") {
+        rule.udp_rule.app_type = App_Type::SomeIP;
+    }
 }
 
 void udp_rule_config::print(logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
-    log->verbose("UDP_rules: {\n");
-    log->verbose("\t port: %d\n", port);
-    log->verbose("}\n");
+    log->verbose("\tUDP_rules: {\n");
+    log->verbose("\t\t dir: %d\n", (uint32_t)(dir));
+    log->verbose("\t\t port: %d\n", port);
+    log->verbose("\t\t app_type: %d\n", (uint32_t)(app_type));
+    log->verbose("\t}\n");
 #endif
 }
 
@@ -154,15 +166,20 @@ void rule_config_item::print()
 #if defined(FW_ENABLE_DEBUG)
     logger *log = logger::instance();
 
-    log->verbose("rule_name: %s\n", rule_name.c_str());
-    log->verbose("rule_id: %d\n", rule_id);
-    log->verbose("type: %d\n", type);
+    log->verbose("Rule: {\n");
+    log->verbose("\t rule_name: %s\n", rule_name.c_str());
+    log->verbose("\t rule_id: %d\n", rule_id);
+    log->verbose("\t type: %d\n", type);
 
     eth_rule.print(log);
     vlan_rule.print(log);
     ipv4_rule.print(log);
     icmp_rule.print(log);
     udp_rule.print(log);
+
+    sig_mask.print(log);
+
+    log->verbose("}\n");
 #endif
 }
 
@@ -209,6 +226,21 @@ fw_error_type rule_config::parse(const std::string rules_file)
     }
 
     return fw_error_type::eNo_Error;
+}
+
+void signature_id_bitmask::print(logger *log)
+{
+    log->verbose("\t signature_mask: {\n");
+    log->verbose("\t\t eth.from_src: %d\n", eth_sig.from_src);
+    log->verbose("\t\t eth.to_dst: %d\n", eth_sig.to_dst);
+    log->verbose("\t\t eth.ethertype: %d\n", eth_sig.ethertype);
+    log->verbose("\t\t vlan.pri: %d\n", vlan_sig.vlan_pri);
+    log->verbose("\t\t vlan.vid: %d\n", vlan_sig.vid);
+    log->verbose("\t\t ipv4.ipv4_check_options: %d\n", ipv4_sig.ipv4_check_options);
+    log->verbose("\t\t ipv4.ipv4_protocol: %d\n", ipv4_sig.ipv4_protocol);
+    log->verbose("\t\t icmp.icmp_non_zero_payload: %d\n", icmp_sig.icmp_non_zero_payload);
+    log->verbose("\t\t udp_sig.port: %d\n", udp_sig.port);
+    log->verbose("\t }\n");
 }
 
 void signature_id_bitmask::init()

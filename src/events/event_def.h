@@ -315,6 +315,7 @@ enum class event_description : uint32_t {
     //
     // Known virus / exploit / worm / malware events
     Evt_Known_Exploit_Win32_Blaster = 10000,
+    Evt_Unknown_Port,
     Evt_Unknown_Error,
 
     //
