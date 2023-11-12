@@ -92,6 +92,36 @@ struct packet_gen_arp_config {
         bool valid_;
 };
 
+struct packet_gen_ipv4_config {
+    uint8_t src_mac[6];
+    uint8_t dest_mac[6];
+    uint32_t ttl;
+    uint32_t src_ipaddr;
+    uint32_t dest_ipaddr;
+    uint16_t id;
+    uint16_t ipv4_len;
+
+    int parse(Json::Value &r);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("src_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                                    src_mac[0], src_mac[1],
+                                    src_mac[2], src_mac[3],
+                                    src_mac[4], src_mac[5]);
+        log->verbose("dest_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                                    dest_mac[0], dest_mac[1],
+                                    dest_mac[2], dest_mac[3],
+                                    dest_mac[4], dest_mac[5]);
+        log->verbose("ttl: %d\n", ttl);
+        log->verbose("src_ipaddr: %u\n", src_ipaddr);
+        log->verbose("dest_ipaddr: %u\n", dest_ipaddr);
+        log->verbose("id: 0x%04x\n", id);
+        log->verbose("ipv4_len: %d\n", ipv4_len);
+    #endif
+    }
+};
+
 /**
  * @brief - defines packet gen configuration.
 */
@@ -100,6 +130,7 @@ struct packet_gen_config {
     packet_gen_eth_config eth_conf;
     packet_gen_pcap_replay_config pcap_conf;
     packet_gen_arp_config arp_conf;
+    packet_gen_ipv4_config ipv4_conf;
 
     static packet_gen_config *instance()
     {

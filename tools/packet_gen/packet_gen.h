@@ -34,6 +34,7 @@ class packet_gen {
         // Runs Ethernet Replay
         void run_eth_replay();
         void run_arp_replay();
+        void run_ipv4_replay();
         packet_gen_config *conf_;
         std::shared_ptr<raw_socket> raw_;
         std::string filename_;

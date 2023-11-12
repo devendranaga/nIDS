@@ -27,6 +27,7 @@ parser::parser(const std::string ifname,
                         udp_h(nullptr),
                         icmp_h(nullptr),
                         icmp6_h(nullptr),
+                        igmp_h(nullptr),
                         dhcp_h(nullptr),
                         ntp_h(nullptr),
                         tls_h(nullptr),
@@ -34,7 +35,7 @@ parser::parser(const std::string ifname,
                         ifname_(ifname),
                         rule_list_(rule_list),
                         log_(log),
-                        pkt_dump_(false)
+                        pkt_dump_(true)
 {
 #if defined(FW_ENABLE_AUTOMOTIVE)
     doip_h = nullptr;
@@ -100,7 +101,7 @@ event_description parser::parse_l4(packet &pkt)
     if (proto == protocols_types::Protocol_IPv6_Encapsulation) {
         ipv6_encap_h = std::make_shared<ipv6_hdr>();
         if (!ipv6_encap_h)
-            return event_description::Evt_Unknown_Error;
+            return event_description::Evt_Out_Of_Memory;
 
         evt_desc = ipv6_encap_h->deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok)
@@ -113,7 +114,7 @@ event_description parser::parse_l4(packet &pkt)
         case protocols_types::Protocol_Udp: {
             udp_h = std::make_shared<udp_hdr>();
             if (!udp_h)
-                return event_description::Evt_Unknown_Error;
+                return event_description::Evt_Out_Of_Memory;
 
             evt_desc = udp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_udp();
@@ -126,15 +127,23 @@ event_description parser::parse_l4(packet &pkt)
         case protocols_types::Protocol_Icmp6: {
             icmp6_h = std::make_shared<icmp6_hdr>();
             if (!icmp6_h)
-                return event_description::Evt_Unknown_Error;
+                return event_description::Evt_Out_Of_Memory;
 
             evt_desc = icmp6_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_icmp6();
         } break;
+        case protocols_types::Protocol_Igmp: {
+            igmp_h = std::make_shared<igmp_hdr>();
+            if (!igmp_h)
+                return event_description::Evt_Out_Of_Memory;
+
+            evt_desc = igmp_h->deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_igmp();
+        } break;
         case protocols_types::Protocol_Tcp: {
             tcp_h = std::make_shared<tcp_hdr>();
             if (!tcp_h)
-                return event_description::Evt_Unknown_Error;
+                return event_description::Evt_Out_Of_Memory;
 
             evt_desc = tcp_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_tcp();

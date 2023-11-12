@@ -27,6 +27,8 @@
 #include <icmp.h>
 // ICMP6 header
 #include <icmp6.h>
+// IGMP header
+#include <igmp.h>
 // DHCP header
 #include <dhcp.h>
 // NTP header
@@ -71,6 +73,7 @@ struct protocol_bits {
                             udp(0),
                             ipv6(0),
                             icmp6(0),
+                            igmp(0),
                             dhcp(0),
                             ntp(0),
                             doip(0),
@@ -90,6 +93,7 @@ struct protocol_bits {
         void set_udp() { udp = 1; }
         void set_ipv6() { ipv6 = 1; }
         void set_icmp6() { icmp6 = 1; }
+        void set_igmp() { igmp = 1; }
         void set_dhcp() { dhcp = 1; }
         void set_ntp() { ntp = 1; }
         void set_doip() { doip = 1; }
@@ -106,6 +110,7 @@ struct protocol_bits {
         bool has_udp() const { return udp == 1; }
         bool has_ipv6() const { return ipv6 == 1; }
         bool has_icmp6() const { return icmp6 == 1; }
+        bool has_igmp() const { return igmp == 1; }
         bool has_dhcp() const { return dhcp == 1; }
         bool has_ntp() const { return ntp == 1; }
         bool has_doip() const { return doip == 1; }
@@ -124,6 +129,7 @@ struct protocol_bits {
         uint32_t udp:1;
         uint32_t ipv6:1;
         uint32_t icmp6:1;
+        uint32_t igmp:1;
         uint32_t dhcp:1;
         uint32_t ntp:1;
         uint32_t doip:1;
@@ -177,6 +183,9 @@ struct parser {
 
         // ICMP6 header
         std::shared_ptr<icmp6_hdr> icmp6_h;
+
+        // IGMP header
+        std::shared_ptr<igmp_hdr> igmp_h;
 
         // DHCP header
         std::shared_ptr<dhcp_hdr> dhcp_h;

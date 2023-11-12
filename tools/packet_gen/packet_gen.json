@@ -24,6 +24,15 @@
         "count": 100,
         "inter_pkt_gap_us": 100
     },
+    "ipv4": {
+        "src_mac": "00:11:22:33:44:55",
+        "dest_mac": "11:22:33:44:11:22",
+        "ttl": 1,
+        "src_ipaddr": "192.168.1.1",
+        "dst_ipaddr": "192.168.1.2",
+        "id": "0x1234",
+        "ipv4_len": 123
+    },
     "pcap_replay": {
         "filepath": "./pcap_file.pcap",
         "intvl_us": 100,

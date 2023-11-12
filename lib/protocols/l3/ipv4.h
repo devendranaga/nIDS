@@ -108,7 +108,7 @@ struct ipv4_opt_timestamp {
 struct ipv4_opt_router_alert {
     uint32_t copy_on_fragment:1;
     uint32_t cls:2;
-    uint32_t len;
+    uint8_t len;
     uint16_t router_alert;
 
     explicit ipv4_opt_router_alert() { }
@@ -343,7 +343,7 @@ struct ipv4_hdr {
     private:
     inline bool is_multicast(uint32_t ip_addr)
     {
-        uint32_t byte = (ip_addr & 0x000000FF);
+        uint32_t byte = (ip_addr & 0xFF000000) >> 24;
 
         if ((byte >= IPV4_MCAST_ADDR_START) && (byte <= IPV4_MCAST_ADDR_END))
             return true;
@@ -353,7 +353,7 @@ struct ipv4_hdr {
 
     inline bool is_reserved(uint32_t ip_addr)
     {
-        uint32_t byte = (ip_addr & 0x000000FF);
+        uint32_t byte = (ip_addr & 0xFF000000) >> 24;
 
         if ((byte >= IPV4_RESERVED_ADDR_START) && (byte <= IPV4_RESERVED_ADDR_END))
             return true;

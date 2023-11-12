@@ -138,6 +138,10 @@ void packet_gen::run_eth_replay()
     log_->info("replay complete\n");
 }
 
+void packet_gen::run_ipv4_replay()
+{
+}
+
 }
 
 int main(int argc, char **argv)

@@ -159,6 +159,11 @@ enum class rule_ids : uint32_t {
     Rule_Id_SomeIP_Hdr_Len_Too_Small = 1701,
 
     //
+    // IGMP Rule Ids
+    Rule_Id_Igmp_Hdr_Len_Too_Small = 1801,
+    Rule_Id_Igmp_Unsupported_Type,
+
+    //
     // Known Malware / Virus / Explit Rule Ids
     Rule_Id_Known_Exploit_Win32_Blaster = 1601,
 
@@ -313,6 +318,11 @@ enum class event_description : uint32_t {
     //
     // SOMEIP events
     Evt_SomeIP_Hdr_Len_Too_Small = 1601,
+
+    //
+    // IGMP events
+    Evt_Igmp_Hdr_Len_Too_Small = 1801,
+    Evt_Igmp_Unsupported_Type,
 
     //
     // Known virus / exploit / worm / malware events
