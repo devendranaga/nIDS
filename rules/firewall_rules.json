@@ -1,72 +1,72 @@
 [
-	{
-		"rule_name": "allow_ipv4",
-		"rule_id": 10000,
-		"rule_type": "allow",
-		"from_src": "00:11:22:33:44:55",
-		"to_dst": "11:22:33:44:55:66",
-		"ethertype": "0x800"
-	},
-	{
-		"rule_name": "allow_vlan",
-		"rule_id": 10001,
-		"rule_type": "deny",
-		"ethertype": "0x8100",
-		"vlan": {
-			"pri": 1,
-			"vid": 10
-		}
-	},
-	{
-		"rule_name": "deny_arps",
-		"rule_id": 10002,
-		"rule_type": "deny",
-		"ethertype": "0x0806"
-	},
-	{
-		"rule_name": "deny_ipv4_with_options",
-		"rule_id": 10003,
-		"rule_type": "deny",
-		"ipv4": {
-			"check_options": true
-		}
-	},
-	{
-		"rule_name": "deny_ipv4_proto_icmp",
-		"rule_id": 10004,
-		"rule_type": "deny",
-		"ipv4": {
-			"protocol": "icmp"
-		}
-	},
-	{
-		"rule_name": "deny_icmps_with_payload",
-		"rule_id": 10005,
-		"rule_type": "deny",
-		"protocol": "icmp",
-		"icmp": {
-			"non_zero_payload": true
-		}
-	},
-	{
-		"rule_name": "allow someip frames on this port",
-		"rule_id": 10006,
-		"rule_type": "allow",
-		"protocol": "udp",
-		"udp": {
-			"direction": "in",
-			"port": 36191,
-			"app_type": "someip"
-		}
-	},
-	{
-		"rule_name": "filter someip frames with service and method id",
-		"rule_id": 10007,
-		"rule_type": "allow",
-		"someip": {
-			"service_id": "0x1000",
-			"method_id": "0x8001"
-		}
-	}
+    {
+        "rule_name": "allow_ipv4",
+        "rule_id": 10000,
+        "rule_type": "allow",
+        "from_src": "00:11:22:33:44:55",
+        "to_dst": "11:22:33:44:55:66",
+        "ethertype": "0x800"
+    },
+    {
+        "rule_name": "allow_vlan",
+        "rule_id": 10001,
+        "rule_type": "deny",
+        "ethertype": "0x8100",
+        "vlan": {
+            "pri": 1,
+            "vid": 10
+        }
+    },
+    {
+        "rule_name": "deny_arps",
+        "rule_id": 10002,
+        "rule_type": "deny",
+        "ethertype": "0x0806"
+    },
+    {
+        "rule_name": "deny_ipv4_with_options",
+        "rule_id": 10003,
+        "rule_type": "deny",
+        "ipv4": {
+            "check_options": true
+        }
+    },
+    {
+        "rule_name": "deny_ipv4_proto_icmp",
+        "rule_id": 10004,
+        "rule_type": "deny",
+        "ipv4": {
+            "protocol": "icmp"
+        }
+    },
+    {
+        "rule_name": "deny_icmps_with_payload",
+        "rule_id": 10005,
+        "rule_type": "deny",
+        "protocol": "icmp",
+        "icmp": {
+            "non_zero_payload": true
+        }
+    },
+    {
+        "rule_name": "allow someip frames on this port",
+        "rule_id": 10006,
+        "rule_type": "allow",
+        "protocol": "udp",
+        "udp": {
+            "direction": "in",
+            "port": 36191,
+            "app_type": "someip"
+        }
+    },
+    {
+        "rule_name": "filter someip frames with service and method id",
+        "rule_id": 10007,
+        "rule_type": "allow",
+        "someip": {
+            "service_id": "0x1000",
+            "method_id": "0x8001"
+        }
+    }
 ]
 

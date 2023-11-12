@@ -49,7 +49,7 @@
 #include <rule_parser.h>
 #include <os_signatures.h>
 #include <packet_stats.h>
-#include <ethertype_filter.h>
+#include <eth_filter.h>
 #include <arp_filter.h>
 #include <icmp_filter.h>
 
@@ -187,6 +187,9 @@ struct parser {
 #if defined(FW_ENABLE_AUTOMOTIVE)
         // DoIP header
         std::shared_ptr<doip_hdr> doip_h;
+
+        // SOME/IP header
+        std::shared_ptr<someip_hdr> someip_h;
 #endif
 
         // TLS header
@@ -194,9 +197,6 @@ struct parser {
 
         // MQTT header
         std::shared_ptr<mqtt_hdr> mqtt_h;
-
-        // SOME/IP header
-        std::shared_ptr<someip_hdr> someip_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;

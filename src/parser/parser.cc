@@ -15,11 +15,32 @@ namespace firewall {
 parser::parser(const std::string ifname,
                rule_config *rule_list,
                logger *log) :
+                        eh(nullptr),
+                        macsec_h(nullptr),
+                        vh(nullptr),
+                        arp_h(nullptr),
+                        ipv4_h(nullptr),
+                        ipv6_h(nullptr),
+                        ipv6_encap_h(nullptr),
+                        ipv6_ah_h(nullptr),
+                        tcp_h(nullptr),
+                        udp_h(nullptr),
+                        icmp_h(nullptr),
+                        icmp6_h(nullptr),
+                        dhcp_h(nullptr),
+                        ntp_h(nullptr),
+                        tls_h(nullptr),
+                        mqtt_h(nullptr),
                         ifname_(ifname),
                         rule_list_(rule_list),
                         log_(log),
-                        pkt_dump_(true)
-{ }
+                        pkt_dump_(false)
+{
+#if defined(FW_ENABLE_AUTOMOTIVE)
+    doip_h = nullptr;
+    someip_h = nullptr;
+#endif
+}
 parser::~parser() { }
 
 /**
@@ -294,7 +315,7 @@ int parser::run(packet &pkt)
 
     //
     // run ethertype match
-    ret = ethertype_filter::instance()->run(*this, log_, pkt_dump_);
+    ret = eth_filter::instance()->run(*this, log_, pkt_dump_);
     if (ret != 0) {
         printf("deny rule\n");
         return ret;
@@ -420,14 +441,17 @@ event_description parser::parse_custom_app_ports(packet &pkt,
 {
     event_description evt_desc = event_description::Evt_Unknown_Error;
 
-    if (((udp_h->dst_port == port) ||
-         (udp_h->src_port == port)) &&
-         (app_type == App_Type::SomeIP)) {
-        someip_h = std::make_shared<someip_hdr>();
-        if (!someip_h)
-            return event_description::Evt_Out_Of_Memory;
+    if ((udp_h->dst_port == port) ||
+        (udp_h->src_port == port)) {
+#if defined(FW_ENABLE_AUTOMOTIVE)
+       if (app_type == App_Type::SomeIP) {
+           someip_h = std::make_shared<someip_hdr>();
+           if (!someip_h)
+               return event_description::Evt_Out_Of_Memory;
 
-        evt_desc = someip_h->deserialize(pkt, log_, pkt_dump_);
+           evt_desc = someip_h->deserialize(pkt, log_, pkt_dump_);
+       }
+#endif
     }
 
     return evt_desc;

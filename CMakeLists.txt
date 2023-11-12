@@ -18,7 +18,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/src/stats/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/filters/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/filters/arp/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/filters/icmp/build.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/src/filters/ethertype/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/filters/eth/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/logging/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/crypto/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/common/build.cmake)
@@ -45,7 +45,7 @@ set(SERVICE_SOURCES
 	${FILTER_SOURCES}
 	${FILTER_ARP_SOURCES}
 	${FILTER_ICMP_SOURCES}
-	${FILTER_ETHERTYPE_SOURCES})
+	${FILTER_ETH_SOURCES})
 
 set(TOOL_PACKET_GEN_SOURCES
 	${PKT_GEN_SOURCES})
@@ -65,7 +65,7 @@ include_directories(
 	./src/config/
 	./src/filters/
 	./src/filters/arp/
-	./src/filters/ethertype/
+	./src/filters/eth/
 	./tools/fw_ctl/)
 
 # Enable Debugging

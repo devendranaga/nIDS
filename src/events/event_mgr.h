@@ -55,6 +55,10 @@ class event_mgr {
         uint32_t get_matching_rule(event_description evt_desc);
         void store(event_type evt_type,
                    event_description evt_desc, const parser &pkt);
+        void store(event_type evt_type,
+                   event_description evt_desc,
+                   uint32_t rule_id,
+                   const parser &pkt);
 
     private:
         explicit event_mgr() { }

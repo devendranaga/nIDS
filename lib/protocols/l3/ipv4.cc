@@ -195,26 +195,31 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
     p.deserialize(hdr_chksum);
     p.deserialize(src_addr);
     p.deserialize(dst_addr);
+
     //
     // Source and Destination IPv4 addresses are same
     if (src_addr == dst_addr) {
         return event_description::Evt_IPv4_Src_And_Dst_Addr_Same;
     }
+
     //
     // drop if Src IPv4 address is a broadcast address
     if (is_broadcast(src_addr)) {
         return event_description::Evt_IPv4_Src_Is_Broadcast;
     }
+
     //
     // drop if Src IPv4 address is a multicast address
     if (is_multicast(src_addr)) {
         return event_description::Evt_IPv4_Src_Is_Multicast;
     }
+
     //
     // IPv4 Src address is reserved
     if (is_reserved(src_addr)) {
         return event_description::Evt_IPv4_Src_Is_Reserved;
     }
+
     //
     // IPv4 Dst address is reserved
     if (is_reserved(dst_addr)) {

@@ -27,6 +27,7 @@ class icmp_filter {
         event_description run_filter(parser &p, packet &pkt, logger *log, bool debug);
     private:
         explicit icmp_filter() { }
+        void check_nonzero_len_payloads(parser &p, uint32_t rule_id, rule_type type);
 };
 
 }

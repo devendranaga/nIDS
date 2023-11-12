@@ -632,6 +632,17 @@ void event_mgr::store(event_type evt_type,
     store(evt);
 }
 
+void event_mgr::store(event_type evt_type,
+                      event_description evt_desc,
+                      uint32_t rule_id,
+                      const parser &pkt)
+{
+    event evt;
+
+    create_evt(evt, rule_id, evt_type, evt_desc, pkt);
+    store(evt);
+}
+
 /**
  * @brief - stores event logs to disk.
 */

@@ -275,6 +275,8 @@ enum class event_description : uint32_t {
     Evt_Icmp_Dest_Addr_Broadcast_In_IPv4,
     Evt_Icmp_Addr_Mask_Len_Inval,
     Evt_Icmp_Inval_Chksum,
+    Evt_Icmp_Non_Zero_Echo_Req_Payload_Len,
+    Evt_Icmp_Non_Zero_ECho_Reply_Payload_Len,
 
     //
     // DHCP events
