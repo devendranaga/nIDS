@@ -100,6 +100,12 @@ struct packet_gen_ipv4_config {
     uint32_t dest_ipaddr;
     uint16_t id;
     uint16_t ipv4_len;
+    uint16_t protocol;
+    uint32_t count;
+    uint32_t inter_pkt_gap_us;
+
+    explicit packet_gen_ipv4_config() : valid_(false) { }
+    ~packet_gen_ipv4_config() { }
 
     int parse(Json::Value &r);
     void print(logger *log)
@@ -120,6 +126,10 @@ struct packet_gen_ipv4_config {
         log->verbose("ipv4_len: %d\n", ipv4_len);
     #endif
     }
+    bool is_valid() { return valid_; }
+
+    private:
+        bool valid_;
 };
 
 /**

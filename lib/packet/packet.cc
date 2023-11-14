@@ -59,10 +59,10 @@ fw_error_type packet::serialize(uint32_t bytes)
         return fw_error_type::eOut_Of_Bounds;
     }
 
-    buf[off] = (bytes & 0x000000FF);
-    buf[off + 1] = (bytes & 0x0000FF00) >> 8;
-    buf[off + 2] = (bytes & 0x00FF0000) >> 16;
-    buf[off + 3] = (bytes & 0xFF000000) >> 24;
+    buf[off + 3] = (bytes & 0x000000FF);
+    buf[off + 2] = (bytes & 0x0000FF00) >> 8;
+    buf[off + 1] = (bytes & 0x00FF0000) >> 16;
+    buf[off] = (bytes & 0xFF000000) >> 24;
 
     off += 4;
 

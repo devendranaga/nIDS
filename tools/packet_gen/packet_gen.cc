@@ -103,6 +103,9 @@ void packet_gen::run()
     if (conf_->arp_conf.is_valid()) {
         run_arp_replay();
     }
+    if (conf_->ipv4_conf.is_valid()) {
+        run_ipv4_replay();
+    }
 }
 
 void packet_gen::run_eth_replay()
@@ -140,6 +143,50 @@ void packet_gen::run_eth_replay()
 
 void packet_gen::run_ipv4_replay()
 {
+    packet p(1500);
+    eth_hdr eh;
+    ipv4_hdr ipv4_h;
+    uint8_t dst[6] = {0};
+    int count = conf_->ipv4_conf.count;
+    int ret;
+
+    log_->info("Starting IPv4 Replay\n");
+
+    std::memcpy(eh.src_mac,
+                conf_->ipv4_conf.src_mac, sizeof(conf_->ipv4_conf.src_mac));
+    std::memcpy(eh.dst_mac,
+                conf_->ipv4_conf.dest_mac, sizeof(conf_->ipv4_conf.dest_mac));
+    eh.ethertype = static_cast<uint16_t>(Ether_Type::Ether_Type_IPv4);
+    eh.serialize(p);
+
+    ipv4_h.version = 4;
+    ipv4_h.dscp = 0;
+    ipv4_h.ecn = 0;
+    ipv4_h.total_len = conf_->ipv4_conf.ipv4_len;
+    ipv4_h.identification = conf_->ipv4_conf.id;
+    ipv4_h.reserved = 0;
+    ipv4_h.dont_frag = 0;
+    ipv4_h.more_frag = 0;
+    ipv4_h.frag_off = 0;
+    ipv4_h.ttl = conf_->ipv4_conf.ttl;
+    ipv4_h.protocol = conf_->ipv4_conf.protocol;
+    ipv4_h.src_addr = ntohl(conf_->ipv4_conf.src_ipaddr);
+    ipv4_h.dst_addr = ntohl(conf_->ipv4_conf.dest_ipaddr);
+    ret = ipv4_h.serialize(p);
+    if (ret < 0) {
+        log_->error("failed to serialize ipv4 packet\n");
+        return;
+    }
+
+    p.buf_len = p.off;
+
+    while (count > 0) {
+        raw_->send_msg(dst, p.buf, p.buf_len);
+        count --;
+
+        std::this_thread::sleep_for(
+                std::chrono::microseconds(conf_->ipv4_conf.inter_pkt_gap_us));
+    }
 }
 
 }

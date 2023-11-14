@@ -41,9 +41,8 @@ event_description icmp_dest_unreachable::parse(packet &p, logger *log, bool debu
 
     p.deserialize(reserved);
     ipv4_h = std::make_shared<ipv4_hdr>();
-    if (!ipv4_h) {
-        return event_description::Evt_Unknown_Error;
-    }
+    if (!ipv4_h)
+        return event_description::Evt_Out_Of_Memory;
 
     evt_desc = ipv4_h->deserialize(p, log, debug);
     if (evt_desc != event_description::Evt_Parse_Ok) {
@@ -169,9 +168,8 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             }
 
             echo_req = std::make_shared<icmp_echo_req>();
-            if (!echo_req) {
-                return event_description::Evt_Unknown_Error;
-            }
+            if (!echo_req)
+                return event_description::Evt_Out_Of_Memory;
 
             p.deserialize(echo_req->id);
             p.deserialize(echo_req->seq_no);
@@ -187,9 +185,9 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             }
 
             echo_req->data = (uint8_t *)calloc(1, p.remaining_len());
-            if (!echo_req->data) {
-                return event_description::Evt_Unknown_Error;
-            }
+            if (!echo_req->data)
+                return event_description::Evt_Out_Of_Memory;
+
             std::memcpy(echo_req->data, &p.buf[p.off], p.remaining_len());
         } break;
         case Icmp_Type::Echo_Reply: {

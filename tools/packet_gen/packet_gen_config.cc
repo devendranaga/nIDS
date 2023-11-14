@@ -109,6 +109,20 @@ int packet_gen_ipv4_config::parse(Json::Value &r)
     if (ret != 0)
         return -1;
 
+    ret = parse_str_to_uint16(r["ipv4"]["protocol"].asString(), protocol);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint32(r["ipv4"]["count"].asString(), count);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint32(r["ipv4"]["inter_pkt_gap_us"].asString(), inter_pkt_gap_us);
+    if (ret != 0)
+        return -1;
+
+    valid_ = true;
+
     return 0;
 }
 

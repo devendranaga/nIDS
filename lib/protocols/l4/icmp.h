@@ -216,6 +216,9 @@ struct icmp_hdr {
 
     private:
         const int icmp_hdr_len_ = 4;
+        //
+        // this is the default value because on Linux, this is 64 bytes.
+        // on Windows and Mac this may change.
         const int icmp_max_data_len_ = 64;
 };
 

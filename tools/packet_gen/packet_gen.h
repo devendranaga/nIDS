@@ -10,11 +10,13 @@
 #include <memory>
 #include <thread>
 #include <getopt.h>
+#include <arpa/inet.h>
 #include <logger.h>
 #include <raw_socket.h>
 #include <packet_gen_config.h>
 #include <pcap_replay.h>
 #include <eth.h>
+#include <ipv4.h>
 
 namespace firewall {
 

@@ -18,7 +18,7 @@ int ipv4_hdr::serialize(packet &p)
     //
     // version and hdr length
     byte = version << 4;
-    byte |= IPV4_HDR_NO_OPTIONS;
+    byte |= (IPV4_HDR_NO_OPTIONS / 4);
 
     p.serialize(byte);
 
@@ -75,8 +75,8 @@ int ipv4_hdr::serialize(packet &p)
 
     // Header checksum
     hdr_chksum = this->generate_checksum(p);
-    p.buf[hdr_chksum_off] = (hdr_chksum & 0xFF00) >> 8;
-    p.buf[hdr_chksum_off + 1] = (hdr_chksum & 0x00FF);
+    p.buf[hdr_chksum_off] = (hdr_chksum & 0x00FF);
+    p.buf[hdr_chksum_off + 1] = (hdr_chksum & 0xFF00) >> 8;
 
     return 0;
 }
@@ -118,9 +118,10 @@ uint16_t ipv4_hdr::generate_checksum(packet &p)
     }
 
     carry = (csum & 0xFF0000) >> 16;
+    csum = csum & 0xFFFF;
     csum += carry;
 
-    return csum & 0xFFFF;
+    return ~csum;
 }
 
 event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)

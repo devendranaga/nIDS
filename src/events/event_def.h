@@ -121,6 +121,7 @@ enum class rule_ids : uint32_t {
     Rule_Id_Icmp_Dest_Addr_Multicast_In_IPv4,
     Rule_Id_Icmp_Dest_Addr_Broadcast_In_IPv4,
     Rule_Id_Icmp_Addr_Mask_Len_Inval,
+    Rule_Id_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast,
 
     //
     // DHCP Rule Ids
@@ -282,6 +283,7 @@ enum class event_description : uint32_t {
     Evt_Icmp_Inval_Chksum,
     Evt_Icmp_Non_Zero_Echo_Req_Payload_Len,
     Evt_Icmp_Non_Zero_ECho_Reply_Payload_Len,
+    Evt_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast,
 
     //
     // DHCP events

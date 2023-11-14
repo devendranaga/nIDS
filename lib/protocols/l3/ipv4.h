@@ -340,6 +340,26 @@ struct ipv4_hdr {
         return is_reserved(dst_addr);
     }
 
+    inline bool is_dst_loopback()
+    {
+        return is_loopback(dst_addr);
+    }
+
+    inline bool is_src_loopback()
+    {
+        return is_loopback(src_addr);
+    }
+
+    inline bool is_dst_directed_broadcast()
+    {
+        return is_directed_broadcat(dst_addr);
+    }
+
+    inline bool is_src_directed_broadcast()
+    {
+        return is_directed_broadcat(src_addr);
+    }
+
     private:
     inline bool is_multicast(uint32_t ip_addr)
     {
@@ -364,6 +384,26 @@ struct ipv4_hdr {
     inline bool is_broadcast(uint32_t ipaddr)
     {
         return ipaddr == 0xFFFFFFFF;
+    }
+
+    inline bool is_loopback(uint32_t ipaddr)
+    {
+        uint32_t byte = (ipaddr & 0xFF000000) >> 24;
+
+        return (byte == 0x7F);
+    }
+
+    //
+    // sometimes this is not the only directed broadcast
+    // address. It depends on the network mask / subnet mask.
+    //
+    // for a subnetwork of 13 bits, we could have the network
+    // between 1 - 30. 31 could be the broadcast address.
+    inline bool is_directed_broadcat(uint32_t ipaddr)
+    {
+        uint32_t byte = (ipaddr & 0x000000FF);
+
+        return (byte == 0xFF);
     }
 
 };

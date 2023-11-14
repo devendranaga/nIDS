@@ -21,6 +21,7 @@ The following protocols are supported.
 | 15 | IPv6-ESP | L3 / L4 |
 | 16 | IPv6-AH | L3 / L4 |
 | 17 | IPv6-in-IPv6 | L3 / L4 |
+| 18 | IGMP v3 | L4 |
 
 Below are some of the supported Automotive protocols.
 

@@ -39,6 +39,16 @@ event_description icmp_filter::run_filter(parser &p, packet &pkt, logger *log, b
         return event_description::Evt_Icmp_Dest_Addr_Broadcast_In_IPv4;
     }
 
+    //
+    // chance of a smurf attack
+    //
+    // in general, the sender expect us to provide a echo-reply on to
+    // the directed broadcast address, in turn flooding the replies on
+    // the entire network.
+    if (p.ipv4_h->is_src_directed_broadcast()) {
+        return event_description::Evt_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast;
+    }
+
     evt_desc = p.icmp_h->deserialize(pkt, log, debug);
     if (evt_desc != event_description::Evt_Parse_Ok) {
         return evt_desc;

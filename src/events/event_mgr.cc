@@ -384,6 +384,11 @@ const static struct {
         rule_ids::Rule_Id_Icmp_Addr_Mask_Len_Inval,
         "ICMP Address Mask length invalid"
     },
+    {
+        event_description::Evt_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast,
+        rule_ids::Rule_Id_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast,
+        "ICMP sender's address is a directed broadcast address"
+    },
 
     //
     // DHCP rules
