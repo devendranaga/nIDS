@@ -1,6 +1,7 @@
 {
     "ifname": "dummy0",
     "eth": {
+        "enable": false,
         "src_mac": "00:11:22:33:44:55",
         "dst_mac": "00:11:22:11:11:22",
         "ethertype": "0x0800",
@@ -10,6 +11,7 @@
         "inter_pkt_gap_us": 100
     },
     "arp": {
+        "enable": false,
         "spoof_mode": true,
         "hwtype": 1,
         "protocol_type": "0x0800",
@@ -25,9 +27,11 @@
         "inter_pkt_gap_us": 100
     },
     "ipv4": {
+        "enable": false,
         "src_mac": "00:11:22:33:44:55",
         "dest_mac": "11:22:33:44:11:22",
         "ttl": 1,
+        "auto_ttl": true,
         "src_ipaddr": "192.168.1.1",
         "dst_ipaddr": "192.168.1.2",
         "id": "0x1234",
@@ -36,7 +40,23 @@
         "count": 10,
         "inter_pkt_gap_us": 100
     },
+    "icmp": {
+        "enable": false,
+        "ipv4": {
+            "src_ipaddr": "192.168.1.1",
+            "dst_ipaddr": "192.168.1.255",
+            "ttl": "auto",
+            "id": "0x1234"
+        },
+        "type": 8,
+        "code": 0,
+        "echo_req": {
+            "id": "0x1212",
+            "seq_no": 1
+        }
+    },
     "pcap_replay": {
+        "enable": false,
         "filepath": "./pcap_file.pcap",
         "intvl_us": 100,
         "repeat": true

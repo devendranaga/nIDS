@@ -199,7 +199,9 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
 
     //
     // Source and Destination IPv4 addresses are same
-    if (src_addr == dst_addr) {
+    if (!is_src_loopback() &&
+        !is_dst_loopback() &&
+        (src_addr == dst_addr)) {
         return event_description::Evt_IPv4_Src_And_Dst_Addr_Same;
     }
 

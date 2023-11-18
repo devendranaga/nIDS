@@ -37,6 +37,7 @@ class packet_gen {
         void run_eth_replay();
         void run_arp_replay();
         void run_ipv4_replay();
+        int make_ipv4_packet(packet &p, int count);
         packet_gen_config *conf_;
         std::shared_ptr<raw_socket> raw_;
         std::string filename_;

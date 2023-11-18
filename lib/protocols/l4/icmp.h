@@ -72,6 +72,15 @@ struct icmp_echo_req {
             free(data);
         }
     }
+
+    /**
+     * @brief - serialize echo_request.
+     *
+     * @param [in] p - packet.
+     *
+     * @return 0 on success -1 on failure.
+     */
+    int serialize(packet &p);
     void print(logger *log);
 };
 
@@ -200,19 +209,27 @@ struct icmp_hdr {
     { }
     ~icmp_hdr() { }
 
+    /**
+     * @brief - serialize icmp packet.
+     *
+     * @param [in] p - packet.
+     *
+     * @return returns 0 on success -1 on error.
+     */
     int serialize(packet &p);
     /**
      * @brief - deserialize icmp packet.
-     * 
+     *
      * @param [inout] p - packet
      * @param [in] log - logger
      * @param [in] debug - debug print
-     * 
+     *
      * @return returns the event description of parsed packet.
     */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log);
     int validate_checksum(const packet &p);
+    int generate_checksum(const packet &p);
 
     private:
         const int icmp_hdr_len_ = 4;

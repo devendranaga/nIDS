@@ -8,9 +8,50 @@
 
 namespace firewall {
 
+int icmp_echo_req::serialize(packet &p)
+{
+    p.serialize(id);
+    p.serialize(seq_no);
+    if (data_len != 0)
+        p.serialize(data, data_len);
+
+    return 0;
+}
+
 int icmp_hdr::serialize(packet &p)
 {
-    return -1;
+    uint32_t checksum_off = 0;
+    uint32_t off_cur = 0;
+    int ret = 0;
+
+    start_off = p.off;
+
+    p.serialize(type);
+    p.serialize(code);
+    checksum = 0;
+    checksum_off = p.off;
+    p.serialize(checksum);
+
+    if (echo_req) {
+        ret = echo_req->serialize(p);
+    }
+
+    end_off = p.off;
+
+    checksum = generate_checksum(p);
+
+    // save the cur offset
+    off_cur = p.off;
+
+    // load the checksum offset into the off
+    p.off = checksum_off;
+
+    p.serialize(checksum);
+
+    // restore the current offset back
+    p.off = off_cur;
+
+    return ret;
 }
 
 int icmp_hdr::validate_checksum(const packet &p)
@@ -33,6 +74,21 @@ int icmp_hdr::validate_checksum(const packet &p)
     }
 
     return -1;
+}
+
+int icmp_hdr::generate_checksum(const packet &p)
+{
+    uint32_t i = 0;
+    uint32_t csum = 0;
+    uint32_t carry = 0;
+
+    for (i = start_off; i < end_off; i += 2) {
+        csum += ((p.buf[i] << 8) | p.buf[i + 1]);
+    }
+    carry = (csum & 0xFF0000) >> 16;
+    csum = csum & 0x00FFFF;
+
+    return ~(csum + carry);
 }
 
 event_description icmp_dest_unreachable::parse(packet &p, logger *log, bool debug)

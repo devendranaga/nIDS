@@ -18,6 +18,7 @@ namespace firewall {
  * @brief - defines ethernet configuration.
 */
 struct packet_gen_eth_config {
+    bool enable;
     uint8_t src_mac[FW_MACADDR_LEN];
     uint8_t dst_mac[FW_MACADDR_LEN];
     uint32_t ethertype;
@@ -46,6 +47,7 @@ struct packet_gen_eth_config {
  * @brief - defines pcap replay configuration.
 */
 struct packet_gen_pcap_replay_config {
+    bool enable;
     std::string filepath;
     uint32_t intvl_us;
     bool repeat;
@@ -69,6 +71,7 @@ struct packet_gen_pcap_replay_config {
  * @brief - defines packet gen arp configuration.
 */
 struct packet_gen_arp_config {
+    bool enable;
     bool spoof_mode;
     arp_hdr arp_h;
     bool repeat;
@@ -93,9 +96,11 @@ struct packet_gen_arp_config {
 };
 
 struct packet_gen_ipv4_config {
+    bool enable;
     uint8_t src_mac[6];
     uint8_t dest_mac[6];
     uint32_t ttl;
+    bool auto_ttl;
     uint32_t src_ipaddr;
     uint32_t dest_ipaddr;
     uint16_t id;

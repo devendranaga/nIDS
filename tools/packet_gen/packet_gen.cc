@@ -29,6 +29,8 @@ int packet_gen::init(int argc, char **argv)
 
     log_ = logger::instance();
 
+    log_->init(false, "", false, true);
+
     log_->info("parse configuration %s\n", filename_.c_str());
 
     conf_ = packet_gen_config::instance();
@@ -94,16 +96,16 @@ void packet_gen::run_arp_replay()
 
 void packet_gen::run()
 {
-    if (conf_->pcap_conf.is_valid()) {
+    if (conf_->pcap_conf.enable && conf_->pcap_conf.is_valid()) {
         run_pcap_replay();
     }
-    if (conf_->eth_conf.is_valid()) {
+    if (conf_->eth_conf.enable && conf_->eth_conf.is_valid()) {
         run_eth_replay();
     }
-    if (conf_->arp_conf.is_valid()) {
+    if (conf_->arp_conf.enable && conf_->arp_conf.is_valid()) {
         run_arp_replay();
     }
-    if (conf_->ipv4_conf.is_valid()) {
+    if (conf_->ipv4_conf.enable && conf_->ipv4_conf.is_valid()) {
         run_ipv4_replay();
     }
 }
@@ -141,16 +143,14 @@ void packet_gen::run_eth_replay()
     log_->info("replay complete\n");
 }
 
-void packet_gen::run_ipv4_replay()
+int packet_gen::make_ipv4_packet(packet &p, int count)
 {
-    packet p(1500);
     eth_hdr eh;
     ipv4_hdr ipv4_h;
-    uint8_t dst[6] = {0};
-    int count = conf_->ipv4_conf.count;
+    uint32_t ttl;
     int ret;
 
-    log_->info("Starting IPv4 Replay\n");
+    p.off = 0;
 
     std::memcpy(eh.src_mac,
                 conf_->ipv4_conf.src_mac, sizeof(conf_->ipv4_conf.src_mac));
@@ -168,25 +168,51 @@ void packet_gen::run_ipv4_replay()
     ipv4_h.dont_frag = 0;
     ipv4_h.more_frag = 0;
     ipv4_h.frag_off = 0;
-    ipv4_h.ttl = conf_->ipv4_conf.ttl;
+
+    ttl = conf_->ipv4_conf.ttl;
+    if (conf_->ipv4_conf.auto_ttl)
+        ttl = count;
+
+    ipv4_h.ttl = ttl;
     ipv4_h.protocol = conf_->ipv4_conf.protocol;
     ipv4_h.src_addr = ntohl(conf_->ipv4_conf.src_ipaddr);
     ipv4_h.dst_addr = ntohl(conf_->ipv4_conf.dest_ipaddr);
     ret = ipv4_h.serialize(p);
     if (ret < 0) {
         log_->error("failed to serialize ipv4 packet\n");
-        return;
+        return -1;
     }
 
-    p.buf_len = p.off;
+    return 0;
+}
 
-    while (count > 0) {
+void packet_gen::run_ipv4_replay()
+{
+    packet p(1500);
+    uint8_t dst[6] = {0};
+    uint32_t count = 0;
+    uint32_t total_count;
+
+    log_->info("Starting IPv4 Replay\n");
+
+    total_count = conf_->ipv4_conf.count;
+    if (conf_->ipv4_conf.auto_ttl) {
+        total_count = 255;
+    }
+    for (; count < total_count; count ++) {
+        make_ipv4_packet(p, count + 1);
+
+        p.buf_len = p.off;
+
         raw_->send_msg(dst, p.buf, p.buf_len);
-        count --;
 
         std::this_thread::sleep_for(
                 std::chrono::microseconds(conf_->ipv4_conf.inter_pkt_gap_us));
+
+        printf("sent [%d]\n", count + 1);
     }
+
+    log_->info("Replay complete\n");
 }
 
 }

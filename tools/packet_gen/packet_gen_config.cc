@@ -12,6 +12,8 @@ int packet_gen_eth_config::parse(Json::Value &r)
 {
     int ret;
 
+    enable = r["enable"].asBool();
+
     ret = parse_str_to_mac(r["src_mac"].asString(), src_mac);
     if (ret != 0)
         return -1;
@@ -38,6 +40,7 @@ int packet_gen_arp_config::parse(Json::Value &r)
 {
     int ret;
 
+    enable = r["arp"]["enable"].asBool();
     spoof_mode = r["arp"]["spoof_mode"].asBool();
     arp_h.hw_type = r["arp"]["hwtype"].asUInt();
     ret = parse_str_to_uint16_h(r["arp"]["protocol_type"].asString(),
@@ -81,6 +84,7 @@ int packet_gen_ipv4_config::parse(Json::Value &r)
 {
     int ret;
 
+    enable = r["ipv4"]["enable"].asBool();
     ret = parse_str_to_mac(r["ipv4"]["src_mac"].asString(), src_mac);
     if (ret != 0)
         return -1;
@@ -92,6 +96,8 @@ int packet_gen_ipv4_config::parse(Json::Value &r)
     ret = parse_str_to_uint32(r["ipv4"]["ttl"].asString(), ttl);
     if (ret != 0)
         return -1;
+
+    auto_ttl = r["ipv4"]["auto_ttl"].asBool();
 
     ret = parse_str_to_ipv4_addr(r["ipv4"]["src_ipaddr"].asString(), src_ipaddr);
     if (ret != 0)
@@ -128,6 +134,7 @@ int packet_gen_ipv4_config::parse(Json::Value &r)
 
 int packet_gen_pcap_replay_config::parse(Json::Value &r)
 {
+    enable = r["enable"].asBool();
     filepath = r["filepath"].asString();
     intvl_us = r["intvl_us"].asUInt();
     repeat = r["repeat"].asBool();
