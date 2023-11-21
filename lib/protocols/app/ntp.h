@@ -12,7 +12,10 @@
 
 namespace firewall {
 
-#define NTP_MODE_CLIENT 3
+enum class Ntp_Mode {
+    Client = 3,
+    Server = 4,
+};
 
 /**
  * @brief - implements NTP header.

@@ -17,17 +17,17 @@ void eth_hdr::serialize(packet &p)
 
 event_description eth_hdr::deserialize(packet &p, logger *log, bool debug)
 {
-	if (p.remaining_len() < eth_hdr_len_) {
+	//
+	// if packet is truncated, flag it
+	if (p.remaining_len() < eth_hdr_len_)
 		return event_description::Evt_Eth_Hdrlen_Too_Small;
-	}
 
 	p.deserialize(src_mac);
 	p.deserialize(dst_mac);
 	p.deserialize(ethertype);
 
-	if (debug) {
+	if (debug)
 		print(log);
-	}
 
 	return event_description::Evt_Parse_Ok;
 }

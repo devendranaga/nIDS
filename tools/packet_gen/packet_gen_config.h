@@ -51,11 +51,13 @@ struct packet_gen_pcap_replay_config {
     std::string filepath;
     uint32_t intvl_us;
     bool repeat;
+    bool use_pcap_timestamps;
 
     explicit packet_gen_pcap_replay_config() :
                         filepath(""),
                         intvl_us(1),
                         repeat(false),
+                        use_pcap_timestamps(false),
                         valid_(false)
     { }
     ~packet_gen_pcap_replay_config() { }

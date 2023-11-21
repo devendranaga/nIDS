@@ -203,6 +203,31 @@ void someip_rule_config::print(logger *log)
 #endif
 }
 
+void rule_config::parse_port_rule(Json::Value &rule_cfg_data,
+                                  rule_config_item &rule)
+{
+    auto port_list_str = rule_cfg_data["port_list"];
+    if (!port_list_str.isNull()) {
+        for (auto it : port_list_str) {
+            rule.port_rule.port_list.push_back(it.asUInt());
+        }
+        rule.sig_mask.port_list_sig.port_list = 1;
+    }
+}
+
+void port_rule_config::print(logger *log)
+{
+#if defined(FW_ENABLE_DEBUG)
+    log->verbose("\tPort_Rule_Config: {\n");
+    log->verbose("\t\t Ports: [ ");
+    for (auto it : port_list) {
+        fprintf(stderr, "%d ", it);
+    }
+    fprintf(stderr, "]\n");
+    log->verbose("\t}\n");
+#endif
+}
+
 void rule_config_item::print()
 {
 #if defined(FW_ENABLE_DEBUG)
@@ -218,6 +243,7 @@ void rule_config_item::print()
     ipv4_rule.print(log);
     icmp_rule.print(log);
     udp_rule.print(log);
+    port_rule.print(log);
 
     sig_mask.print(log);
 
@@ -249,6 +275,7 @@ fw_error_type rule_config::parse_rule(Json::Value &rule_cfg_data)
     parse_icmp_rule(rule_cfg_data, rule);
     parse_udp_rule(rule_cfg_data, rule);
     parse_someip_rule(rule_cfg_data, rule);
+    parse_port_rule(rule_cfg_data, rule);
 
     rule.print();
 
@@ -286,6 +313,7 @@ void signature_id_bitmask::print(logger *log)
     log->verbose("\t\t udp_sig.port: %d\n", udp_sig.port);
     log->verbose("\t\t someip.service_id: %d\n", someip_sig.service_id);
     log->verbose("\t\t someip.method_id: %d\n", someip_sig.method_id);
+    log->verbose("\t\t port_rule.port_list: %d\n", port_list_sig.port_list);
     log->verbose("\t }\n");
 #endif
 }
@@ -297,6 +325,7 @@ void signature_id_bitmask::init()
     ipv4_sig.init();
     icmp_sig.init();
     udp_sig.init();
+    port_list_sig.init();
 }
 
 void eth_sig_bitmask::init()
@@ -332,6 +361,11 @@ void someip_sig_bitmask::init()
 {
     service_id = 0;
     method_id = 0;
+}
+
+void port_list_sig_bitmask::init()
+{
+    port_list = 0;
 }
 
 }

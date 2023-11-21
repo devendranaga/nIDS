@@ -164,6 +164,7 @@ enum class rule_ids : uint32_t {
     // IGMP Rule Ids
     Rule_Id_Igmp_Hdr_Len_Too_Small = 1801,
     Rule_Id_Igmp_Unsupported_Type,
+    Rule_Id_Port_Matched = 1901,
 
     //
     // Known Malware / Virus / Explit Rule Ids
@@ -327,6 +328,10 @@ enum class event_description : uint32_t {
     // IGMP events
     Evt_Igmp_Hdr_Len_Too_Small = 1801,
     Evt_Igmp_Unsupported_Type,
+
+    //
+    // Port events
+    Evt_Port_Matched = 1901,
 
     //
     // Known virus / exploit / worm / malware events

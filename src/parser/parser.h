@@ -54,6 +54,7 @@
 #include <eth_filter.h>
 #include <arp_filter.h>
 #include <icmp_filter.h>
+#include <port_filter.h>
 
 namespace firewall {
 
@@ -282,7 +283,6 @@ struct parser {
                                                  int port);
         event_description run_arp_filter(packet &pkt, logger *log, bool pkt_dump);
         void run_rule_filters(packet &pkt,
-                              rule_config *rule_list,
                               logger *log,
                               bool pkt_dump);
         bool exploit_search(packet &pkt);

@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <memory>
 #include <raw_socket.h>
+#include <pcap_intf.h>
 
 namespace firewall {
 
@@ -20,6 +21,7 @@ class pcap_replay {
         explicit pcap_replay(std::shared_ptr<raw_socket> &raw,
                              const std::string &replay_file,
                              uint32_t replay_intvl,
+                             bool use_pcap_timediffs,
                              bool pcap_repeat);
         ~pcap_replay() { }
 
@@ -32,7 +34,11 @@ class pcap_replay {
         std::shared_ptr<raw_socket> raw_;
         std::string replay_filename_;
         uint32_t replay_intvl_;
+        bool use_pcap_timediffs_;
         bool pcap_repeat_;
+        std::shared_ptr<pcap_reader> rd_;
+        pcaprec_hdr_t rec_hdr_;
+        uint8_t pkt_[4096];
 };
 
 }

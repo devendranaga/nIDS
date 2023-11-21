@@ -256,7 +256,7 @@ struct ipv4_hdr {
      * @return true if a fragment
      * @return false if not
     */
-    bool is_a_frag() { return frag_off > 0; }
+    bool is_a_frag() { return (frag_off > 0) || more_frag; }
 
     /**
      * @brief - serialize the ipv4 packet.

@@ -67,6 +67,12 @@
             "service_id": "0x1000",
             "method_id": "0x8001"
         }
+    },
+    {
+        "rule_name": "deny all ports except the below ones",
+        "rule_id": 10008,
+        "rule_type": "allow",
+        "port_list": [ 80, 443, 22]
     }
 ]
 

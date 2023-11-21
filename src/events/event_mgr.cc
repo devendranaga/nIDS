@@ -481,6 +481,14 @@ const static struct {
     },
 
     //
+    // Port rules
+    {
+        event_description::Evt_Port_Matched,
+        rule_ids::Rule_Id_Port_Matched,
+        "Port Matched in the ruleset",
+    },
+
+    //
     // Rules matched by the Exploit filter
     {
         event_description::Evt_Known_Exploit_Win32_Blaster,

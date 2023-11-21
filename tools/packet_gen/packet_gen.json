@@ -59,6 +59,7 @@
         "enable": false,
         "filepath": "./pcap_file.pcap",
         "intvl_us": 100,
+        "use_pcap_timediff": false,
         "repeat": true
     }
 }

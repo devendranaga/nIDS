@@ -105,6 +105,14 @@ struct someip_rule_config {
     void print(logger *log);
 };
 
+struct port_rule_config {
+    std::vector<uint16_t> port_list;
+
+    explicit port_rule_config() { }
+    ~port_rule_config() { }
+    void print(logger *log);
+};
+
 struct eth_sig_bitmask {
     uint32_t from_src:1;
     uint32_t to_dst:1;
@@ -175,6 +183,16 @@ struct someip_sig_bitmask {
     void init();
 };
 
+struct port_list_sig_bitmask {
+    uint32_t port_list:1;
+
+    explicit port_list_sig_bitmask() :
+                    port_list(0) { }
+    ~port_list_sig_bitmask() { }
+
+    void init();
+};
+
 struct signature_id_bitmask {
     eth_sig_bitmask eth_sig;
     vlan_sig_bitmask vlan_sig;
@@ -182,6 +200,7 @@ struct signature_id_bitmask {
     icmp_sig_bitmask icmp_sig;
     udp_sig_bitmask udp_sig;
     someip_sig_bitmask someip_sig;
+    port_list_sig_bitmask port_list_sig;
 
     explicit signature_id_bitmask() { }
     ~signature_id_bitmask() { }
@@ -206,6 +225,7 @@ struct rule_config_item {
     icmp_rule_config icmp_rule;
     udp_rule_config udp_rule;
     someip_rule_config someip_rule;
+    port_rule_config port_rule;
     signature_id_bitmask sig_mask;
     signature_id_bitmask sig_detected;
 
@@ -254,6 +274,7 @@ struct rule_config {
         void parse_icmp_rule(Json::Value &it, rule_config_item &item);
         void parse_udp_rule(Json::Value &it, rule_config_item &item);
         void parse_someip_rule(Json::Value &it, rule_config_item &item);
+        void parse_port_rule(Json::Value &it, rule_config_item &item);
 };
 
 }

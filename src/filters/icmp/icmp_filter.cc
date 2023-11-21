@@ -23,7 +23,7 @@ event_description icmp_filter::run_filter(parser &p, packet &pkt, logger *log, b
     //
     // more fragments or frag_off is present
     // in an ICMP frame. Deny all ICMP frames with fragments by default.
-    if ((p.ipv4_h->more_frag) || (p.ipv4_h->frag_off != 0)) {
+    if (p.ipv4_h->is_a_frag()) {
         return event_description::Evt_Icmp_Pkt_Fragmented; 
     }
 

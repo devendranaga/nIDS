@@ -405,7 +405,7 @@ int parser::run(packet &pkt)
 
     //
     // run the rule filters
-    run_rule_filters(pkt, rule_list_, log_, pkt_dump_);
+    run_rule_filters(pkt, log_, pkt_dump_);
 
     return 0;
 }
@@ -437,10 +437,16 @@ event_description parser::run_arp_filter(packet &pkt,
 }
 
 void parser::run_rule_filters(packet &p,
-                              rule_config *rule_list,
                               logger *log,
                               bool pkt_dump)
 {
+    for (auto it : rule_list_->rules_cfg_) {
+        //
+        // run port filtering
+        if (it.sig_mask.port_list_sig.port_list) {
+            port_filter::instance()->run(*this, it, log, pkt_dump);
+        }
+    }
 }
 
 event_description parser::parse_custom_app_ports(packet &pkt,

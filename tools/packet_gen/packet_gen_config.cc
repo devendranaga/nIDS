@@ -138,6 +138,7 @@ int packet_gen_pcap_replay_config::parse(Json::Value &r)
     filepath = r["filepath"].asString();
     intvl_us = r["intvl_us"].asUInt();
     repeat = r["repeat"].asBool();
+    use_pcap_timestamps = r["use_pcap_timediff"].asBool();
 
     valid_ = true;
 

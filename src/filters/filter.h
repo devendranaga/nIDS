@@ -11,6 +11,7 @@
 #include <packet.h>
 #include <arp_filter.h>
 #include <icmp_filter.h>
+#include <port_filter.h>
 #include <common.h>
 
 namespace firewall {

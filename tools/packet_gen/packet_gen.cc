@@ -57,6 +57,7 @@ void packet_gen::run_pcap_replay()
                         raw_,
                         conf_->pcap_conf.filepath,
                         conf_->pcap_conf.intvl_us,
+                        conf_->pcap_conf.use_pcap_timestamps,
                         conf_->pcap_conf.repeat);
     replay->replay();
 }
