@@ -7,6 +7,7 @@
 #define __FW_LIB_PROTOCOLS_MACSEC_H__
 
 #include <cstring>
+#include <ether_types.h>
 #include <packet.h>
 #include <event_def.h>
 #include <logger.h>
@@ -55,6 +56,7 @@ struct ieee8021ae_hdr {
     uint8_t short_len;
     uint32_t pkt_number;
     ieee8021ae_sci sci;
+    uint16_t ethertype;
     uint16_t data_len;
     uint8_t *data;
     uint8_t icv[MACSEC_ICV_LEN];
@@ -99,6 +101,9 @@ struct ieee8021ae_hdr {
                             sci.mac[4], sci.mac[5]);
         log->verbose("\t\t port_number: %u\n", sci.port_id);
         log->verbose("\t }\n");
+        if (is_an_authenticated_frame()) {
+            log->verbose("\t Ethertype: 0x%04x\n", ethertype);
+        }
         log->verbose("\t data_len: %d\n", data_len);
         log->verbose("\t ICV: ");
         for (auto i = 0; i < MACSEC_ICV_LEN; i ++) {
@@ -110,6 +115,14 @@ struct ieee8021ae_hdr {
     }
     bool is_an_encrypted_frame() { return tci.e && tci.c; }
     bool is_an_authenticated_frame() { return (tci.e == 0) && (tci.c == 0); }
+    Ether_Type get_ethertype()
+    {
+        if (is_an_authenticated_frame()) {
+            return static_cast<Ether_Type>(ethertype);
+        }
+
+        return Ether_Type::Ether_Type_Unknown;
+    }
 
     private:
         int macsec_hdr_len_min_ = 22;

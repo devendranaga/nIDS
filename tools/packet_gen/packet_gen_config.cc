@@ -132,6 +132,110 @@ int packet_gen_ipv4_config::parse(Json::Value &r)
     return 0;
 }
 
+int packet_gen_macsec_config::parse(Json::Value &r)
+{
+    uint32_t ver = 0;
+    uint32_t es = 0;
+    uint32_t sc = 0;
+    uint32_t scb = 0;
+    uint32_t e = 0;
+    uint32_t c = 0;
+    uint32_t an = 0;
+    int ret;
+
+    enable = r["macsec"]["enable"].asBool();
+
+    ret = parse_str_to_uint32(r["macsec"]["tci"]["ver"].asString(), ver);
+    if (ret != 0)
+        return -1;
+
+    macsec_h.tci.ver = ver;
+
+    ret = parse_str_to_uint32(r["macsec"]["tci"]["es"].asString(), es);
+    if (ret != 0)
+        return -1;
+
+    macsec_h.tci.es = es;
+
+    ret = parse_str_to_uint32(r["macsec"]["tci"]["sc"].asString(), sc);
+    if (ret != 0)
+        return -1;
+
+    macsec_h.tci.sc = sc;
+
+    ret = parse_str_to_uint32(r["macsec"]["tci"]["scb"].asString(), scb);
+    if (ret != 0)
+        return -1;
+
+    macsec_h.tci.scb = scb;
+
+    ret = parse_str_to_uint32(r["macsec"]["tci"]["e"].asString(), e);
+    if (ret != 0)
+        return -1;
+
+    macsec_h.tci.e = e;
+
+    ret = parse_str_to_uint32(r["macsec"]["tci"]["c"].asString(), c);
+    if (ret != 0)
+        return -1;
+
+    macsec_h.tci.c = c;
+
+    ret = parse_str_to_uint32(r["macsec"]["tci"]["an"].asString(), an);
+    if (ret != 0)
+        return -1;
+
+    macsec_h.tci.an = an;
+
+    ret = parse_str_to_uint32(r["macsec"]["short_len"].asString(), (uint32_t &)(macsec_h.short_len));
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint32(r["macsec"]["pkt_number"].asString(), macsec_h.pkt_number);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_mac(r["macsec"]["sci"]["mac"].asString(), macsec_h.sci.mac);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint32(r["macsec"]["sci"]["port_id"].asString(), (uint32_t &)(macsec_h.sci.port_id));
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint16_h(r["macsec"]["macsec_ethertype"].asString(), macsec_h.ethertype);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint16(r["macsec"]["data_len"].asString(), macsec_h.data_len);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint32(r["macsec"]["count"].asString(), count);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint32(r["macsec"]["inter_pkt_gap_us"].asString(), inter_pkt_gap_us);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_mac(r["macsec"]["eth_src"].asString(), eth_src);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_mac(r["macsec"]["eth_dst"].asString(), eth_dst);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint16_h(r["macsec"]["ethertype"].asString(), ethertype);
+    if (ret != 0)
+        return -1;
+
+    valid_ = true;
+
+    return 0;
+}
+
 int packet_gen_pcap_replay_config::parse(Json::Value &r)
 {
     enable = r["enable"].asBool();
@@ -165,6 +269,9 @@ int packet_gen_config::parse(const std::string filepath)
     }
     if (!root["ipv4"].isNull()) {
         ipv4_conf.parse(root);
+    }
+    if (!root["macsec"].isNull()) {
+        macsec_conf.parse(root);
     }
 
     return 0;

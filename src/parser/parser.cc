@@ -348,6 +348,9 @@ int parser::run(packet &pkt)
         if (macsec_h->is_an_encrypted_frame()) {
             return 0;
         }
+        //
+        // We have an authenticated frame here, lets decode it further.
+        ether = macsec_h->get_ethertype();
     }
 
     //

@@ -10,6 +10,7 @@
 #include <string>
 #include <common.h>
 #include <arp.h>
+#include <macsec.h>
 #include <jsoncpp/json/json.h>
 
 namespace firewall {
@@ -139,6 +140,42 @@ struct packet_gen_ipv4_config {
         bool valid_;
 };
 
+struct packet_gen_macsec_config {
+    bool enable;
+    ieee8021ae_hdr macsec_h;
+    uint32_t count;
+    uint32_t inter_pkt_gap_us;
+    uint8_t eth_src[6];
+    uint8_t eth_dst[6];
+    uint16_t ethertype;
+
+    explicit packet_gen_macsec_config() : valid_(false) { }
+    ~packet_gen_macsec_config() { }
+
+    int parse(Json::Value &r);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->info("MACsec_Config: {\n");
+        macsec_h.print(log);
+        log->info("count: %d\n", count);
+        log->info("inter_pkt_gap_us: %d\n", inter_pkt_gap_us);
+        log->info("eth_src: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                                eth_src[0], eth_src[1], eth_src[2],
+                                eth_src[3], eth_src[4], eth_src[5]);
+        log->info("eth_dst: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                                eth_dst[0], eth_dst[1], eth_dst[2],
+                                eth_dst[3], eth_dst[4], eth_dst[5]);
+        log->info("ethertype: 0x%04x\n", ethertype);
+        log->info("}\n");
+    #endif
+    }
+    bool is_valid() { return valid_; }
+
+    private:
+        bool valid_;
+};
+
 /**
  * @brief - defines packet gen configuration.
 */
@@ -148,6 +185,7 @@ struct packet_gen_config {
     packet_gen_pcap_replay_config pcap_conf;
     packet_gen_arp_config arp_conf;
     packet_gen_ipv4_config ipv4_conf;
+    packet_gen_macsec_config macsec_conf;
 
     static packet_gen_config *instance()
     {
@@ -161,6 +199,12 @@ struct packet_gen_config {
     #if defined(FW_ENABLE_DEBUG)
         if (arp_conf.is_valid()) {
             arp_conf.print(log);
+        }
+        if (ipv4_conf.is_valid()) {
+            ipv4_conf.print(log);
+        }
+        if (macsec_conf.is_valid()) {
+            macsec_conf.print(log);
         }
     #endif
     }

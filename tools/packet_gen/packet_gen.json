@@ -14,7 +14,7 @@
         "enable": false,
         "spoof_mode": true,
         "hwtype": 1,
-        "protocol_type": "0x0800",
+        "protocol_type": "0x088E5",
         "hw_size": 6,
         "protocol_size": 4,
         "opcode": 1,
@@ -54,6 +54,32 @@
             "id": "0x1212",
             "seq_no": 1
         }
+    },
+    "macsec": {
+        "enable": true,
+        "eth_src": "00:01:02:03:04:05",
+        "eth_dst": "00:02:03:04:05:04",
+        "ethertype": "0x88E5",
+        "tci": {
+            "ver": 0,
+            "es": 0,
+            "sc": 1,
+            "scb": 0,
+            "e": 0,
+            "c": 1,
+            "an": 0
+        },
+        "short_len": 0,
+        "pkt_number": 444,
+        "sci": {
+            "mac": "01:02:03:04:05:06",
+            "port_id": 1
+        },
+        "macsec_ethertype": "0x0800",
+        "data_len": 444,
+        "icv": "00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F",
+        "count": 100,
+        "inter_pkt_gap_us": 100
     },
     "pcap_replay": {
         "enable": false,

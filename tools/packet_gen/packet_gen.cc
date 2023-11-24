@@ -109,6 +109,9 @@ void packet_gen::run()
     if (conf_->ipv4_conf.enable && conf_->ipv4_conf.is_valid()) {
         run_ipv4_replay();
     }
+    if (conf_->macsec_conf.enable && conf_->macsec_conf.is_valid()) {
+        run_macsec_replay();
+    }
 }
 
 void packet_gen::run_eth_replay()
@@ -209,6 +212,44 @@ void packet_gen::run_ipv4_replay()
 
         std::this_thread::sleep_for(
                 std::chrono::microseconds(conf_->ipv4_conf.inter_pkt_gap_us));
+
+        printf("sent [%d]\n", count + 1);
+    }
+
+    log_->info("Replay complete\n");
+}
+
+void packet_gen::run_macsec_replay()
+{
+    packet p(1500);
+    uint8_t dst[6] = {0};
+    uint32_t count = 0;
+    eth_hdr eh;
+
+    log_->info("Starting MACsec Replay\n");
+
+    std::memcpy(eh.src_mac,
+                conf_->macsec_conf.eth_src,
+                sizeof(conf_->macsec_conf.eth_src));
+    std::memcpy(eh.dst_mac,
+                conf_->macsec_conf.eth_dst,
+                sizeof(conf_->macsec_conf.eth_dst));
+    eh.ethertype = conf_->macsec_conf.ethertype;
+
+    eh.serialize(p);
+    conf_->macsec_conf.macsec_h.data = (uint8_t *)calloc(1, conf_->macsec_conf.macsec_h.data_len);
+    if (!conf_->macsec_conf.macsec_h.data) {
+        return;
+    }
+    conf_->macsec_conf.macsec_h.serialize(p);
+
+    p.buf_len = p.off;
+
+    for (count = 0; count < conf_->macsec_conf.count; count ++) {    
+        raw_->send_msg(dst, p.buf, p.buf_len);
+
+        std::this_thread::sleep_for(
+                std::chrono::microseconds(conf_->macsec_conf.inter_pkt_gap_us));
 
         printf("sent [%d]\n", count + 1);
     }

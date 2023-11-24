@@ -240,9 +240,8 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
 
     end_off = p.off;
 
-    if (debug) {
+    if (debug)
         print(log);
-    }
 
     //
     // validate the checksum
