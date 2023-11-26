@@ -33,6 +33,7 @@ enum class rule_ids : uint32_t {
     //
     // ARP Rule Ids
     Rule_Id_ARP_Hdrlen_Too_Small = 201,
+    Rule_Id_ARP_HWType_Inval,
     Rule_Id_ARP_HW_Addr_Len_Inval,
     Rule_Id_ARP_Protocol_Addr_Len_Inval,
     Rule_Id_ARP_Inval_Operation,
@@ -167,8 +168,12 @@ enum class rule_ids : uint32_t {
     Rule_Id_Port_Matched = 1901,
 
     //
+    // EAP Rule Ids
+    Rule_Id_EAP_Type_Unsupported = 2001,
+
+    //
     // Known Malware / Virus / Explit Rule Ids
-    Rule_Id_Known_Exploit_Win32_Blaster = 1601,
+    Rule_Id_Known_Exploit_Win32_Blaster = 10001,
 
     Rule_Id_Unknown,
 };
@@ -193,6 +198,7 @@ enum class event_description : uint32_t {
     //
     // ARP events
     Evt_ARP_Hdrlen_Too_Small = 201,
+    Evt_ARP_HWType_Inval,
     Evt_ARP_HW_Addr_Len_Inval,
     Evt_ARP_Protocol_Addr_Len_Inval,
     Evt_ARP_Inval_Operation,
@@ -332,6 +338,10 @@ enum class event_description : uint32_t {
     //
     // Port events
     Evt_Port_Matched = 1901,
+
+    //
+    // EAP events
+    Evt_EAP_Type_Unsupported = 2001,
 
     //
     // Known virus / exploit / worm / malware events

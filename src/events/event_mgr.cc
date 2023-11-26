@@ -41,6 +41,11 @@ const static struct {
         rule_ids::Rule_Id_MACsec_TCI_SC_SCB_Set,
         "MACsec TCI->SC and TCI->SCB cannot be set at the same time"
     },
+    {
+        event_description::Evt_MACsec_Hdr_Len_Too_Small,
+        rule_ids::Rule_Id_MACsec_Hdr_Len_Too_Small,
+        "MACsec Header length too small"
+    },
 
     //
     // arp rules
@@ -48,6 +53,11 @@ const static struct {
         event_description::Evt_ARP_Hdrlen_Too_Small,
         rule_ids::Rule_Id_ARP_Hdrlen_Too_Small,
         "ARP Header length too small",
+    },
+    {
+        event_description::Evt_ARP_HWType_Inval,
+        rule_ids::Rule_Id_ARP_HWType_Inval,
+        "ARP HwType is invalid",
     },
     {
         event_description::Evt_ARP_HW_Addr_Len_Inval,

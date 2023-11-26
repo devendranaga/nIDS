@@ -34,6 +34,11 @@ struct eth_hdr {
 		return (Ether_Type)ethertype == Ether_Type::Ether_Type_VLAN;
 	}
 
+	inline bool has_ethertype_8021ad()
+	{
+		return (Ether_Type)ethertype == Ether_Type::Ether_Type_8021_AD;
+	}
+
 	inline bool has_ethertype_arp()
 	{
 		return (Ether_Type)ethertype == Ether_Type::Ether_Type_ARP;

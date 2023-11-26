@@ -11,6 +11,8 @@
 #include <eth.h>
 // MACsec header
 #include <macsec.h>
+// IEEE 802.1ad header
+#include <ieee_8021ad.h>
 // VLAN header
 #include <vlan.h>
 // ARP header
@@ -43,6 +45,8 @@
 #include <mqtt.h>
 // SOME/IP header
 #include <some_ip.h>
+// EAP header
+#include <eap.h>
 // Known exploits
 #include <known_exploits.h>
 
@@ -67,6 +71,7 @@ struct protocol_bits {
                             eth(0),
                             macsec(0),
                             ipv4(0),
+                            ieee8021ad(0),
                             arp(0),
                             vlan(0),
                             icmp(0),
@@ -80,13 +85,15 @@ struct protocol_bits {
                             doip(0),
                             tls(0),
                             mqtt(0),
-                            someip(0)
+                            someip(0),
+                            eap(0)
         { }
         ~protocol_bits() { }
 
         void set_eth() { eth = 1; }
         void set_macsec() { macsec = 1; }
         void set_ipv4() { ipv4 = 1; }
+        void set_ieee8021ad() { ieee8021ad = 1; }
         void set_arp() { arp = 1; }
         void set_vlan() { vlan = 1; }
         void set_icmp() { icmp = 1; }
@@ -101,9 +108,11 @@ struct protocol_bits {
         void set_tls() { tls = 1; }
         void set_mqtt() { mqtt = 1; }
         void set_someip() { someip = 1; }
+        void set_eap() { eap = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_macsec() const { return macsec == 1; }
         bool has_ipv4() const { return ipv4 == 1; }
+        bool has_ieee8021ad() const { return ieee8021ad == 1; }
         bool has_arp() const { return arp == 1; }
         bool has_vlan() const { return vlan == 1; }
         bool has_icmp() const { return icmp == 1; }
@@ -118,11 +127,13 @@ struct protocol_bits {
         bool has_tls() const { return tls == 1; }
         bool has_mqtt() const { return mqtt == 1; }
         bool has_someip() const { return someip == 1; }
+        bool has_eap() const { return eap == 1; }
 
     private:
         uint32_t eth:1;
         uint32_t macsec:1;
         uint32_t ipv4:1;
+        uint32_t ieee8021ad:1;
         uint32_t arp:1;
         uint32_t vlan:1;
         uint32_t icmp:1;
@@ -137,6 +148,7 @@ struct protocol_bits {
         uint32_t tls:1;
         uint32_t mqtt:1;
         uint32_t someip:1;
+        uint32_t eap:1;
 };
 
 /**
@@ -154,6 +166,9 @@ struct parser {
 
         // MACsec header
         std::shared_ptr<ieee8021ae_hdr> macsec_h;
+
+        // IEEE 802.1ad header
+        std::shared_ptr<ieee8021ad_hdr> ieee8021ad_h;
 
         // VLAN header
         std::shared_ptr<vlan_hdr> vh;
@@ -207,6 +222,8 @@ struct parser {
 
         // MQTT header
         std::shared_ptr<mqtt_hdr> mqtt_h;
+
+        std::shared_ptr<ieee8021x_hdr> ieee8021x_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;

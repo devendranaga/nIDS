@@ -307,6 +307,22 @@ int parser::run(packet &pkt)
     ether = eh->get_ethertype();
 
     //
+    // check if its IEEE 802.1ad provider bridge, parse it
+    if (eh->has_ethertype_8021ad()) {
+        ieee8021ad_h = std::make_shared<ieee8021ad_hdr>();
+        if (!ieee8021ad_h)
+            return -1;
+
+        evt_desc = ieee8021ad_h->deserialize(pkt, log_, pkt_dump_);
+        if (evt_desc != event_description::Evt_Parse_Ok) {
+            evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
+            return -1;
+        }
+        protocols_avail.set_ieee8021ad();
+        ether = ieee8021ad_h->get_ethertype();
+    }
+
+    //
     // check if its vlan, parse it
     if (eh->has_ethertype_vlan()) {
         vh = std::make_shared<vlan_hdr>();
@@ -378,6 +394,14 @@ int parser::run(packet &pkt)
 
             evt_desc = ipv6_h->deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ipv6();
+        } break;
+        case Ether_Type::Ether_Type_IEEE8021X: {
+            ieee8021x_h = std::make_shared<ieee8021x_hdr>();
+            if (!ieee8021x_h)
+                return -1;
+
+            evt_desc = ieee8021x_h->deserialize(pkt, log_, pkt_dump_);
+            protocols_avail.set_eap();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;

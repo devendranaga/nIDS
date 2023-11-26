@@ -32,22 +32,22 @@ event_description arp_hdr::deserialize(packet &p, logger *log, bool debug)
     }
 
     p.deserialize(hw_type);
+    if (static_cast<Arp_Hw_Type>(hw_type) != Arp_Hw_Type::Ethernet)
+        return event_description::Evt_ARP_HWType_Inval;
+
     p.deserialize(proto_type);
     p.deserialize(hw_addr_len);
-    if (hw_addr_len != ARP_HW_ADDR_LEN) {
+    if (hw_addr_len != ARP_HW_ADDR_LEN)
         return event_description::Evt_ARP_HW_Addr_Len_Inval;
-    }
 
     p.deserialize(proto_addr_len);
-    if (proto_addr_len != ARP_PROTO_ADDR_LEN) {
+    if (proto_addr_len != ARP_PROTO_ADDR_LEN)
         return event_description::Evt_ARP_Protocol_Addr_Len_Inval;
-    }
 
     p.deserialize(operation);
-    if ((operation < static_cast<uint16_t>(arp_operation::Request)) ||
-        (operation > static_cast<uint16_t>(arp_operation::InArp_Reply))) {
+    if ((operation < static_cast<uint16_t>(Arp_Operation::Request)) ||
+        (operation > static_cast<uint16_t>(Arp_Operation::InArp_Reply)))
         return event_description::Evt_ARP_Inval_Operation;
-    }
 
     p.deserialize(sender_hw_addr);
     p.deserialize(sender_proto_addr);

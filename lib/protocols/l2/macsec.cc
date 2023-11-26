@@ -42,9 +42,8 @@ event_description ieee8021ae_hdr::deserialize(packet &p, logger *log, bool debug
 
     //
     // drop the shorter frame
-    if (p.remaining_len() < macsec_hdr_len_min_) {
+    if (p.remaining_len() < macsec_hdr_len_min_)
         return event_description::Evt_MACsec_Hdr_Len_Too_Small;
-    }
 
     p.deserialize(byte);
     tci.ver = !!(byte & 0x80);

@@ -32,7 +32,7 @@ event_description arp_filter::add_arp_frame(parser &p)
             arp_e.state = Arp_State::Unknown;
             clock_gettime(CLOCK_MONOTONIC, &arp_e.last_seen);
 
-            if (p.arp_h->operation == static_cast<uint16_t>(arp_operation::Request)) {
+            if (p.arp_h->operation == static_cast<uint16_t>(Arp_Operation::Request)) {
                 arp_e.state = Arp_State::Req;
             }
             arp_table_.push_back(arp_e);

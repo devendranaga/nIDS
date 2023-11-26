@@ -21,7 +21,7 @@ namespace firewall {
 
 //
 // ARP operation
-enum class arp_operation {
+enum class Arp_Operation {
     Request = 1,
     Reply,
     Rarp_Request,
@@ -32,7 +32,7 @@ enum class arp_operation {
     InArp_Reply,
 };
 
-enum class arp_hw_type {
+enum class Arp_Hw_Type {
     Ethernet = 1,
 };
 
@@ -68,10 +68,10 @@ struct arp_hdr {
     void print(logger *log);
 
     inline bool is_arp_req()
-    { return operation == (uint32_t)arp_operation::Request; }
+    { return operation == (uint32_t)Arp_Operation::Request; }
 
     inline bool is_arp_reply()
-    { return operation == (uint32_t)arp_operation::Reply; }
+    { return operation == (uint32_t)Arp_Operation::Reply; }
 
     uint16_t get_hdr_len() { return arp_hdr_len_; }
 
