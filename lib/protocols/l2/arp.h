@@ -16,7 +16,10 @@
 
 namespace firewall {
 
+// HW length 6 for Ethernet protocol
 #define ARP_HW_ADDR_LEN 6
+
+// IPv4 protocol
 #define ARP_PROTO_ADDR_LEN 4
 
 //

@@ -1,5 +1,5 @@
 #include <ipv6.h>
-#include <ip_ah.h>
+#include <ipsec_ah.h>
 
 namespace firewall {
 
@@ -9,10 +9,38 @@ event_description ip_ah_hdr::deserialize(packet &p, logger *log, bool debug)
 
     p.deserialize(nh);
     p.deserialize(len);
+
+    /**
+     * Refer https://datatracker.ietf.org/doc/html/rfc4302
+     * 
+     * Payload length of 4 words means : 3 32 bit header fileds : nh, len, reserved, spi, seq +
+     * 96 bits (3 32 bits) of ICV if its 96 bits in length - 2.
+     * 
+     * So a value of 0 means 2 - 2, so the minimum length seem 2 * 4 = 8 bytes.
+     * 
+     * But the nh, len, reserved, spi and seq are always present so the default length
+     * is 12 bytes = 3 - 2 = 1 word.
+     */
+    if (len <= len_)
+        return event_description::Evt_IPSec_AH_Inval_Len;
+
+    /**
+     * ICV compute length by adding 2 to the total length and subtracting the minimum header length
+     * without the ICV.
+     */
+    icv_len = (len + 2) - IPSEC_AH_LEN_NO_ICV;
+    if (icv_len == 0)
+        return event_description::Evt_IPSec_AH_Zero_ICV_Len;
+
     p.deserialize(reserved);
     p.deserialize(ah_spi);
     p.deserialize(ah_seq);
-    p.deserialize(ah_icv, IP_AH_ICV_LEN);
+
+    /**
+     * OOB check before memcpy the ICV.
+     */
+    if (icv_len <= IPSEC_AH_ICV_LEN)
+        p.deserialize(ah_icv, icv_len);
 
     return evt_desc;
 }

@@ -74,6 +74,11 @@ const static struct {
         rule_ids::Rule_Id_ARP_Inval_Operation,
         "ARP invalid op"
     },
+    {
+        event_description::Evt_ARP_Info_Leak,
+        rule_ids::Rule_Id_ARP_Info_Leak,
+        "ARP Information leak",
+    },
 
     //
     // vlan rules
@@ -179,6 +184,16 @@ const static struct {
         event_description::Evt_IPv4_Total_Len_Smaller_Than_Hdr_Len,
         rule_ids::Rule_Id_IPv4_Total_Len_Smaller_Than_Hdr_Len,
         "IPv4 total length is smaller than header length"
+    },
+    {
+        event_description::Evt_IPSec_AH_Inval_Len,
+        rule_ids::Rule_Id_IPSec_AH_Inval_Len,
+        "IPSec AH length is invalid"
+    },
+    {
+        event_description::Evt_IPSec_AH_Zero_ICV_Len,
+        rule_ids::Rule_Id_IPSec_AH_Zero_ICV_Len,
+        "IPSec AH ICV length is 0"
     },
 
     //

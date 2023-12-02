@@ -116,7 +116,38 @@ void firewall_intf::init_pcap_writer()
                 t->tm_year + 1900, t->tm_mon + 1,
                 t->tm_mday, t->tm_hour,
                 t->tm_min, t->tm_sec);
+
     pcap_w_ = std::make_shared<pcap_writer>(pcap_file);
+
+    //
+    // create pcap writer thread
+    pcap_wr_thr_id_ = std::make_shared<std::thread>(
+                            &firewall_intf::write_pcap, this);
+    pcap_wr_thr_id_->detach();
+
+    log_->info("create pcap writer thread ok\n");
+}
+
+//
+// write pcap logs waking up every second
+void firewall_intf::write_pcap()
+{
+    while (1) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        {
+            packet pkt;
+
+            std::unique_lock<std::mutex> lock(pcap_log_lock_);
+
+            while (pcap_log_q_.size() > 0) {
+                pkt = pcap_log_q_.front();
+
+                pcap_w_->write_packet(pkt.buf, pkt.buf_len);
+
+                pcap_log_q_.pop();
+            }
+        }
+    }
 }
 
 fw_error_type firewall_intf::init(const std::string ifname,
@@ -191,7 +222,7 @@ void firewall_intf::rx_thread()
         }
 
         if (log_pcap_) {
-            pcap_w_->write_packet(pkt.buf, pkt.buf_len);
+            pcap_log_q_.push(pkt);
         }
     }
 }

@@ -8,7 +8,8 @@
 
 namespace firewall {
 
-#define IP_AH_ICV_LEN 12
+#define IPSEC_AH_ICV_LEN 32
+#define IPSEC_AH_LEN_NO_ICV 12
 
 struct ipv6_hdr;
 
@@ -18,7 +19,8 @@ struct ip_ah_hdr {
     uint16_t reserved;
     uint32_t ah_spi;
     uint32_t ah_seq;
-    uint8_t ah_icv[IP_AH_ICV_LEN];
+    uint32_t icv_len;
+    uint8_t ah_icv[IPSEC_AH_ICV_LEN];
 
     std::shared_ptr<ipv6_hdr> ipv6_h;
 
@@ -41,6 +43,9 @@ struct ip_ah_hdr {
      * @param [in] log - logger.
      */
     void print(logger *log);
+
+    private:
+        const int len_ = 1;
 };
 
 }

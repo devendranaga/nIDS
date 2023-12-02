@@ -47,6 +47,7 @@ class firewall_intf {
         void filter_thread();
         void run_filter(packet &pkt);
         void init_pcap_writer();
+        void write_pcap();
 
         //
         // receive thread for each interface
@@ -55,6 +56,13 @@ class firewall_intf {
         //
         // filter thread id for each interface
         std::shared_ptr<std::thread> filt_thr_id_;
+
+        //
+        // PCAP writer thread for each interface
+        std::shared_ptr<std::thread> pcap_wr_thr_id_;
+        std::mutex pcap_log_lock_;
+        std::queue<packet> pcap_log_q_;
+
         //
         // raw socket interface
         std::shared_ptr<raw_socket> raw_;

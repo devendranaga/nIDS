@@ -10,7 +10,7 @@
 #include <packet.h>
 #include <logger.h>
 #include <event_def.h>
-#include <ip_ah.h>
+#include <ipsec_ah.h>
 
 namespace firewall {
 

@@ -37,10 +37,22 @@ event_description arp_hdr::deserialize(packet &p, logger *log, bool debug)
 
     p.deserialize(proto_type);
     p.deserialize(hw_addr_len);
+
+    //
+    // if hw addr len is over 6, there could be an information leak
+    if (hw_addr_len > ARP_HW_ADDR_LEN)
+        return event_description::Evt_ARP_Info_Leak;
+
     if (hw_addr_len != ARP_HW_ADDR_LEN)
         return event_description::Evt_ARP_HW_Addr_Len_Inval;
 
     p.deserialize(proto_addr_len);
+
+    //
+    // if hw addr len is over 6, there could be an information leak
+    if (proto_addr_len > ARP_PROTO_ADDR_LEN)
+        return event_description::Evt_ARP_Info_Leak;
+
     if (proto_addr_len != ARP_PROTO_ADDR_LEN)
         return event_description::Evt_ARP_Protocol_Addr_Len_Inval;
 
