@@ -204,14 +204,18 @@ void firewall_intf::rx_thread()
 */
 void firewall_intf::run_filter(packet &pkt)
 {
-    parser p(ifname_, rule_data_, log_);
+    std::shared_ptr<parser> p;
     int ret;
+
+    p = std::make_shared<parser>(ifname_, rule_data_, log_);
+    if (!p)
+        return;
 
     pkt_perf_->start();
 
     log_->verbose("filter packet with size %d\n", pkt.buf_len);
 
-    ret = p.run(pkt);
+    ret = p->run(pkt);
     if (ret != 0) {
         firewall_pkt_stats::instance()->stats_update(Pktstats_Type::Type_Deny, ifname_);
     }

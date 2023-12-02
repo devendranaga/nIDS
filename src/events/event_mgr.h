@@ -69,6 +69,8 @@ class event_mgr {
                         event_description evt_details,
                         const parser &pkt);
         void log_syslog(event &evt);
+        void log_console(event &evt);
+        void make_evt_string(event &evt, std::string &fmt);
         const std::string evt_type_str(event_type type);
         void mqtt_upload(event &evt);
 

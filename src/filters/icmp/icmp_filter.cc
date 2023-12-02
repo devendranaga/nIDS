@@ -16,26 +16,22 @@ event_description icmp_filter::run_filter(parser &p, packet &pkt, logger *log, b
     std::vector<rule_config_item>::iterator it;
     event_description evt_desc;
 
-    p.icmp_h = std::make_shared<icmp_hdr>();
-    if (!p.icmp_h)
-        return event_description::Evt_Unknown_Error;
-
     //
     // more fragments or frag_off is present
     // in an ICMP frame. Deny all ICMP frames with fragments by default.
-    if (p.ipv4_h->is_a_frag()) {
+    if (p.ipv4_h.is_a_frag()) {
         return event_description::Evt_Icmp_Pkt_Fragmented; 
     }
 
     //
-    // ipv4_h->dst_addr is multicast for ICMP packet
-    if (p.ipv4_h->is_dst_multicast()) {
+    // ipv4_h.dst_addr is multicast for ICMP packet
+    if (p.ipv4_h.is_dst_multicast()) {
         return event_description::Evt_Icmp_Dest_Addr_Multicast_In_IPv4;
     }
 
     //
-    // ipv4_h->dst_addr is brodcast for ICMP packet
-    if (p.ipv4_h->is_dst_broadcast()) {
+    // ipv4_h.dst_addr is brodcast for ICMP packet
+    if (p.ipv4_h.is_dst_broadcast()) {
         return event_description::Evt_Icmp_Dest_Addr_Broadcast_In_IPv4;
     }
 
@@ -45,11 +41,11 @@ event_description icmp_filter::run_filter(parser &p, packet &pkt, logger *log, b
     // in general, the sender expect us to provide a echo-reply on to
     // the directed broadcast address, in turn flooding the replies on
     // the entire network.
-    if (p.ipv4_h->is_src_directed_broadcast()) {
+    if (p.ipv4_h.is_src_directed_broadcast()) {
         return event_description::Evt_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast;
     }
 
-    evt_desc = p.icmp_h->deserialize(pkt, log, debug);
+    evt_desc = p.icmp_h.deserialize(pkt, log, debug);
     if (evt_desc != event_description::Evt_Parse_Ok) {
         return evt_desc;
     }
@@ -80,16 +76,16 @@ void icmp_filter::manage_icmp(parser &p)
     uint32_t id = 0;
     icmp_info i;
 
-    if (p.ipv4_h) {
-        src_ipaddr = p.ipv4_h->src_addr;
-        dst_ipaddr = p.ipv4_h->dst_addr;
+    if (p.protocols_avail.has_ipv4()) {
+        src_ipaddr = p.ipv4_h.src_addr;
+        dst_ipaddr = p.ipv4_h.dst_addr;
     }
 
-    if (p.icmp_h) {
-        if (p.icmp_h->echo_req)
-            id = p.icmp_h->echo_req->id;
-        if (p.icmp_h->echo_reply)
-            id = p.icmp_h->echo_reply->id;
+    if (p.protocols_avail.has_icmp()) {
+        if (p.icmp_h.echo_req)
+            id = p.icmp_h.echo_req->id;
+        if (p.icmp_h.echo_reply)
+            id = p.icmp_h.echo_reply->id;
     }
 
     std::unique_lock<std::mutex> lock(table_lock_);
@@ -113,23 +109,23 @@ void icmp_filter::manage_icmp(parser &p)
     if (it == icmp_list_.end()) {
         //
         // new echo request.. lets add it
-        if (p.icmp_h->echo_req) {
-            i.sender_ip = p.ipv4_h->src_addr;
-            i.dest_ip = p.ipv4_h->dst_addr;
+        if (p.icmp_h.echo_req) {
+            i.sender_ip = p.ipv4_h.src_addr;
+            i.dest_ip = p.ipv4_h.dst_addr;
 
             icmp_seq_info seq_info;
 
             seq_info.state = Icmp_State::Echo_Req_Observed;
-            seq_info.seq = p.icmp_h->echo_req->seq_no;
+            seq_info.seq = p.icmp_h.echo_req->seq_no;
             timestamp_perf(&seq_info.seq_ts);
             i.seq_info.push_back(seq_info);
-            i.id = p.icmp_h->echo_req->id;
+            i.id = p.icmp_h.echo_req->id;
             i.n_icmp = 0;
 
             timestamp_perf(&i.cur_echo_req_time);
 
             icmp_list_.push_back(i);
-        } else if (p.icmp_h->echo_reply) {
+        } else if (p.icmp_h.echo_reply) {
             //
             // we've received echo-reply without echo-request
             evt_mgr->store(
@@ -139,15 +135,15 @@ void icmp_filter::manage_icmp(parser &p)
             return;
         }
     } else {
-        if (p.icmp_h->echo_reply) {
-            it->sender_ip = p.ipv4_h->src_addr;
-            it->dest_ip = p.ipv4_h->dst_addr;
+        if (p.icmp_h.echo_reply) {
+            it->sender_ip = p.ipv4_h.src_addr;
+            it->dest_ip = p.ipv4_h.dst_addr;
 
             std::vector<icmp_seq_info>::iterator it1;
             bool matching_seq_no = false;
 
             for (it1 = it->seq_info.begin(); it1 != it->seq_info.end(); it1 ++) {
-                if (it1->seq == p.icmp_h->echo_reply->seq_no) {
+                if (it1->seq == p.icmp_h.echo_reply->seq_no) {
                     matching_seq_no = true;
                     if (it1->state == Icmp_State::Echo_Reply_Observed) {
                         // duplicate frame received
@@ -165,7 +161,7 @@ void icmp_filter::manage_icmp(parser &p)
                 //
                 // echo-request and echo-reply do not match with the sequence number
                 printf("invalid seq no %d for the requested echo_reply\n",
-                            p.icmp_h->echo_reply->seq_no);
+                            p.icmp_h.echo_reply->seq_no);
             }
 
             it->prev_echo_reply_time = it->cur_echo_reply_time;
@@ -173,14 +169,14 @@ void icmp_filter::manage_icmp(parser &p)
             // update the echo_reply
             timestamp_perf(&it->cur_echo_reply_time);
         }
-        if (p.icmp_h->echo_req) {
-            it->sender_ip = p.ipv4_h->src_addr;
-            it->dest_ip = p.ipv4_h->dst_addr;
+        if (p.icmp_h.echo_req) {
+            it->sender_ip = p.ipv4_h.src_addr;
+            it->dest_ip = p.ipv4_h.dst_addr;
 
             icmp_seq_info seq_info;
 
             seq_info.state = Icmp_State::Echo_Req_Observed;
-            seq_info.seq = p.icmp_h->echo_req->seq_no;
+            seq_info.seq = p.icmp_h.echo_req->seq_no;
             timestamp_perf(&seq_info.seq_ts);
             it->seq_info.push_back(seq_info);
 
@@ -234,11 +230,11 @@ void icmp_filter::check_nonzero_len_payloads(parser &p,
     //
     // if filter is configured to drop all pings with non-zero data length
     //
-    if ((p.icmp_h->echo_req) &&
-        (p.icmp_h->echo_req->data_len != 0)) {
+    if ((p.icmp_h.echo_req) &&
+        (p.icmp_h.echo_req->data_len != 0)) {
         evt_desc = event_description::Evt_Icmp_Non_Zero_Echo_Req_Payload_Len;
-    } else if ((p.icmp_h->echo_reply) &&
-               (p.icmp_h->echo_reply->data_len != 0)) {
+    } else if ((p.icmp_h.echo_reply) &&
+               (p.icmp_h.echo_reply->data_len != 0)) {
         evt_desc = event_description::Evt_Icmp_Non_Zero_ECho_Reply_Payload_Len;
     }
 

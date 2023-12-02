@@ -160,6 +160,11 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
     ecn = (byte_1 & 0x03);
 
     p.deserialize(total_len);
+    //
+    // total length smaller than header length
+    if (total_len < hdr_len)
+        return event_description::Evt_IPv4_Total_Len_Smaller_Than_Hdr_Len;
+
     p.deserialize(identification);
     p.deserialize(byte_1);
 
@@ -236,6 +241,10 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
         if (evt_desc != event_description::Evt_Parse_Ok) {
             return evt_desc;
         }
+    }
+
+    if (p.remaining_len() < (int32_t)(total_len - hdr_len)) {
+        return event_description::Evt_IPv4_Invalid_Total_Len;
     }
 
     end_off = p.off;

@@ -1,9 +1,9 @@
 #include <ipv6.h>
-#include <ipv6_ah.h>
+#include <ip_ah.h>
 
 namespace firewall {
 
-event_description ipv6_ah_hdr::deserialize(packet &p, logger *log, bool debug)
+event_description ip_ah_hdr::deserialize(packet &p, logger *log, bool debug)
 {
     event_description evt_desc = event_description::Evt_Parse_Ok;
 
@@ -12,15 +12,15 @@ event_description ipv6_ah_hdr::deserialize(packet &p, logger *log, bool debug)
     p.deserialize(reserved);
     p.deserialize(ah_spi);
     p.deserialize(ah_seq);
-    p.deserialize(ah_icv, IPV6_AH_ICV_LEN);
+    p.deserialize(ah_icv, IP_AH_ICV_LEN);
 
     return evt_desc;
 }
 
-void ipv6_ah_hdr::print(logger *log)
+void ip_ah_hdr::print(logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
-    log->verbose("\t IPV6-AH: {\n");
+    log->verbose("\t IP-AH: {\n");
     log->verbose("\t\t next_hdr: %d\n", nh);
     log->verbose("\t\t len: %d\n", len);
     log->verbose("\t\t reserved: %d\n", reserved);
@@ -36,3 +36,4 @@ void ipv6_ah_hdr::print(logger *log)
 }
 
 }
+

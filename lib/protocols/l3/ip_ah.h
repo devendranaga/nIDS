@@ -1,5 +1,5 @@
-#ifndef __FW_LIB_PROTOCOLS_L3_IPV6_AH_H__
-#define __FW_LIB_PROTOCOLS_L3_IPV6_AH_H__
+#ifndef __FW_LIB_PROTOCOLS_L3_IP_AH_H__
+#define __FW_LIB_PROTOCOLS_L3_IP_AH_H__
 
 #include <memory>
 #include <packet.h>
@@ -8,17 +8,17 @@
 
 namespace firewall {
 
-#define IPV6_AH_ICV_LEN 12
+#define IP_AH_ICV_LEN 12
 
 struct ipv6_hdr;
 
-struct ipv6_ah_hdr {
+struct ip_ah_hdr {
     uint8_t nh;
     uint8_t len;
     uint16_t reserved;
     uint32_t ah_spi;
     uint32_t ah_seq;
-    uint8_t ah_icv[IPV6_AH_ICV_LEN];
+    uint8_t ah_icv[IP_AH_ICV_LEN];
 
     std::shared_ptr<ipv6_hdr> ipv6_h;
 

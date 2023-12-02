@@ -111,12 +111,32 @@ struct protocol_bits {
         void set_eap() { eap = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_macsec() const { return macsec == 1; }
+        /**
+         * @brief - Has the parser found an ipv4 packet ?
+         *
+         * @return true on success false on failure.
+         */
         bool has_ipv4() const { return ipv4 == 1; }
         bool has_ieee8021ad() const { return ieee8021ad == 1; }
         bool has_arp() const { return arp == 1; }
+        /**
+         * @brief - Has the parser found a vlan frame ?
+         *
+         * @return true on success false on failure.
+         */
         bool has_vlan() const { return vlan == 1; }
         bool has_icmp() const { return icmp == 1; }
+        /**
+         * @brief - Has the parser found a tcp packet ?
+         *
+         * @return true on success false on failure.
+         */
         bool has_tcp() const { return tcp == 1; }
+        /**
+         * @brief - Has the parser found a udp packet ?
+         *
+         * @return true on success false on failure.
+         */
         bool has_udp() const { return udp == 1; }
         bool has_ipv6() const { return ipv6 == 1; }
         bool has_icmp6() const { return icmp6 == 1; }
@@ -162,68 +182,68 @@ struct parser {
         ~parser();
 
         // ethernet header
-        std::shared_ptr<eth_hdr> eh;
+        eth_hdr eh;
 
         // MACsec header
-        std::shared_ptr<ieee8021ae_hdr> macsec_h;
+        ieee8021ae_hdr macsec_h;
 
         // IEEE 802.1ad header
-        std::shared_ptr<ieee8021ad_hdr> ieee8021ad_h;
+        ieee8021ad_hdr ieee8021ad_h;
 
         // VLAN header
-        std::shared_ptr<vlan_hdr> vh;
+        vlan_hdr vh;
 
         // ARP header
-        std::shared_ptr<arp_hdr> arp_h;
+        arp_hdr arp_h;
 
         // IPV4 header
-        std::shared_ptr<ipv4_hdr> ipv4_h;
+        ipv4_hdr ipv4_h;
 
         // IPV6 header
-        std::shared_ptr<ipv6_hdr> ipv6_h;
+        ipv6_hdr ipv6_h;
 
         // IPv6 Encapsulation header
         std::shared_ptr<ipv6_hdr> ipv6_encap_h;
 
         // IPV6 Authentication header
-        std::shared_ptr<ipv6_ah_hdr> ipv6_ah_h;
+        ip_ah_hdr ip_ah_h;
 
         // TCP header
-        std::shared_ptr<tcp_hdr> tcp_h;
+        tcp_hdr tcp_h;
 
         // UDP header
-        std::shared_ptr<udp_hdr> udp_h;
+        udp_hdr udp_h;
 
         // ICMP header
-        std::shared_ptr<icmp_hdr> icmp_h;
+        icmp_hdr icmp_h;
 
         // ICMP6 header
-        std::shared_ptr<icmp6_hdr> icmp6_h;
+        icmp6_hdr icmp6_h;
 
         // IGMP header
-        std::shared_ptr<igmp_hdr> igmp_h;
+        igmp_hdr igmp_h;
 
         // DHCP header
-        std::shared_ptr<dhcp_hdr> dhcp_h;
+        dhcp_hdr dhcp_h;
 
         // NTP header
-        std::shared_ptr<ntp_hdr> ntp_h;
+        ntp_hdr ntp_h;
 
 #if defined(FW_ENABLE_AUTOMOTIVE)
         // DoIP header
-        std::shared_ptr<doip_hdr> doip_h;
+        doip_hdr doip_h;
 
         // SOME/IP header
-        std::shared_ptr<someip_hdr> someip_h;
+        someip_hdr someip_h;
 #endif
 
         // TLS header
-        std::shared_ptr<tls_hdr> tls_h;
+        tls_hdr tls_h;
 
         // MQTT header
-        std::shared_ptr<mqtt_hdr> mqtt_h;
+        mqtt_hdr mqtt_h;
 
-        std::shared_ptr<ieee8021x_hdr> ieee8021x_h;
+        ieee8021x_hdr ieee8021x_h;
 
         // parsed protocols so far
         protocol_bits protocols_avail;
@@ -238,9 +258,9 @@ struct parser {
         protocols_types get_protocol_type()
         {
             if (protocols_avail.has_ipv4()) {
-                return static_cast<protocols_types>(ipv4_h->protocol);
+                return static_cast<protocols_types>(ipv4_h.protocol);
             } else if (protocols_avail.has_ipv6()) {
-                return static_cast<protocols_types>(ipv6_h->nh);
+                return static_cast<protocols_types>(ipv6_h.nh);
             }
 
             return static_cast<protocols_types>(protocols_types::Protocol_Max);
@@ -248,7 +268,7 @@ struct parser {
 
         bool contain_ipv4()
         {
-            if (static_cast<Ether_Type>(eh->ethertype) == Ether_Type::Ether_Type_IPv4)
+            if (static_cast<Ether_Type>(eh.ethertype) == Ether_Type::Ether_Type_IPv4)
                 return true;
 
             return false;
@@ -267,9 +287,9 @@ struct parser {
         Port_Numbers get_dst_port()
         {
             if (protocols_avail.has_udp()) {
-                return static_cast<Port_Numbers>(udp_h->dst_port);
+                return static_cast<Port_Numbers>(udp_h.dst_port);
             } else if (protocols_avail.has_tcp()) {
-                return static_cast<Port_Numbers>(tcp_h->dst_port);
+                return static_cast<Port_Numbers>(tcp_h.dst_port);
             }
 
             return Port_Numbers::Port_Number_Max;
@@ -278,9 +298,9 @@ struct parser {
         Port_Numbers get_src_port()
         {
             if (protocols_avail.has_udp()) {
-                return static_cast<Port_Numbers>(udp_h->src_port);
+                return static_cast<Port_Numbers>(udp_h.src_port);
             } else if (protocols_avail.has_tcp()) {
-                return static_cast<Port_Numbers>(tcp_h->src_port);
+                return static_cast<Port_Numbers>(tcp_h.src_port);
             }
 
             return Port_Numbers::Port_Number_Max;

@@ -15,32 +15,12 @@ namespace firewall {
 parser::parser(const std::string ifname,
                rule_config *rule_list,
                logger *log) :
-                        eh(nullptr),
-                        macsec_h(nullptr),
-                        vh(nullptr),
-                        arp_h(nullptr),
-                        ipv4_h(nullptr),
-                        ipv6_h(nullptr),
                         ipv6_encap_h(nullptr),
-                        ipv6_ah_h(nullptr),
-                        tcp_h(nullptr),
-                        udp_h(nullptr),
-                        icmp_h(nullptr),
-                        icmp6_h(nullptr),
-                        igmp_h(nullptr),
-                        dhcp_h(nullptr),
-                        ntp_h(nullptr),
-                        tls_h(nullptr),
-                        mqtt_h(nullptr),
                         ifname_(ifname),
                         rule_list_(rule_list),
                         log_(log),
-                        pkt_dump_(true)
+                        pkt_dump_(false)
 {
-#if defined(FW_ENABLE_AUTOMOTIVE)
-    doip_h = nullptr;
-    someip_h = nullptr;
-#endif
 }
 parser::~parser() { }
 
@@ -54,7 +34,7 @@ void parser::detect_os_signature()
     uint32_t ttl = 0;
 
     if (protocols_avail.has_ipv4()) {
-        ttl = ipv4_h->ttl;
+        ttl = ipv4_h.ttl;
     }
 
     switch (ttl) {
@@ -112,11 +92,7 @@ event_description parser::parse_l4(packet &pkt)
 
     switch (proto) {
         case protocols_types::Protocol_Udp: {
-            udp_h = std::make_shared<udp_hdr>();
-            if (!udp_h)
-                return event_description::Evt_Out_Of_Memory;
-
-            evt_desc = udp_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = udp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_udp();
         } break;
         case protocols_types::Protocol_Icmp: {
@@ -125,27 +101,15 @@ event_description parser::parse_l4(packet &pkt)
             protocols_avail.set_icmp();
         } break;
         case protocols_types::Protocol_Icmp6: {
-            icmp6_h = std::make_shared<icmp6_hdr>();
-            if (!icmp6_h)
-                return event_description::Evt_Out_Of_Memory;
-
-            evt_desc = icmp6_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = icmp6_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_icmp6();
         } break;
         case protocols_types::Protocol_Igmp: {
-            igmp_h = std::make_shared<igmp_hdr>();
-            if (!igmp_h)
-                return event_description::Evt_Out_Of_Memory;
-
-            evt_desc = igmp_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = igmp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_igmp();
         } break;
         case protocols_types::Protocol_Tcp: {
-            tcp_h = std::make_shared<tcp_hdr>();
-            if (!tcp_h)
-                return event_description::Evt_Out_Of_Memory;
-
-            evt_desc = tcp_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = tcp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_tcp();
         } break;
         //
@@ -219,45 +183,25 @@ event_description parser::parse_app_pkt(packet &pkt, Port_Numbers port)
    switch (port) {
         case Port_Numbers::Port_Number_DHCP_Server:
         case Port_Numbers::Port_Number_DHCP_Client: {
-            dhcp_h = std::make_shared<dhcp_hdr>();
-            if (!dhcp_h)
-                return event_description::Evt_Unknown_Error;
-
-            evt_desc = dhcp_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = dhcp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_dhcp();
         } break;
         case Port_Numbers::Port_Number_NTP: {
-            ntp_h = std::make_shared<ntp_hdr>();
-            if (!ntp_h)
-                return event_description::Evt_Unknown_Error;
-
-            evt_desc = ntp_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = ntp_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ntp();
         } break;
         case Port_Numbers::Port_Number_TLS: {
-            tls_h = std::make_shared<tls_hdr>();
-            if (!tls_h)
-                return event_description::Evt_Unknown_Error;
-
-            evt_desc = tls_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = tls_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_tls();
         } break;
 #if defined(FW_ENABLE_AUTOMOTIVE)
         case Port_Numbers::Port_Number_DoIP: {
-            doip_h = std::make_shared<doip_hdr>();
-            if (!doip_h)
-                return event_description::Evt_Unknown_Error;
-
-            evt_desc = doip_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = doip_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_doip();
         } break;
 #endif
         case Port_Numbers::Port_Number_MQTT: {
-            mqtt_h = std::make_shared<mqtt_hdr>();
-            if (!mqtt_h)
-                return event_description::Evt_Out_Of_Memory;
-
-            evt_desc = mqtt_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = mqtt_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_mqtt();
         } break;
         default:
@@ -291,69 +235,52 @@ int parser::run(packet &pkt)
     event_description evt_desc = event_description::Evt_Unknown_Error;
     int ret;
 
-    eh = std::make_shared<eth_hdr>();
-    if (!eh)
-        return -1;
-
     //
     // deserialize ethernet header
-    evt_desc = eh->deserialize(pkt, log_, pkt_dump_);
+    evt_desc = eh.deserialize(pkt, log_, pkt_dump_);
     if (evt_desc != event_description::Evt_Parse_Ok) {
         evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
         return -1;
     }
     protocols_avail.set_eth();
 
-    ether = eh->get_ethertype();
+    ether = eh.get_ethertype();
 
     //
     // check if its IEEE 802.1ad provider bridge, parse it
-    if (eh->has_ethertype_8021ad()) {
-        ieee8021ad_h = std::make_shared<ieee8021ad_hdr>();
-        if (!ieee8021ad_h)
-            return -1;
-
-        evt_desc = ieee8021ad_h->deserialize(pkt, log_, pkt_dump_);
+    if (eh.has_ethertype_8021ad()) {
+        evt_desc = ieee8021ad_h.deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
             return -1;
         }
         protocols_avail.set_ieee8021ad();
-        ether = ieee8021ad_h->get_ethertype();
+        ether = ieee8021ad_h.get_ethertype();
     }
 
     //
     // check if its vlan, parse it
-    if (eh->has_ethertype_vlan()) {
-        vh = std::make_shared<vlan_hdr>();
-        if (!vh)
-            return -1;
-
-        evt_desc = vh->deserialize(pkt, log_, pkt_dump_);
+    if (eh.has_ethertype_vlan()) {
+        evt_desc = vh.deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
             return -1;
         }
         protocols_avail.set_vlan();
-        ether = vh->get_ethertype();
+        ether = vh.get_ethertype();
     }
 
     //
     // run ethertype match
     ret = eth_filter::instance()->run(*this, log_, pkt_dump_);
     if (ret != 0) {
-        printf("deny rule\n");
         return ret;
     }
 
     //
     // Parse macsec frame.
     if (ether == Ether_Type::Ether_Type_MACsec) {
-        macsec_h = std::make_shared<ieee8021ae_hdr>();
-        if (!macsec_h)
-            return -1;
-
-        evt_desc = macsec_h->deserialize(pkt, log_, pkt_dump_);
+        evt_desc = macsec_h.deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
             return -1;
@@ -361,12 +288,12 @@ int parser::run(packet &pkt)
 
         //
         // We cannot decrypt the frame, we simply return the parse ok.
-        if (macsec_h->is_an_encrypted_frame()) {
+        if (macsec_h.is_an_encrypted_frame()) {
             return 0;
         }
         //
         // We have an authenticated frame here, lets decode it further.
-        ether = macsec_h->get_ethertype();
+        ether = macsec_h.get_ethertype();
     }
 
     //
@@ -377,30 +304,18 @@ int parser::run(packet &pkt)
             protocols_avail.set_arp();
         } break;
         case Ether_Type::Ether_Type_IPv4: {
-            ipv4_h = std::make_shared<ipv4_hdr>();
-            if (!ipv4_h)
-                return -1;
-
-            evt_desc = ipv4_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = ipv4_h.deserialize(pkt, log_, pkt_dump_);
             if (evt_desc == event_description::Evt_IPV4_Hdr_Chksum_Invalid) {
                 firewall_pkt_stats::instance()->stats_update(evt_desc, ifname_);
             }
             protocols_avail.set_ipv4();
         } break;
         case Ether_Type::Ether_Type_IPv6: {
-            ipv6_h = std::make_shared<ipv6_hdr>();
-            if (!ipv6_h)
-                return -1;
-
-            evt_desc = ipv6_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = ipv6_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_ipv6();
         } break;
         case Ether_Type::Ether_Type_IEEE8021X: {
-            ieee8021x_h = std::make_shared<ieee8021x_hdr>();
-            if (!ieee8021x_h)
-                return -1;
-
-            evt_desc = ieee8021x_h->deserialize(pkt, log_, pkt_dump_);
+            evt_desc = ieee8021x_h.deserialize(pkt, log_, pkt_dump_);
             protocols_avail.set_eap();
         } break;
         default:
@@ -443,13 +358,9 @@ event_description parser::run_arp_filter(packet &pkt,
     event_description evt_desc = event_description::Evt_Unknown_Error;
     arp_filter *arp_f;
 
-    arp_h = std::make_shared<arp_hdr>();
-    if (!arp_h)
-        return event_description::Evt_Unknown_Error;
-
     //
     // deserialize ARP frame
-    evt_desc = arp_h->deserialize(pkt, log_, pkt_dump_);
+    evt_desc = arp_h.deserialize(pkt, log_, pkt_dump_);
     if (evt_desc != event_description::Evt_Parse_Ok)
        return evt_desc;
 
@@ -458,7 +369,7 @@ event_description parser::run_arp_filter(packet &pkt,
     arp_f = arp_filter::instance();
     evt_desc = arp_f->add_arp_frame(*this);
 
-    arp_f->print_arp_table(log);
+    //arp_f->print_arp_table(log);
 
     return evt_desc;
 }
@@ -483,15 +394,11 @@ event_description parser::parse_custom_app_ports(packet &pkt,
 {
     event_description evt_desc = event_description::Evt_Unknown_Error;
 
-    if ((udp_h->dst_port == port) ||
-        (udp_h->src_port == port)) {
+    if ((udp_h.dst_port == port) ||
+        (udp_h.src_port == port)) {
 #if defined(FW_ENABLE_AUTOMOTIVE)
        if (app_type == App_Type::SomeIP) {
-           someip_h = std::make_shared<someip_hdr>();
-           if (!someip_h)
-               return event_description::Evt_Out_Of_Memory;
-
-           evt_desc = someip_h->deserialize(pkt, log_, pkt_dump_);
+           evt_desc = someip_h.deserialize(pkt, log_, pkt_dump_);
        }
 #endif
     }
@@ -509,7 +416,7 @@ event_description parser::parse_custom_ports(packet &pkt)
     for (auto it : rule_list_->rules_cfg_) {
         port = -1;
 
-        if (udp_h && it.sig_mask.udp_sig.port) {
+        if (this->protocols_avail.has_udp() && it.sig_mask.udp_sig.port) {
             dir = it.udp_rule.dir;
             app_type = it.udp_rule.app_type;
             port = it.udp_rule.port;

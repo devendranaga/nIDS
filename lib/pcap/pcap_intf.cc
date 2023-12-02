@@ -70,14 +70,14 @@ int pcap_writer::write_packet(pcaprec_hdr_t *rec, uint8_t *buf)
 int pcap_writer::write_packet(uint8_t *buf, uint32_t buf_len)
 {
     pcaprec_hdr_t rec_hdr;
-    struct timeval tv;
+    struct timespec tp;
     int ret;
 
     std::memset(&rec_hdr, 0, sizeof(rec_hdr));
-    gettimeofday(&tv, 0);
+    clock_gettime(CLOCK_REALTIME, &tp);
 
-    rec_hdr.ts_sec = tv.tv_sec;
-    rec_hdr.ts_usec = tv.tv_usec;
+    rec_hdr.ts_sec = tp.tv_sec;
+    rec_hdr.ts_usec = tp.tv_nsec / 1000u;
     rec_hdr.incl_len = buf_len;
     rec_hdr.orig_len = buf_len;
 

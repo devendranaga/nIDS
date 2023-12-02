@@ -53,6 +53,7 @@ struct firewall_event_info_config {
     std::string event_file_path;
     uint32_t event_file_size_bytes;
     event_file_format evt_file_format;
+    bool log_to_console;
     bool log_to_syslog;
     bool encrypt_log_file;
     std::string encryption_key;

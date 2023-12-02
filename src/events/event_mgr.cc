@@ -131,6 +131,11 @@ const static struct {
         "IPv4 unknown option"
     },
     {
+        event_description::Evt_IPV4_Inval_Src_Addr,
+        rule_ids::Rule_Id_IPV4_Inval_Src_Addr,
+        "IPv4 invalid source address"
+    },
+    {
         event_description::Evt_IPv4_Zero_TTL,
         rule_ids::Rule_Id_IPv4_Zero_TTL,
         "IPv4 packet TTL is zero"
@@ -170,9 +175,24 @@ const static struct {
         rule_ids::Rule_Id_IPv4_Strict_Source_Route_Len_Truncated,
         "IPv4 options: strict source route length is truncated"
     },
+    {
+        event_description::Evt_IPv4_Total_Len_Smaller_Than_Hdr_Len,
+        rule_ids::Rule_Id_IPv4_Total_Len_Smaller_Than_Hdr_Len,
+        "IPv4 total length is smaller than header length"
+    },
 
     //
     // IPv6 rules
+    {
+        event_description::Evt_IPV6_Hdrlen_Too_Small,
+        rule_ids::Rule_Id_IPv6_Hdrlen_Too_Small,
+        "IPv6 header length too small"
+    },
+    {
+        event_description::Evt_IPV6_Version_Invalid,
+        rule_ids::Rule_Id_IPv6_Version_Inval,
+        "IPv6 invalid version"
+    },
     {
         event_description::Evt_IPv6_Payload_Truncated,
         rule_ids::Rule_Id_IPv6_Payload_Truncated,
@@ -186,7 +206,7 @@ const static struct {
     {
         event_description::Evt_IPv6_Unsupported_NH,
         rule_ids::Rule_Id_IPv6_Unsupported_NH,
-        "IPv6 unsupported next hop"
+        "IPv6 unsupported next header"
     },
     {
         event_description::Evt_IPv6_Zero_Hop_Limit,
@@ -555,20 +575,20 @@ void event_mgr::create_evt(event &evt,
     evt.evt_details = evt_details;
     evt.rule_id = rule_id;
 
-    std::memcpy(evt.src_mac, pkt.eh->src_mac, sizeof(pkt.eh->src_mac));
-    std::memcpy(evt.dst_mac, pkt.eh->dst_mac, sizeof(pkt.eh->dst_mac));
+    std::memcpy(evt.src_mac, pkt.eh.src_mac, sizeof(pkt.eh.src_mac));
+    std::memcpy(evt.dst_mac, pkt.eh.dst_mac, sizeof(pkt.eh.dst_mac));
 
     //
     // if vlan header is present, get ethertype from vlan header
-    evt.ethertype = pkt.eh->ethertype;
+    evt.ethertype = pkt.eh.ethertype;
     if (pkt.protocols_avail.has_vlan()) {
-        evt.ethertype = pkt.vh->ethertype;
+        evt.ethertype = pkt.vh.ethertype;
     }
 
     switch (evt.ethertype) {
         case static_cast<uint16_t>(Ether_Type::Ether_Type_IPv4):
-            evt.protocol = pkt.ipv4_h->protocol;
-            evt.ttl = pkt.ipv4_h->ttl;
+            evt.protocol = pkt.ipv4_h.protocol;
+            evt.ttl = pkt.ipv4_h.ttl;
         break;
     }
     evt.pkt_len = pkt.pkt_len;
@@ -676,7 +696,7 @@ void event_mgr::storage_thread()
     while (1) {
         // wake up every second and write the collected event logs
         // to disk.
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         {
             std::unique_lock<std::mutex> lock(storage_thr_lock_);
             int q_len = 0;
@@ -699,6 +719,12 @@ void event_mgr::storage_thread()
                 }
 
                 //
+                // if enabled, write to console as well
+                if (conf->evt_config.log_to_console) {
+                    log_console(evt);
+                }
+
+                //
                 // if enabled, write to MQTT connection
                 if (conf->evt_config.upload_method == Event_Upload_Method_Type::MQTT) {
                     mqtt_upload(evt);
@@ -709,7 +735,7 @@ void event_mgr::storage_thread()
     }
 }
 
-void event_mgr::log_syslog(event &evt)
+void event_mgr::make_evt_string(event &evt, std::string &fmt)
 {
     char msg[1024];
     int len = 0;
@@ -750,7 +776,23 @@ void event_mgr::log_syslog(event &evt)
 
     len += snprintf(msg + len, sizeof(msg) - len, "\n");
 
-    syslog(LOG_ALERT, "%s", msg);
+    fmt = msg;
+}
+
+void event_mgr::log_syslog(event &evt)
+{
+    std::string msg;
+
+    make_evt_string(evt, msg);
+    syslog(LOG_ALERT, "%s", msg.c_str());
+}
+
+void event_mgr::log_console(event &evt)
+{
+    std::string msg;
+
+    make_evt_string(evt, msg);
+    fprintf(stderr, "%s", msg.c_str());
 }
 
 void event_mgr::mqtt_upload(event &e)

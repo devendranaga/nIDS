@@ -10,7 +10,7 @@
 #include <packet.h>
 #include <logger.h>
 #include <event_def.h>
-#include <ipv6_ah.h>
+#include <ip_ah.h>
 
 namespace firewall {
 
@@ -50,7 +50,7 @@ struct ipv6_hop_by_hop_hdr {
 
 struct ipv6_opts {
     std::shared_ptr<ipv6_hop_by_hop_hdr> hh;
-    std::shared_ptr<ipv6_ah_hdr> ah_hdr;
+    std::shared_ptr<ip_ah_hdr> ah_hdr;
 
     explicit ipv6_opts() :
                 hh(nullptr) { }

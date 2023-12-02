@@ -36,13 +36,13 @@ bool port_filter::match_ports(std::vector<uint16_t> &port_list,
                               bool debug)
 {
     for (auto it : port_list) {
-        if (p.tcp_h) {
-            if ((it == p.tcp_h->src_port) || (it == p.tcp_h->dst_port)) {
+        if (p.protocols_avail.has_tcp()) {
+            if ((it == p.tcp_h.src_port) || (it == p.tcp_h.dst_port)) {
                 return true;
             }
         }
-        if (p.udp_h) {
-            if ((it == p.udp_h->src_port) || (it == p.udp_h->dst_port)) {
+        if (p.protocols_avail.has_udp()) {
+            if ((it == p.udp_h.src_port) || (it == p.udp_h.dst_port)) {
                 return true;
             }
         }

@@ -47,6 +47,34 @@ struct icmp6_option_dns_search_list {
     void print(logger *log);
 };
 
+struct icmp6_option_prefix_information_flags {
+    uint32_t onlink:1;
+    uint32_t autonomous_addr_conf:1;
+    uint32_t router_addr:1;
+    uint32_t reserved:5;
+
+    explicit icmp6_option_prefix_information_flags() :
+                        onlink(0),
+                        autonomous_addr_conf(0),
+                        router_addr(0),
+                        reserved(0) { }
+    ~icmp6_option_prefix_information_flags() { }
+};
+
+struct icmp6_option_prefix_information {
+    uint8_t len;
+    uint8_t prefix_len;
+    icmp6_option_prefix_information_flags flags;
+    uint32_t valid_lifetime;
+    uint32_t preferred_lifetime;
+    uint32_t reserved;
+    uint8_t prefix[16];
+
+    int serialize(packet &p);
+    event_description deserialize(packet &p, logger *log, bool debug = false);
+    void print(logger *log);
+};
+
 struct icmp6_option_mtu {
     uint8_t len;
     uint16_t reserved;
@@ -75,7 +103,17 @@ struct icmp6_router_advertisement {
 
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);
-    void print(logger *log);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\t\t RouterAdvertisement: {\n");
+        log->verbose("\t\t\t\t cur_hoplimit: %d\n", cur_hoplimit);
+        log->verbose("\t\t\t\t router_lifetie: %d\n", router_lifetime);
+        log->verbose("\t\t\t\t reachable_time: %d\n", reachable_time);
+        log->verbose("\t\t\t\t retransmit_timer: %d\n", retransmit_timer);
+        log->verbose("\t\t\t }\n");
+    #endif
+    }
 };
 
 struct icmp6_mcast_record {
@@ -90,6 +128,7 @@ struct icmp6_mcast_record {
     event_description deserialize(packet &p, logger *log, bool debug);
     void print(logger *log)
     {
+    #if defined(FW_ENABLE_DEBUG)
         log->verbose("\t\t\t McastRecord: {\n");
         log->verbose("\t\t\t\t rec_type: %d\n", rec_type);
         log->verbose("\t\t\t\t aux_data_len: %d\n", aux_data_len);
@@ -102,6 +141,7 @@ struct icmp6_mcast_record {
                         addr[8], addr[9], addr[10], addr[11],
                         addr[12], addr[13], addr[14], addr[15]);
         log->verbose("\t\t\t }\n");
+    #endif
     }
 
     private:
@@ -197,6 +237,7 @@ struct icmp6_hdr {
     std::shared_ptr<icmp6_option_dns_search_list> dns_search_list;
     std::shared_ptr<icmp6_option_mtu> mtu;
     std::shared_ptr<icmp6_option_source_link_layer_addr> s_lladdr;
+    std::shared_ptr<icmp6_option_prefix_information> prefix_information;
     std::shared_ptr<icmp6_echo_req> echo_req;
     std::shared_ptr<icmp6_echo_reply> echo_reply;
 

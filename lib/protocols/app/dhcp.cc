@@ -283,6 +283,24 @@ event_description dhcp_opts::deserialize(packet &p, logger *log, bool debug)
                     return evt_desc;
                 }
             } break;
+            case dhcp_param_req_list::DHCP_Auto_Config: {
+                dhcp_autoconf = std::make_shared<dhcp_opt_autoconf>();
+                if (!dhcp_autoconf)
+                    return event_description::Evt_Out_Of_Memory;
+
+                evt_desc = dhcp_autoconf->deserialize(p, log, debug);
+                if (evt_desc != event_description::Evt_Parse_Ok)
+                    return evt_desc;
+            } break;
+            case dhcp_param_req_list::Vendor_Class_Identifier: {
+                vendor_class_id = std::make_shared<dhcp_opt_vendor_class_identifier>();
+                if (!vendor_class_id)
+                    return event_description::Evt_Out_Of_Memory;
+
+                evt_desc = vendor_class_id->deserialize(p, log, debug);
+                if (evt_desc != event_description::Evt_Parse_Ok)
+                    return evt_desc;
+            } break;
             case dhcp_param_req_list::Pad: {
             } break;
             default: {

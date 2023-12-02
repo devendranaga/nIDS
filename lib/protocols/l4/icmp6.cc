@@ -28,11 +28,17 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
     switch (type) {
         case Icmp6_Types::Mcast_Listener_Report_Msg_V2: {
             mcast_listener_v2 = std::make_shared<icmp6_mcast_listener_report_msg_v2>();
-            if (!mcast_listener_v2) {
-                return event_description::Evt_Unknown_Error;
-            }
+            if (!mcast_listener_v2)
+                return event_description::Evt_Out_Of_Memory;
 
             evt_desc = mcast_listener_v2->deserialize(p, log, debug);
+        } break;
+        case Icmp6_Types::Icmp6_Type_Router_Advertisement: {
+            radv = std::make_shared<icmp6_router_advertisement>();
+            if (!radv)
+                return event_description::Evt_Out_Of_Memory;
+
+            evt_desc = radv->deserialize(p, log, debug);
         } break;
         case Icmp6_Types::Echo_Request: {
             echo_req = std::make_shared<icmp6_echo_req>();
@@ -67,6 +73,8 @@ void icmp6_hdr::print(logger *log)
     log->verbose("\t type: %d\n", type);
     log->verbose("\t code: %d\n", code);
     log->verbose("\t checksum: 0x%04x\n", checksum);
+    if (radv)
+        radv->print(log);
     if (echo_reply)
         echo_reply->print(log);
     if (echo_req)
@@ -138,6 +146,48 @@ event_description icmp6_echo_reply::deserialize(packet &p, logger *log, bool deb
         return event_description::Evt_Unknown_Error;
 
     p.deserialize(data, data_len);
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_router_advertisement::deserialize(packet &p, logger *log, bool debug)
+{
+    uint8_t byte = 0;
+
+    p.deserialize(cur_hoplimit);
+    p.deserialize(byte);
+
+    flags.managed_addr_conf = !!(byte & 0x80);
+    flags.other_conf = !!(byte & 0x40);
+    flags.home_agent = !!(byte & 0x20);
+    flags.prf = (byte & 0x18) >> 3;
+    flags.proxy = !!(byte & 0x04);
+    flags.reserved = !!(byte & 0x02);
+
+    p.deserialize(router_lifetime);
+    p.deserialize(reachable_time);
+    p.deserialize(retransmit_timer);
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_option_prefix_information::deserialize(packet &p, logger *log, bool debug)
+{
+    uint8_t byte = 0;
+
+    p.deserialize(len);
+    p.deserialize(prefix_len);
+    p.deserialize(byte);
+
+    flags.onlink = !!(byte & 0x80);
+    flags.autonomous_addr_conf = !!(byte & 0x40);
+    flags.router_addr = !!(byte & 0x20);
+    flags.reserved = byte & 0x1F;
+
+    p.deserialize(valid_lifetime);
+    p.deserialize(preferred_lifetime);
+    p.deserialize(reserved);
+    p.deserialize(prefix, prefix_len);
 
     return event_description::Evt_Parse_Ok;
 }

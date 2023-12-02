@@ -69,7 +69,7 @@ event_description ipv6_hdr::deserialize(packet &p, logger *log, bool debug)
     // we cannot use switch statement here because,
     // we can only parse certain nh options.
     if (static_cast<IPv6_NH_Type>(nh) == IPv6_NH_Type::AH) {
-        opts->ah_hdr = std::make_shared<ipv6_ah_hdr>();
+        opts->ah_hdr = std::make_shared<ip_ah_hdr>();
         if (!opts->ah_hdr)
             return event_description::Evt_Unknown_Error;
 

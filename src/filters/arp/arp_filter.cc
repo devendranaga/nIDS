@@ -18,7 +18,7 @@ event_description arp_filter::add_arp_frame(parser &p)
         std::unique_lock<std::mutex> lock(lock_);
 
         for (it = arp_table_.begin(); it != arp_table_.end(); it ++) {
-            if (std::memcmp(it->mac, p.arp_h->sender_hw_addr, FW_MACADDR_LEN) == 0) {
+            if (std::memcmp(it->mac, p.arp_h.sender_hw_addr, FW_MACADDR_LEN) == 0) {
                 new_arp_entry = false;
                 break;
             }
@@ -27,12 +27,12 @@ event_description arp_filter::add_arp_frame(parser &p)
         if (new_arp_entry) {
             arp_entry arp_e;
 
-            std::memcpy(arp_e.mac, p.arp_h->sender_hw_addr, FW_MACADDR_LEN);
-            arp_e.ipaddr = p.arp_h->sender_proto_addr;
+            std::memcpy(arp_e.mac, p.arp_h.sender_hw_addr, FW_MACADDR_LEN);
+            arp_e.ipaddr = p.arp_h.sender_proto_addr;
             arp_e.state = Arp_State::Unknown;
             clock_gettime(CLOCK_MONOTONIC, &arp_e.last_seen);
 
-            if (p.arp_h->operation == static_cast<uint16_t>(Arp_Operation::Request)) {
+            if (p.arp_h.operation == static_cast<uint16_t>(Arp_Operation::Request)) {
                 arp_e.state = Arp_State::Req;
             }
             arp_table_.push_back(arp_e);

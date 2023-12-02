@@ -13,13 +13,13 @@ int eth_filter::run(parser &p, logger *log, bool debug)
 
     //
     // if ethernet header is present get the ethertype
-    if (p.eh)
-        ethertype = p.eh->ethertype;
+    if (p.protocols_avail.has_eth())
+        ethertype = p.eh.ethertype;
 
     //
     // if there's vlan header, get the ethertype
-    if (p.vh)
-        ethertype = p.vh->ethertype;
+    if (p.protocols_avail.has_vlan())
+        ethertype = p.vh.ethertype;
 
     if (ethertype == 0)
         return -1;

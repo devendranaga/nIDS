@@ -38,7 +38,9 @@ enum class dhcp_param_req_list {
     Parameter_Req_List = 55,
     Renewal_Time = 58,
     Rebinding_Time = 59,
+    Vendor_Class_Identifier = 60,
     Client_Id = 61,
+    DHCP_Auto_Config = 116,
     Domain_Search = 119,
     Classless_Static_Route = 121,
     Private_Classless_Static_Route = 249,
@@ -413,6 +415,49 @@ struct dhcp_opt_perform_router_discover {
     }
 };
 
+struct dhcp_opt_autoconf {
+    uint8_t len;
+    uint8_t val;
+
+    event_description deserialize(packet &p, logger *log, bool debug)
+    {
+        p.deserialize(len);
+        p.deserialize(val);
+
+        return event_description::Evt_Parse_Ok;
+    }
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\t DHCP Auto Configuration: {\n");
+        log->verbose("\t\t\t len: %d\n", len);
+        log->verbose("\t\t\t val: %d\n", val);
+        log->verbose("\t\t }\n");
+    #endif
+    }
+};
+
+struct dhcp_opt_vendor_class_identifier {
+    uint8_t len;
+    std::vector<uint8_t> val;
+
+    event_description deserialize(packet &p, logger *log, bool debug)
+    {
+        p.deserialize(len);
+        p.deserialize(val, len);
+
+        return event_description::Evt_Parse_Ok;
+    }
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\t Vendor Class Identifier: {\n");
+        log->verbose("\t\t\t len: %d\n", len);
+        log->verbose("\t\t }\n");
+    #endif
+    }
+};
+
 struct dhcp_opts {
     std::shared_ptr<dhcp_opt_msg_type> type;
     std::shared_ptr<dhcp_opt_req_ipaddr> req_ipaddr;
@@ -428,6 +473,8 @@ struct dhcp_opts {
     std::shared_ptr<dhcp_opt_router> router;
     std::shared_ptr<dhcp_opt_dns> dns;
     std::shared_ptr<dhcp_opt_perform_router_discover> perf_rdisc;
+    std::shared_ptr<dhcp_opt_autoconf> dhcp_autoconf;
+    std::shared_ptr<dhcp_opt_vendor_class_identifier> vendor_class_id;
     dhcp_opt_param_end end;
 
     explicit dhcp_opts() : 
@@ -443,7 +490,9 @@ struct dhcp_opts {
                 domain_name(nullptr),
                 router(nullptr),
                 dns(nullptr),
-                perf_rdisc(nullptr) { }
+                perf_rdisc(nullptr),
+                dhcp_autoconf(nullptr),
+                vendor_class_id(nullptr) { }
     ~dhcp_opts() { }
 
     int serialize(packet &p);
@@ -486,6 +535,10 @@ struct dhcp_opts {
             domain_name->print(log);
         if (perf_rdisc)
             perf_rdisc->print(log);
+        if (dhcp_autoconf)
+            dhcp_autoconf->print(log);
+        if (vendor_class_id)
+            vendor_class_id->print(log);
     #endif
     }
 };
