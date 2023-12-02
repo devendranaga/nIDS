@@ -38,6 +38,7 @@ enum class rule_ids : uint32_t {
     Rule_Id_ARP_Protocol_Addr_Len_Inval,
     Rule_Id_ARP_Inval_Operation,
     Rule_Id_ARP_Flood_Maybe_In_Progress,
+    Rule_Id_ARP_Info_Leak,
 
     //
     // VLAN Rule Ids
@@ -175,6 +176,9 @@ enum class rule_ids : uint32_t {
     // EAP Rule Ids
     Rule_Id_EAP_Type_Unsupported = 2001,
 
+    Rule_Id_IPSec_AH_Inval_Len,
+    Rule_Id_IPSec_AH_Zero_ICV_Len,
+
     //
     // Known Malware / Virus / Explit Rule Ids
     Rule_Id_Known_Exploit_Win32_Blaster = 10001,
@@ -207,6 +211,7 @@ enum class event_description : uint32_t {
     Evt_ARP_Protocol_Addr_Len_Inval,
     Evt_ARP_Inval_Operation,
     Evt_ARP_Flood_Maybe_In_Progress,
+    Evt_ARP_Info_Leak,
 
     //
     // VLAN events
@@ -348,6 +353,9 @@ enum class event_description : uint32_t {
     //
     // EAP events
     Evt_EAP_Type_Unsupported = 2001,
+
+    Evt_IPSec_AH_Inval_Len = 2100,
+    Evt_IPSec_AH_Zero_ICV_Len,
 
     //
     // Known virus / exploit / worm / malware events
