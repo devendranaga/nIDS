@@ -19,9 +19,10 @@ So in the system with two NICs we have:
 
 1. 1 main thread
 2. 2 interface threads (1 for each NIC)
-3. 2 parser threads (1 for each NIC)
-4. 1 event manager thread
-5. 1 file writer thread
+3. 2 pcap log threads (1 for each NIC)
+4. 2 parser threads (1 for each NIC)
+5. 1 event manager thread
+6. 1 file writer thread
 
 The interface and network threads scale with number of input interfaces to filter on.
 
@@ -128,6 +129,34 @@ But right now the focus is on filters and rule matching methods.
 4. Since dynamic memory is used almost all possible cases, excluding the cases where the data buffer needed.
 5. Memory is freed at the destructor to avoid any possible leak.
 
+### Queueing
+
+Queueing is most used in the nIDS.
+
+Following types are being queued:
+
+1. Incoming frame
+2. Parsed packet
+3. Events
+
+Every incoming frame gets queued into two main places.
+
+1. For parser for parsing and filtering.
+2. For logging in pcap.
+
+Parsed packet is queued into the event manager for the following:
+
+1. Perform specific filtering - icmp, arp are few instances
+2. writing events to a file
+3. writing events to a mqtt
+4. writing events to a console or syslog
+
+Events are queued only for forwarding:
+
+1. forward via mqtt to a remote host.
+
+Queueing generally introduce delay, but the threads process each frame in parallel to avoid
+packet loss or more time being spent in receive path leading to starvation of incoming frames.
 
 ### Eventing:
 
@@ -168,7 +197,7 @@ The following metrics are of concern to me.
 
 2. A flood ping at 1 usec inter packet gap really tested the ICMP filter capability.
 
-   On an average, the filter latency was around 9 microseconds with some debug prints. However, the flood ping
+   On an average, the filter latency was around 6 microseconds with some debug prints. However, the flood ping
    was really testing the queues and parser speed to deque and process. Right now, i do not have a solution
    for this high rate of flood input to parse and figure. No plans to think about it too, because a flood at
    such a high rate is generally a cause of DoS and i must rather focus on writing a DoS filter at the moment
