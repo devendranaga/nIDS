@@ -185,7 +185,12 @@ event_description tcp_hdr_options::deserialize(packet &p,
 {
     uint32_t len = p.off + rem_len;
 
+    end_of_opt = false;
+
     while (p.off < len) {
+        if (end_of_opt)
+            break;
+
         switch (static_cast<Tcp_Options_Type>(p.buf[p.off])) {
             case Tcp_Options_Type::Mss: {
                 p.off ++;
@@ -214,9 +219,9 @@ event_description tcp_hdr_options::deserialize(packet &p,
                 }
 
                 sack_permitted = std::make_shared<tcp_hdr_opt_sack_permitted>();
-                if (!sack_permitted) {
-                    return event_description::Evt_Unknown_Error;
-                }
+                if (!sack_permitted)
+                    return event_description::Evt_Out_Of_Memory;
+
                 p.deserialize(sack_permitted->len);
             } break;
             case Tcp_Options_Type::Timestamp: {
@@ -228,9 +233,9 @@ event_description tcp_hdr_options::deserialize(packet &p,
                 }
 
                 ts = std::make_shared<tcp_hdr_opt_timestamp>();
-                if (!ts) {
-                    return event_description::Evt_Unknown_Error;
-                }
+                if (!ts)
+                    return event_description::Evt_Out_Of_Memory;
+
                 p.deserialize(ts->len);
 
                 //
@@ -251,9 +256,9 @@ event_description tcp_hdr_options::deserialize(packet &p,
                 }
 
                 win_scale = std::make_shared<tcp_hdr_opt_win_scale>();
-                if (!win_scale) {
-                    return event_description::Evt_Unknown_Error;
-                }
+                if (!win_scale)
+                    return event_description::Evt_Out_Of_Memory;
+
                 p.deserialize(win_scale->len);
 
                 //
@@ -263,6 +268,12 @@ event_description tcp_hdr_options::deserialize(packet &p,
                     return event_description::Evt_Tcp_Opt_Win_Scale_Inval_Len;
                 }
                 p.deserialize(win_scale->shift_count);
+            } break;
+            case Tcp_Options_Type::End_Of_Option_List: {
+                //
+                // break when the end of opts reached
+                p.off ++;
+                end_of_opt = true;
             } break;
             default:
                 return event_description::Evt_Tcp_Invalid_Option;
