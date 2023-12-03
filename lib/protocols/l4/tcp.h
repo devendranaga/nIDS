@@ -14,6 +14,7 @@
 namespace firewall {
 
 enum class Tcp_Options_Type : uint32_t {
+    End_Of_Option_List = 0,
     Nop = 1,
     Mss = 2,
     Win_Scale = 3,
@@ -59,12 +60,14 @@ struct tcp_hdr_options {
     std::shared_ptr<tcp_hdr_opt_sack_permitted> sack_permitted;
     std::shared_ptr<tcp_hdr_opt_timestamp> ts;
     std::shared_ptr<tcp_hdr_opt_win_scale> win_scale;
+    bool end_of_opt;
 
     explicit tcp_hdr_options() :
                     mss(nullptr),
                     sack_permitted(nullptr),
                     ts(nullptr),
-                    win_scale(nullptr) { }
+                    win_scale(nullptr),
+                    end_of_opt(false) { }
     ~tcp_hdr_options() { }
 
     int serialize(packet &p);
