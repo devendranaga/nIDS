@@ -80,6 +80,7 @@ enum class rule_ids : uint32_t {
     // ICMP6 Rule Ids
     Rule_Id_Icmp6_Icmp6_Type_Unsupported = 601,
     Rule_Id_Icmp6_Mcast_Listener_Inval_Rec_Len,
+    Rule_Id_Icmp6_Echo_Req_Hdr_Len_Too_Short,
 
     //
     // TCP Rule Ids
@@ -253,6 +254,7 @@ enum class event_description : uint32_t {
     // ICMP6 events
     Evt_Icmp6_Icmp6_Type_Unsupported = 601,
     Evt_Icmp6_Mcast_Listener_Inval_Rec_Len,
+    Evt_Icmp6_Echo_Req_Hdr_Len_Too_Short,
 
     //
     // TCP events

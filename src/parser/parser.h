@@ -205,8 +205,8 @@ struct parser {
         // IPv6 Encapsulation header
         std::shared_ptr<ipv6_hdr> ipv6_encap_h;
 
-        // IPV6 Authentication header
-        ip_ah_hdr ip_ah_h;
+        // IPSec Authentication header
+        ipsec_ah_hdr ip_ah_h;
 
         // TCP header
         tcp_hdr tcp_h;
