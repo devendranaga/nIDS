@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements IPSec AH (Authentication Header) parsing.
+ * 
+ * @copyright - 2023-present. Devendra Naga All rights reserved.
+*/
 #ifndef __FW_LIB_PROTOCOLS_L3_IP_AH_H__
 #define __FW_LIB_PROTOCOLS_L3_IP_AH_H__
 
@@ -13,7 +18,7 @@ namespace firewall {
 
 struct ipv6_hdr;
 
-struct ip_ah_hdr {
+struct ipsec_ah_hdr {
     uint8_t nh;
     uint8_t len;
     uint16_t reserved;

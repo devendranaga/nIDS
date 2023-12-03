@@ -50,7 +50,7 @@ struct ipv6_hop_by_hop_hdr {
 
 struct ipv6_opts {
     std::shared_ptr<ipv6_hop_by_hop_hdr> hh;
-    std::shared_ptr<ip_ah_hdr> ah_hdr;
+    std::shared_ptr<ipsec_ah_hdr> ah_hdr;
 
     explicit ipv6_opts() :
                 hh(nullptr) { }
@@ -99,7 +99,7 @@ struct ipv6_hdr {
                 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
             };
-            return std::memcmp(addr, z_addr, sizeof(z_addr));
+            return (std::memcmp(addr, z_addr, sizeof(z_addr)) == 0);
         }
 };
 

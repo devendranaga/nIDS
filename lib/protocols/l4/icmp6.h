@@ -20,8 +20,15 @@ enum Icmp6_Types {
     Echo_Request = 128,
     Echo_Reply = 129,
     Icmp6_Type_Router_Advertisement = 134,
+    Neighbor_Solitication = 135,
+    Neighbor_Advertisement = 136,
     Mcast_Listener_Report_Msg_V2 = 143,
     Icmp6_Type_Max = 255,
+};
+
+enum class Icmp6_Option_Types {
+    Source_Link_Layer_Address = 0x1,
+    Target_Link_Layer_Address = 0x2,
 };
 
 struct icmp6_flags {
@@ -91,7 +98,36 @@ struct icmp6_option_source_link_layer_addr {
 
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);
-    void print(logger *log);    
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t SourceLinkLayerAddr: {\n");
+        log->verbose("\t\t len: %d\n", len);
+        log->verbose("\t\t lladdr: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                        lladdr[0], lladdr[1], lladdr[2],
+                        lladdr[3], lladdr[4], lladdr[5]);
+        log->verbose("\t }\n");
+    #endif
+    }
+};
+
+struct icmp6_option_target_link_layer_addr {
+    uint8_t len;
+    uint8_t lladdr[FW_MACADDR_LEN];
+
+    int serialize(packet &p);
+    event_description deserialize(packet &p, logger *log, bool debug = false);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t TargetLinkLayerAddr: {\n");
+        log->verbose("\t\t len: %d\n", len);
+        log->verbose("\t\t lladdr: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                        lladdr[0], lladdr[1], lladdr[2],
+                        lladdr[3], lladdr[4], lladdr[5]);
+        log->verbose("\t }\n");
+    #endif
+    }
 };
 
 struct icmp6_router_advertisement {
@@ -224,6 +260,98 @@ struct icmp6_echo_reply {
     }
 };
 
+struct icmp6_neighbor_solicitation {
+    uint32_t reserved;
+    uint8_t target_addr[16];
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t Neighbor_Solicitation: {\n");
+        log->verbose("\t\t reserved: %d\n", reserved);
+        log->verbose("\t }\n");
+    #endif
+    }
+};
+
+struct neighbor_advertisement_flags {
+    uint32_t router:1;
+    uint32_t solicited:1;
+    uint32_t override_val:1;
+    uint32_t reserved:29;
+
+    explicit neighbor_advertisement_flags() :
+                    router(0),
+                    solicited(0),
+                    override_val(0),
+                    reserved(0) { }
+    ~neighbor_advertisement_flags() { }
+};
+
+struct icmp6_neighbor_advertisement {
+    neighbor_advertisement_flags flags;
+    uint8_t target_addr[16];
+
+    explicit icmp6_neighbor_advertisement() { }
+    ~icmp6_neighbor_advertisement() { }
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t NeighborAdvertisement: {\n");
+        log->verbose("\t\t flags: {\n");
+        log->verbose("\t\t\t router: %d\n", flags.router);
+        log->verbose("\t\t\t solicited: %d\n", flags.solicited);
+        log->verbose("\t\t\t override: %d\n", flags.override_val);
+        log->verbose("\t\t\t reserved: %d\n", flags.reserved);
+        log->verbose("\t\t }\n");
+        log->verbose("\t }\n");
+    #endif
+    }
+};
+
+struct icmp6_options_bits {
+    uint32_t dns_search_list:1;
+    uint32_t mtu:1;
+    uint32_t s_lladdr:1;
+    uint32_t prefix_information:1;
+    uint32_t t_lladdr:1;
+
+    explicit icmp6_options_bits() :
+                    dns_search_list(0),
+                    mtu(0),
+                    s_lladdr(0),
+                    prefix_information(0),
+                    t_lladdr(0) { }
+    ~icmp6_options_bits() { }
+};
+
+/**
+ * @brief - implements ICMP6 options.
+*/
+struct icmp6_options {
+    icmp6_option_dns_search_list dns_search_list;
+    icmp6_option_mtu mtu;
+    icmp6_option_source_link_layer_addr s_lladdr;
+    icmp6_option_prefix_information prefix_information;
+    icmp6_option_target_link_layer_addr t_lladdr;
+
+    icmp6_options_bits valid;
+
+    event_description deserialize(packet &p, logger *log, bool debug);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        if (valid.s_lladdr)
+            s_lladdr.print(log);
+        if (valid.t_lladdr)
+            t_lladdr.print(log);
+    #endif
+    }
+};
+
 /**
  * @brief - implements ICMP6 serialize and deserialize.
 */
@@ -233,20 +361,20 @@ struct icmp6_hdr {
     uint16_t checksum;
     std::shared_ptr<icmp6_router_advertisement> radv;
     std::shared_ptr<icmp6_mcast_listener_report_msg_v2> mcast_listener_v2;
-
-    std::shared_ptr<icmp6_option_dns_search_list> dns_search_list;
-    std::shared_ptr<icmp6_option_mtu> mtu;
-    std::shared_ptr<icmp6_option_source_link_layer_addr> s_lladdr;
-    std::shared_ptr<icmp6_option_prefix_information> prefix_information;
     std::shared_ptr<icmp6_echo_req> echo_req;
     std::shared_ptr<icmp6_echo_reply> echo_reply;
+    std::shared_ptr<icmp6_neighbor_solicitation> ns;
+    std::shared_ptr<icmp6_neighbor_advertisement> na;
+
+    // options pointer
+    std::shared_ptr<icmp6_options> opt;
 
     explicit icmp6_hdr() :
-                    dns_search_list(nullptr),
-                    mtu(nullptr),
-                    s_lladdr(nullptr),
                     echo_req(nullptr),
-                    echo_reply(nullptr)
+                    echo_reply(nullptr),
+                    ns(nullptr),
+                    na(nullptr),
+                    opt(nullptr)
     { }
     ~icmp6_hdr() { }
 

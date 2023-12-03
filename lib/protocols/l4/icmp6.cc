@@ -54,9 +54,48 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
 
             evt_desc = echo_reply->deserialize(p, log, debug);
         } break;
+        case Icmp6_Types::Neighbor_Solitication: {
+            ns = std::make_shared<icmp6_neighbor_solicitation>();
+            if (!ns)
+                return event_description::Evt_Out_Of_Memory;
+
+            evt_desc = ns->deserialize(p, log, debug);
+        } break;
+        case Icmp6_Types::Neighbor_Advertisement: {
+            na = std::make_shared<icmp6_neighbor_advertisement>();
+
+            if (!na)
+                return event_description::Evt_Out_Of_Memory;
+
+            evt_desc = na->deserialize(p, log, debug);
+        } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
         break;
+    }
+
+    if ((static_cast<Icmp6_Types>(type) != Icmp6_Types::Echo_Request) &&
+        (static_cast<Icmp6_Types>(type) != Icmp6_Types::Echo_Reply)) {
+        opt = std::make_shared<icmp6_options>();
+        if (!opt)
+            return event_description::Evt_Out_Of_Memory;
+
+        while (p.off < p.buf_len) {
+            switch (static_cast<Icmp6_Option_Types>(p.buf[p.off])) {
+                case Icmp6_Option_Types::Source_Link_Layer_Address: {
+                    p.off ++;
+                    opt->valid.s_lladdr = 1;
+                    evt_desc = opt->s_lladdr.deserialize(p, log, debug);
+                } break;
+                case Icmp6_Option_Types::Target_Link_Layer_Address: {
+                    p.off ++;
+                    opt->valid.t_lladdr = 1;
+                    evt_desc = opt->t_lladdr.deserialize(p, log, debug);
+                } break;
+                default: // we are not fully parsing the options yet
+                break;
+            }
+        }
     }
 
     if (debug) {
@@ -79,6 +118,12 @@ void icmp6_hdr::print(logger *log)
         echo_reply->print(log);
     if (echo_req)
         echo_req->print(log);
+    if (ns)
+        ns->print(log);
+    if (na)
+        na->print(log);
+    if (opt)
+        opt->print(log);
     log->verbose("}\n");
 #endif
 }
@@ -124,6 +169,11 @@ event_description icmp6_mcast_record::deserialize(packet &p, logger *log, bool d
 
 event_description icmp6_echo_req::deserialize(packet &p, logger *log, bool debug)
 {
+    //
+    // echo request header must be equal to 4 and more if it include data
+    if (p.remaining_len() < 4)
+        return event_description::Evt_Icmp6_Echo_Req_Hdr_Len_Too_Short;
+
     p.deserialize(id);
     p.deserialize(seq_no);
     data_len = p.remaining_len();
@@ -188,6 +238,46 @@ event_description icmp6_option_prefix_information::deserialize(packet &p, logger
     p.deserialize(preferred_lifetime);
     p.deserialize(reserved);
     p.deserialize(prefix, prefix_len);
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_neighbor_solicitation::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(reserved);
+    p.deserialize(target_addr, sizeof(target_addr));
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_option_source_link_layer_addr::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(len);
+    p.deserialize(lladdr, sizeof(lladdr));
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_neighbor_advertisement::deserialize(packet &p, logger *log, bool debug)
+{
+    uint32_t byte;
+
+    p.deserialize(byte);
+
+    flags.router = !!(byte & 0x80000000);
+    flags.solicited = !!(byte & 0x40000000);
+    flags.override_val = !!(byte & 0x20000000);
+    flags.reserved = (byte & 0x1FFFFFFF);
+
+    p.deserialize(target_addr, sizeof(target_addr));
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_option_target_link_layer_addr::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(len);
+    p.deserialize(lladdr, sizeof(lladdr));
 
     return event_description::Evt_Parse_Ok;
 }

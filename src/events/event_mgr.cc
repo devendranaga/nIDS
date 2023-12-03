@@ -485,6 +485,11 @@ const static struct {
         rule_ids::Rule_Id_Icmp6_Mcast_Listener_Inval_Rec_Len,
         "ICMP6 Invalid Mcast Listener record length"
     },
+    {
+        event_description::Evt_Icmp6_Echo_Req_Hdr_Len_Too_Short,
+        rule_ids::Rule_Id_Icmp6_Echo_Req_Hdr_Len_Too_Short,
+        "ICMP6 echo request header length is too short"
+    },
 
     //
     // DoIP rules

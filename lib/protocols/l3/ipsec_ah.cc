@@ -1,9 +1,14 @@
+/**
+ * @brief - Implements IPSec AH (Authentication Header) parsing.
+ * 
+ * @copyright - 2023-present. Devendra Naga All rights reserved.
+*/
 #include <ipv6.h>
 #include <ipsec_ah.h>
 
 namespace firewall {
 
-event_description ip_ah_hdr::deserialize(packet &p, logger *log, bool debug)
+event_description ipsec_ah_hdr::deserialize(packet &p, logger *log, bool debug)
 {
     event_description evt_desc = event_description::Evt_Parse_Ok;
 
@@ -45,7 +50,7 @@ event_description ip_ah_hdr::deserialize(packet &p, logger *log, bool debug)
     return evt_desc;
 }
 
-void ip_ah_hdr::print(logger *log)
+void ipsec_ah_hdr::print(logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
     log->verbose("\t IP-AH: {\n");
