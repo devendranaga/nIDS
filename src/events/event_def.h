@@ -97,6 +97,7 @@ enum class rule_ids : uint32_t {
     Rule_Id_Tcp_Flags_SYN_FIN_Set,
     Rule_Id_Tcp_Src_Port_Zero,
     Rule_Id_Tcp_Dst_Port_Zero,
+    Rule_Id_Tcp_Opt_MSS_Len_Inval,
 
     //
     // UDP Rule Ids
@@ -271,6 +272,7 @@ enum class event_description : uint32_t {
     Evt_Tcp_Flags_SYN_FIN_Set,
     Evt_Tcp_Src_Port_Zero,
     Evt_Tcp_Dst_Port_Zero,
+    Evt_Tcp_Opt_MSS_Len_Inval,
 
     //
     // UDP events
