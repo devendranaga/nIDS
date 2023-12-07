@@ -213,5 +213,21 @@ fw_error_type packet::deserialize(std::vector<uint8_t> &bufout, uint32_t buflen_
     return fw_error_type::eNo_Error;
 }
 
+fw_error_type packet::deserialize(std::vector<char> &bufout, uint32_t buflen_to_copy)
+{
+    uint32_t i;
+
+    if (packet_assert_length(off + buflen_to_copy, buf_len)) {
+        return fw_error_type::eOut_Of_Bounds;
+    }
+
+    for (i = 0; i < buflen_to_copy; i ++)
+        bufout.push_back(buf[off + i]);
+
+    off += buflen_to_copy;
+
+    return fw_error_type::eNo_Error;
+}
+
 }
 

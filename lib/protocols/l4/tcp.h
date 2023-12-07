@@ -25,6 +25,11 @@ enum class Tcp_Options_Type : uint32_t {
 struct tcp_hdr_opt_mss {
     uint8_t len;
     uint16_t val;
+
+    uint8_t hdr_len() { return len_; }
+
+    private:
+        const uint8_t len_ = 4;
 };
 
 struct tcp_hdr_opt_sack_permitted {
@@ -55,18 +60,33 @@ struct tcp_hdr_opt_win_scale {
         const int len_ = 3;
 };
 
+struct tcp_hdr_options_flags {
+    uint32_t mss:1;
+    uint32_t sack_permitted:1;
+    uint32_t ts:1;
+    uint32_t win_scale:1;
+
+    explicit tcp_hdr_options_flags() :
+                    mss(0),
+                    sack_permitted(0),
+                    ts(0),
+                    win_scale(0) { }
+    ~tcp_hdr_options_flags() { }
+};
+
+/**
+ * @brief - Implements TCP options.
+ */
 struct tcp_hdr_options {
-    std::shared_ptr<tcp_hdr_opt_mss> mss;
-    std::shared_ptr<tcp_hdr_opt_sack_permitted> sack_permitted;
-    std::shared_ptr<tcp_hdr_opt_timestamp> ts;
-    std::shared_ptr<tcp_hdr_opt_win_scale> win_scale;
+    tcp_hdr_opt_mss mss;
+    tcp_hdr_opt_sack_permitted sack_permitted;
+    tcp_hdr_opt_timestamp ts;
+    tcp_hdr_opt_win_scale win_scale;
     bool end_of_opt;
 
+    tcp_hdr_options_flags flags;
+
     explicit tcp_hdr_options() :
-                    mss(nullptr),
-                    sack_permitted(nullptr),
-                    ts(nullptr),
-                    win_scale(nullptr),
                     end_of_opt(false) { }
     ~tcp_hdr_options() { }
 
@@ -110,6 +130,7 @@ struct tcp_hdr {
     uint16_t window;
     uint16_t checksum;
     uint16_t urg_ptr;
+    std::vector<char> rst_reason;
 
     // if options are set, this pointer is valid
     std::shared_ptr<tcp_hdr_options> opts;

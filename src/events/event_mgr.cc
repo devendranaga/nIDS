@@ -296,6 +296,11 @@ const static struct {
         rule_ids::Rule_Id_Tcp_Dst_Port_Zero,
         "TCP destination port is 0"
     },
+    {
+        event_description::Evt_Tcp_Opt_MSS_Len_Inval,
+        rule_ids::Rule_Id_Tcp_Opt_MSS_Len_Inval,
+        "TCP MSS Length is invalid"
+    },
 
     //
     // UDP rules
@@ -609,6 +614,8 @@ void event_mgr::create_evt(event &evt,
         case static_cast<uint16_t>(Ether_Type::Ether_Type_IPv4):
             evt.protocol = pkt.ipv4_h.protocol;
             evt.ttl = pkt.ipv4_h.ttl;
+            evt.src_addr = pkt.ipv4_h.src_addr;
+            evt.dst_addr = pkt.ipv4_h.dst_addr;
         break;
     }
     evt.pkt_len = pkt.pkt_len;

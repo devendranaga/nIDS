@@ -21,24 +21,22 @@ event_description tcp_hdr::deserialize(packet &p, logger *log, bool debug)
 
     //
     // check for short tcp header length
-    if (p.remaining_len() < tcp_hdr_len_no_off_) {
+    if (p.remaining_len() < tcp_hdr_len_no_off_)
         return event_description::Evt_Tcp_Hdrlen_Too_Short;
-    }
 
     p.deserialize(src_port);
     p.deserialize(dst_port);
 
     //
     // src port cannot be zero
-    if (src_port == 0) {
+    if (src_port == 0)
         return event_description::Evt_Tcp_Src_Port_Zero;
-    }
 
     //
     // dst port cannot be zero
-    if (dst_port == 0) {
+    if (dst_port == 0)
         return event_description::Evt_Tcp_Dst_Port_Zero;
-    }
+
     p.deserialize(seq_no);
     p.deserialize(ack_no);
     p.deserialize(byte_1);
@@ -59,9 +57,8 @@ event_description tcp_hdr::deserialize(packet &p, logger *log, bool debug)
     //
     // check for TCP invalid flag bits
     evt_des = check_flags();
-    if (evt_des != event_description::Evt_Parse_Ok) {
+    if (evt_des != event_description::Evt_Parse_Ok)
         return evt_des;
-    }
 
     p.deserialize(window);
     p.deserialize(checksum);
@@ -70,9 +67,9 @@ event_description tcp_hdr::deserialize(packet &p, logger *log, bool debug)
     // check for possible TCP options
     if (hdr_len > tcp_hdr_len_no_off_) {
         opts = std::make_shared<tcp_hdr_options>();
-        if (!opts) {
-            return event_description::Evt_Unknown_Error;
-        }
+        if (!opts)
+            return event_description::Evt_Out_Of_Memory;
+
         evt_des = opts->deserialize(p,
                                     hdr_len - tcp_hdr_len_no_off_,
                                     log,
@@ -82,10 +79,13 @@ event_description tcp_hdr::deserialize(packet &p, logger *log, bool debug)
         }
     }
 
-    debug = true;
-    if (debug) {
+    //
+    // copy reset reason in case if there is some data
+    if (rst && p.remaining_len())
+        p.deserialize(rst_reason, static_cast<uint32_t>(p.remaining_len()));
+
+    if (debug)
         print(log);
-    }
 
     return event_description::Evt_Parse_Ok;
 }
@@ -115,27 +115,27 @@ void tcp_hdr::print(logger *log)
     log->verbose("\turg_ptr: %d\n", urg_ptr);
     if (opts) {
         log->verbose("\tTCP_Options: {\n");
-        if (opts->mss) {
+        if (opts->flags.mss) {
             log->verbose("\t\tMSS: {\n");
-            log->verbose("\t\t\t %d\n", opts->mss->val);
+            log->verbose("\t\t\t %d\n", opts->mss.val);
             log->verbose("\t\t}\n");
         }
-        if (opts->sack_permitted) {
+        if (opts->flags.sack_permitted) {
             log->verbose("\t\tSACK_Permitted: {\n");
-            log->verbose("\t\t\t %d\n", opts->sack_permitted->len);
+            log->verbose("\t\t\t %d\n", opts->sack_permitted.len);
             log->verbose("\t\t}\n");
         }
-        if (opts->ts) {
+        if (opts->flags.ts) {
             log->verbose("\t\tTimestamp: {\n");
-            log->verbose("\t\t\tlen: %d\n", opts->ts->len);
-            log->verbose("\t\t\tts_val: %u\n", opts->ts->ts_val);
-            log->verbose("\t\t\tts_echo_reply: %u\n", opts->ts->ts_echo_reply);
+            log->verbose("\t\t\tlen: %d\n", opts->ts.len);
+            log->verbose("\t\t\tts_val: %u\n", opts->ts.ts_val);
+            log->verbose("\t\t\tts_echo_reply: %u\n", opts->ts.ts_echo_reply);
             log->verbose("\t\t}\n");
         }
-        if (opts->win_scale) {
+        if (opts->flags.win_scale) {
             log->verbose("\t\tWin_Scale: {\n");
-            log->verbose("\t\t\tlen: %d\n", opts->win_scale->len);
-            log->verbose("\t\t\tshift_count: %d\n", opts->win_scale->shift_count);
+            log->verbose("\t\t\tlen: %d\n", opts->win_scale.len);
+            log->verbose("\t\t\tshift_count: %d\n", opts->win_scale.shift_count);
             log->verbose("\t\t}\n");
         }
         log->verbose("\t}\n");  
@@ -196,16 +196,15 @@ event_description tcp_hdr_options::deserialize(packet &p,
                 p.off ++;
                 //
                 // MSS cannot be repeated
-                if (mss != nullptr) {
+                if (flags.mss)
                     return event_description::Evt_Tcp_Opt_MSS_Repeated;
-                }
 
-                mss = std::make_shared<tcp_hdr_opt_mss>();
-                if (!mss) {
-                    return event_description::Evt_Unknown_Error;
-                }
-                p.deserialize(mss->len);
-                p.deserialize(mss->val);
+                flags.mss = 1;
+                p.deserialize(mss.len);
+                if (mss.len != mss.hdr_len())
+                    return event_description::Evt_Tcp_Opt_MSS_Len_Inval;
+
+                p.deserialize(mss.val);
             } break;
             case Tcp_Options_Type::Nop: {
                 p.off ++;
@@ -214,60 +213,48 @@ event_description tcp_hdr_options::deserialize(packet &p,
                 p.off ++;
                 //
                 // SACK cannot be repeated
-                if (sack_permitted != nullptr) {
+                if (flags.sack_permitted)
                     return event_description::Evt_Tcp_Opt_SACK_Permitted_Repeated;
-                }
 
-                sack_permitted = std::make_shared<tcp_hdr_opt_sack_permitted>();
-                if (!sack_permitted)
-                    return event_description::Evt_Out_Of_Memory;
-
-                p.deserialize(sack_permitted->len);
+                flags.sack_permitted = 1;
+                p.deserialize(sack_permitted.len);
             } break;
             case Tcp_Options_Type::Timestamp: {
                 p.off ++;
                 //
                 // TS cannot be repeated
-                if (ts != nullptr) {
+                if (flags.ts)
                     return event_description::EvT_Tcp_Opt_Ts_Repeated;
-                }
 
-                ts = std::make_shared<tcp_hdr_opt_timestamp>();
-                if (!ts)
-                    return event_description::Evt_Out_Of_Memory;
-
-                p.deserialize(ts->len);
+                flags.ts = 1;
+                p.deserialize(ts.len);
 
                 //
                 // discard if length is not what expected
                 // must be 10 including the header (type + len)
-                if (!ts->len_in_range()) {
+                if (!ts.len_in_range())
                     return event_description::Evt_Tcp_Opt_Ts_Inval_Len;
-                }
-                p.deserialize(ts->ts_val);
-                p.deserialize(ts->ts_echo_reply);
+
+                p.deserialize(ts.ts_val);
+                p.deserialize(ts.ts_echo_reply);
             } break;
             case Tcp_Options_Type::Win_Scale: {
                 p.off ++;
                 //
                 // WinScale cannot be repeated
-                if (win_scale != nullptr) {
+                if (flags.win_scale)
                     return event_description::Evt_Tcp_Opt_WinScale_Repeated;
-                }
 
-                win_scale = std::make_shared<tcp_hdr_opt_win_scale>();
-                if (!win_scale)
-                    return event_description::Evt_Out_Of_Memory;
-
-                p.deserialize(win_scale->len);
+                flags.win_scale = 1;
+                p.deserialize(win_scale.len);
 
                 //
                 // discard if the length is not what expected
                 // must be 10 including the header (type + len)
-                if (!win_scale->len_in_range()) {
+                if (!win_scale.len_in_range())
                     return event_description::Evt_Tcp_Opt_Win_Scale_Inval_Len;
-                }
-                p.deserialize(win_scale->shift_count);
+
+                p.deserialize(win_scale.shift_count);
             } break;
             case Tcp_Options_Type::End_Of_Option_List: {
                 //
