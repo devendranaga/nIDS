@@ -19,11 +19,11 @@ class port_filter {
         ~port_filter() { }
 
         void init();
-        void run(parser &p, rule_config_item &rule, logger *log, bool debug);
+        void run(parser &p, std::vector<rule_config_item>::iterator &rule, logger *log, bool debug);
 
     private:
         explicit port_filter() { }
-        void match_allowed_ports(parser &p, rule_config_item &rule, logger *log, bool debug);
+        void match_allowed_ports(parser &p, std::vector<rule_config_item>::iterator &rule, logger *log, bool debug);
         bool match_ports(std::vector<uint16_t> &port_list, parser &p, logger *log, bool debug);
 };
 

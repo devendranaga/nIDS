@@ -526,6 +526,11 @@ const static struct {
         rule_ids::Rule_Id_MQTT_Inval_Msg_Type,
         "MQTT invalid message type"
     },
+    {
+        event_description::Evt_MQTT_Version_Unknown,
+        rule_ids::Rule_Id_MQTT_Version_Unknown,
+        "MQTT Version is unknown / unsupported yet by the IDS"
+    },
 
     //
     // SOME/IP rules
