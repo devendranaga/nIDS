@@ -543,6 +543,12 @@ const static struct {
         "Port Matched in the ruleset",
     },
 
+    {
+        event_description::Evt_8021AD_INVAL_Hdr_Len,
+        rule_ids::Rule_Id_8021AD_INVAL_Hdr_Len,
+        "802.1AD Invalid Header Length",
+    },
+
     //
     // Rules matched by the Exploit filter
     {

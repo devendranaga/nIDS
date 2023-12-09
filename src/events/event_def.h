@@ -178,6 +178,10 @@ enum class rule_ids : uint32_t {
     // EAP Rule Ids
     Rule_Id_EAP_Type_Unsupported = 2001,
 
+    //
+    // IEEE 802.1AD Rule Ids
+    Rule_Id_8021AD_INVAL_Hdr_Len = 2101,
+
     Rule_Id_IPSec_AH_Inval_Len,
     Rule_Id_IPSec_AH_Zero_ICV_Len,
 
@@ -360,6 +364,10 @@ enum class event_description : uint32_t {
 
     Evt_IPSec_AH_Inval_Len = 2100,
     Evt_IPSec_AH_Zero_ICV_Len,
+
+    //
+    // IEEE 802.1AD invalid header length
+    Evt_8021AD_INVAL_Hdr_Len = 2201,
 
     //
     // Known virus / exploit / worm / malware events
