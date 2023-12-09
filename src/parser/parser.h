@@ -171,6 +171,37 @@ struct protocol_bits {
         uint32_t eap:1;
 };
 
+struct protocol_present_bits {
+    uint32_t eth:1;
+    uint32_t vlan:1;
+    uint32_t arp:1;
+    uint32_t ieee8021ad:1;
+    uint32_t macsec:1;
+    uint32_t ieee8021x_eap:1;
+    uint32_t ipv4:1;
+    uint32_t ipv6:1;
+    uint32_t ipsec_ah:1;
+    uint32_t tcp:1;
+    uint32_t udp:1;
+    uint32_t icmp:1;
+    uint32_t icmp6:1;
+    uint32_t igmp:1;
+    uint32_t dhcp:1;
+    uint32_t ntp:1;
+#if defined(FW_ENABLE_AUTOMOTIVE)
+    uint32_t doip:1;
+    uint32_t someip:1;
+#endif
+    uint32_t tls:1;
+    uint32_t mqtt:1;
+
+    explicit protocol_present_bits()
+    {
+        std::memset(this, 0, sizeof(*this));
+    }
+    ~protocol_present_bits() { }
+};
+
 /**
  * @brief - Implements packet parser.
 */
@@ -206,7 +237,7 @@ struct parser {
         std::shared_ptr<ipv6_hdr> ipv6_encap_h;
 
         // IPSec Authentication header
-        ipsec_ah_hdr ip_ah_h;
+        ipsec_ah_hdr ipsec_ah_h;
 
         // TCP header
         tcp_hdr tcp_h;
@@ -245,7 +276,10 @@ struct parser {
 
         ieee8021x_hdr ieee8021x_h;
 
-        // parsed protocols so far
+        // present protocols.. they might have failed parse.
+        protocol_present_bits present_bits;
+
+        // parsed protocols so far sucessfully.
         protocol_bits protocols_avail;
 
         // OS type

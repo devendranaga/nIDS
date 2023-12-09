@@ -63,6 +63,14 @@ class event_mgr {
     private:
         explicit event_mgr() { }
         void storage_thread();
+        /**
+         * @brief - creates an L4 event with tcp, udp and other protocols
+         *
+         * @param [inout] evt - event input
+         * @param [in] pkt - parsed packet
+        */
+        void create_l4_evt(event &evt,
+                           const parser &pkt);
         void create_evt(event &evt,
                         uint32_t rule_id,
                         event_type evt_type,
@@ -70,6 +78,16 @@ class event_mgr {
                         const parser &pkt);
         void log_syslog(event &evt);
         void log_console(event &evt);
+        /**
+         * @brief - make L4 event string with TCP and UDP ports.
+         *
+         * @param [in] evt - event input
+         * @param [inout] in - string buffer to write text event
+         * @param [in] in_len - length of remaining in buffer
+         *
+         * @return return the number of written bytes
+        */
+        int make_evt_string_l4(event &evt, char *in, size_t in_len);
         void make_evt_string(event &evt, std::string &fmt);
         const std::string evt_type_str(event_type type);
         void mqtt_upload(event &evt);

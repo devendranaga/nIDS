@@ -9,6 +9,7 @@
 #include <event_mgr.h>
 #include <protocols_types.h>
 #include <port_numbers.h>
+#include <packet_stats.h>
 
 namespace firewall {
 
@@ -57,6 +58,7 @@ event_description parser::parse_l4(packet &pkt)
 {
     event_description evt_desc = event_description::Evt_Unknown_Error;
     protocols_types proto;
+    firewall_pkt_stats *stats = firewall_pkt_stats::instance();
 
     //
     // parse the rest of l4 frames.
@@ -92,25 +94,42 @@ event_description parser::parse_l4(packet &pkt)
 
     switch (proto) {
         case protocols_types::Protocol_Udp: {
+            present_bits.udp = 1;
+            stats->stats_update(Pktstats_Type::Type_UDP_Rx, ifname_);
+
             evt_desc = udp_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_udp();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_udp();
         } break;
         case protocols_types::Protocol_Icmp: {
+            present_bits.icmp = 1;
+
             icmp_filter *icmp_f = icmp_filter::instance();
             evt_desc = icmp_f->run_filter(*this, pkt, log_, pkt_dump_);
-            protocols_avail.set_icmp();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_icmp();
         } break;
         case protocols_types::Protocol_Icmp6: {
+            present_bits.icmp6 = 1;
+
             evt_desc = icmp6_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_icmp6();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_icmp6();
         } break;
         case protocols_types::Protocol_Igmp: {
+            present_bits.igmp = 1;
+
             evt_desc = igmp_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_igmp();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_igmp();
         } break;
         case protocols_types::Protocol_Tcp: {
+            present_bits.tcp = 1;
+            stats->stats_update(Pktstats_Type::Type_TCP_Rx, ifname_);
+
             evt_desc = tcp_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_tcp();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_tcp();
         } break;
         //
         // Since ESP is an encrypted frame and we cannot track it
@@ -183,35 +202,53 @@ event_description parser::parse_app_pkt(packet &pkt, Port_Numbers port)
    switch (port) {
         case Port_Numbers::Port_Number_DHCP_Server:
         case Port_Numbers::Port_Number_DHCP_Client: {
+            present_bits.dhcp = 1;
+
             evt_desc = dhcp_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_dhcp();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_dhcp();
         } break;
         case Port_Numbers::Port_Number_NTP: {
+            present_bits.ntp = 1;
+
             evt_desc = ntp_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_ntp();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_ntp();
         } break;
         case Port_Numbers::Port_Number_TLS: {
+            present_bits.tls = 1;
+
             evt_desc = tls_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_tls();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_tls();
         } break;
 #if defined(FW_ENABLE_AUTOMOTIVE)
         case Port_Numbers::Port_Number_DoIP: {
+            present_bits.mqtt = 1;
+
             evt_desc = doip_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_doip();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_doip();
         } break;
 #endif
         case Port_Numbers::Port_Number_MQTT: {
+            present_bits.mqtt = 1;
+
             evt_desc = mqtt_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_mqtt();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_mqtt();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Port;
         break;
     }
 
-   if (evt_desc == event_description::Evt_Unknown_Port) {
-       evt_desc = parse_custom_ports(pkt);
-   }
+    //
+    // for unknown ports lets call custom parser and find if
+    // the port number is defined in the configuration.
+    if (evt_desc == event_description::Evt_Unknown_Port) {
+        evt_desc = parse_custom_ports(pkt);
+    }
 
     return evt_desc;
 }
@@ -233,6 +270,9 @@ int parser::run(packet &pkt)
     event_mgr *evt_mgr = event_mgr::instance();
     Ether_Type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
+    firewall_pkt_stats *stats = firewall_pkt_stats::instance();
+
+    present_bits.eth = 1;
 
     //
     // deserialize ethernet header
@@ -248,6 +288,8 @@ int parser::run(packet &pkt)
     //
     // check if its IEEE 802.1ad provider bridge, parse it
     if (eh.has_ethertype_8021ad()) {
+        present_bits.ieee8021ad = 1;
+
         evt_desc = ieee8021ad_h.deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
@@ -260,6 +302,9 @@ int parser::run(packet &pkt)
     //
     // check if its vlan, parse it
     if (eh.has_ethertype_vlan()) {
+        present_bits.vlan = 1;
+        stats->stats_update(Pktstats_Type::Type_VLAN_Rx, ifname_);
+
         evt_desc = vh.deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
@@ -272,11 +317,15 @@ int parser::run(packet &pkt)
     //
     // Parse macsec frame.
     if (ether == Ether_Type::Ether_Type_MACsec) {
+        present_bits.macsec = 1;
+
         evt_desc = macsec_h.deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {
             evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
             return -1;
         }
+
+        protocols_avail.set_macsec();
 
         //
         // We cannot decrypt the frame, we simply return the parse ok.
@@ -293,22 +342,31 @@ int parser::run(packet &pkt)
     switch (ether) {
         case Ether_Type::Ether_Type_ARP: {
             evt_desc = run_arp_filter(pkt, log_, pkt_dump_);
-            protocols_avail.set_arp();
         } break;
         case Ether_Type::Ether_Type_IPv4: {
+            present_bits.ipv4 = 1;
+            stats->stats_update(Pktstats_Type::Type_IPv4_Rx, ifname_);
+
             evt_desc = ipv4_h.deserialize(pkt, log_, pkt_dump_);
             if (evt_desc == event_description::Evt_IPV4_Hdr_Chksum_Invalid) {
                 firewall_pkt_stats::instance()->stats_update(evt_desc, ifname_);
             }
-            protocols_avail.set_ipv4();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_ipv4();
         } break;
         case Ether_Type::Ether_Type_IPv6: {
+            present_bits.ipv6 = 1;
+            stats->stats_update(Pktstats_Type::Type_IPv6_Rx, ifname_);
+
             evt_desc = ipv6_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_ipv6();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_ipv6();
         } break;
         case Ether_Type::Ether_Type_IEEE8021X: {
+            present_bits.ieee8021x_eap = 1;
             evt_desc = ieee8021x_h.deserialize(pkt, log_, pkt_dump_);
-            protocols_avail.set_eap();
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_eap();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
@@ -349,12 +407,18 @@ event_description parser::run_arp_filter(packet &pkt,
 {
     event_description evt_desc = event_description::Evt_Unknown_Error;
     arp_filter *arp_f;
+    firewall_pkt_stats *stats = firewall_pkt_stats::instance();
+
+    present_bits.arp = 1;
+    stats->stats_update(Pktstats_Type::Type_ARP_Rx, ifname_);
 
     //
     // deserialize ARP frame
     evt_desc = arp_h.deserialize(pkt, log_, pkt_dump_);
     if (evt_desc != event_description::Evt_Parse_Ok)
        return evt_desc;
+
+    protocols_avail.set_arp();
 
     //
     // run the filter
@@ -373,6 +437,8 @@ void parser::run_rule_filters(packet &p,
     std::vector<rule_config_item>::iterator it;
     for (it = rule_list_->rules_cfg_.begin();
          it != rule_list_->rules_cfg_.end(); it ++) {
+        //
+        // run ethertype filtering
         if (it->sig_mask.eth_sig.ethertype)
             eth_filter::instance()->ethertype_filter(*this, it, log, pkt_dump);
 

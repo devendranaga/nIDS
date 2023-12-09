@@ -7,75 +7,15 @@
 
 namespace firewall {
 
-void firewall_pkt_stats::inc_n_rx(const std::string ifname)
-{
-    for (auto it : stats_) {
-        if (it.ifname == ifname) {
-            it.n_rx ++;
-            break;
-        }
-    }
-}
-
-void firewall_pkt_stats::inc_n_deny(const std::string ifname)
-{
-    for (auto it : stats_) {
-        if (it.ifname == ifname) {
-            it.n_deny ++;
-            break;
-        }
-    }
-}
-
-void firewall_pkt_stats::inc_n_allowed(const std::string ifname)
-{
-    for (auto it : stats_) {
-        if (it.ifname == ifname) {
-            it.n_allowed ++;
-            break;
-        }
-    }
-}
-
-void firewall_pkt_stats::inc_n_events(const std::string ifname)
-{
-    for (auto it : stats_) {
-        if (it.ifname == ifname) {
-            it.n_events ++;
-            break;
-        }
-    }
-}
-
-void firewall_pkt_stats::inc_n_icmp_chksum_err(const std::string ifname)
-{
-    for (auto it : stats_) {
-        if (it.ifname == ifname) {
-            it.n_icmp_chksum_errors ++;
-            break;
-        }
-    }
-}
-
-void firewall_pkt_stats::inc_n_ipv4_chksum_err(const std::string ifname)
-{
-    for (auto it : stats_) {
-        if (it.ifname == ifname) {
-            it.n_ipv4_chksum_errors ++;
-            break;
-        }
-    }
-}
-
 void firewall_pkt_stats::stats_update(event_description evt_desc,
                                       const std::string &ifname)
 {
     switch (evt_desc) {
         case event_description::Evt_IPV4_Hdr_Chksum_Invalid: {
-            inc_n_ipv4_chksum_err(ifname);
+            stats_[ifname].n_ipv4_chksum_errors ++;
         } break;
         case event_description::Evt_Icmp_Inval_Chksum: {
-            inc_n_icmp_chksum_err(ifname);
+            stats_[ifname].n_icmp_chksum_errors ++;
         } break;
         default:
             return;
@@ -87,16 +27,37 @@ void firewall_pkt_stats::stats_update(Pktstats_Type type,
 {
     switch (type) {
         case Pktstats_Type::Type_Rx: {
-            inc_n_rx(ifname);
+            stats_[ifname].n_rx ++;
+        } break;
+        case Pktstats_Type::Type_VLAN_Rx: {
+            stats_[ifname].n_vlan_processed ++;
+        } break;
+        case Pktstats_Type::Type_ARP_Rx: {
+            stats_[ifname].n_arp_processed ++;
+        } break;
+        case Pktstats_Type::Type_IPv4_Rx: {
+            stats_[ifname].n_ipv4_processed ++;
+        } break;
+        case Pktstats_Type::Type_IPv6_Rx: {
+            stats_[ifname].n_ipv6_processed ++;
+        } break;
+        case Pktstats_Type::Type_TCP_Rx: {
+            stats_[ifname].n_tcp_processed ++;
+        } break;
+        case Pktstats_Type::Type_UDP_Rx: {
+            stats_[ifname].n_udp_processed ++;
         } break;
         case Pktstats_Type::Type_Deny: {
-            inc_n_deny(ifname);
-        } break;
-        case Pktstats_Type::Type_Events: {
-            inc_n_events(ifname);
+            stats_[ifname].n_deny ++;
         } break;
         case Pktstats_Type::Type_Allowed: {
-            inc_n_allowed(ifname);
+            stats_[ifname].n_allowed ++;
+        } break;
+        case Pktstats_Type::Type_Events: {
+            stats_[ifname].n_events ++;
+        } break;
+        case Pktstats_Type::Type_Startup_Time: {
+            timestamp_wall(&stats_[ifname].startup_time);
         } break;
         default:
             return;
@@ -105,11 +66,7 @@ void firewall_pkt_stats::stats_update(Pktstats_Type type,
 
 void firewall_pkt_stats::get(const std::string &ifname, firewall_intf_stats &if_stats)
 {
-    for (auto it : stats_) {
-        if (it.ifname == ifname) {
-            if_stats = it;
-        }
-    }
+    if_stats = stats_[ifname];
 }
 
 }

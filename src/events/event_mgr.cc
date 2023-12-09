@@ -598,6 +598,30 @@ const std::string event_mgr::evt_type_str(event_type type)
     return "Unknown";
 }
 
+void event_mgr::create_l4_evt(event &evt,
+                              const parser &pkt)
+{
+    int protocol = -1;
+
+    if (pkt.protocols_avail.has_ipv4())
+        protocol = pkt.ipv4_h.protocol;
+    else if (pkt.protocols_avail.has_ipv6())
+        protocol = pkt.ipv6_h.nh;
+
+    switch (static_cast<protocols_types>(protocol)) {
+        case protocols_types::Protocol_Tcp: {
+            evt.src_port = pkt.tcp_h.src_port;
+            evt.dst_port = pkt.tcp_h.dst_port;
+        } break;
+        case protocols_types::Protocol_Udp: {
+            evt.src_port = pkt.udp_h.src_port;
+            evt.dst_port = pkt.udp_h.dst_port;
+        } break;
+        default:
+            return;
+    }
+}
+
 /**
  * @brief - create an event.
 */
@@ -627,6 +651,8 @@ void event_mgr::create_evt(event &evt,
             evt.ttl = pkt.ipv4_h.ttl;
             evt.src_addr = pkt.ipv4_h.src_addr;
             evt.dst_addr = pkt.ipv4_h.dst_addr;
+
+            create_l4_evt(evt, pkt);
         break;
     }
     evt.pkt_len = pkt.pkt_len;
@@ -773,6 +799,24 @@ void event_mgr::storage_thread()
     }
 }
 
+int event_mgr::make_evt_string_l4(event &evt, char *in, size_t in_len)
+{
+    int written = 0;
+
+    switch (static_cast<protocols_types>(evt.protocol)) {
+        case protocols_types::Protocol_Tcp:
+        case protocols_types::Protocol_Udp: {
+            written += snprintf(in + written, in_len - written,
+                                "src_port [%d] dst_port [%d]",
+                                evt.src_port, evt.dst_port);
+        } break;
+        default:
+        break;
+    }
+
+    return written;
+}
+
 void event_mgr::make_evt_string(event &evt, std::string &fmt)
 {
     char msg[1024];
@@ -806,7 +850,9 @@ void event_mgr::make_evt_string(event &evt, std::string &fmt)
                             "src_ip %s dst_ip %s ",
                             src_ipaddr.c_str(), dst_ipaddr.c_str());
             len += snprintf(msg + len, sizeof(msg) - len,
-                            "protocol %d", evt.protocol);
+                            "protocol %d ", evt.protocol);
+
+            len += make_evt_string_l4(evt, msg + len, sizeof(msg) - len);
         } break;
         default:
         break;
