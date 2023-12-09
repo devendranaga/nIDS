@@ -193,6 +193,11 @@ fw_error_type firewall_intf::init(const std::string ifname,
         init_pcap_writer();
     }
 
+    //
+    // set the startup time of the each interface thread
+    firewall_pkt_stats::instance()->stats_update(Pktstats_Type::Type_Startup_Time,
+                                                 ifname);
+
     return fw_error_type::eNo_Error;
 }
 
