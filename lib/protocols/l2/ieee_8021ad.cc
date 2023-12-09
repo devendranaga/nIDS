@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements 802.1AD serialize and deserialize.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #include <ieee_8021ad.h>
 
 namespace firewall {

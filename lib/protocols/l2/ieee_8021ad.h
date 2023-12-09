@@ -33,6 +33,11 @@ struct ieee8021ad_hdr {
     */
     event_description deserialize(packet &p, logger *log, bool debug);
 
+    /**
+     * @brief - get the ethertype.
+     *
+     * @return return the ethertype.
+    */
     inline Ether_Type get_ethertype()
     { return static_cast<Ether_Type>(ethertype); }
 
@@ -54,7 +59,7 @@ struct ieee8021ad_hdr {
     }
 
     private:
-        const uint32_t len_ = 4;
+        const int len_ = 4;
 };
 
 }

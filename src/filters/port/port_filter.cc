@@ -5,7 +5,7 @@
 namespace firewall {
 
 void port_filter::run(parser &p,
-                      rule_config_item &rule,
+                      std::vector<rule_config_item>::iterator &rule,
                       logger *log,
                       bool debug)
 {
@@ -13,7 +13,7 @@ void port_filter::run(parser &p,
 }
 
 void port_filter::match_allowed_ports(parser &p,
-                                      rule_config_item &rule,
+                                      std::vector<rule_config_item>::iterator &rule,
                                       logger *log,
                                       bool debug)
 {
@@ -21,7 +21,7 @@ void port_filter::match_allowed_ports(parser &p,
     event_type evt_type;
     event_mgr *evt_mgr = event_mgr::instance();
 
-    match = match_ports(rule.port_rule.port_list, p, log, debug);
+    match = match_ports(rule->port_rule.port_list, p, log, debug);
     if (match == false)
         evt_type = event_type::Evt_Deny;
     else

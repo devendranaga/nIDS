@@ -233,7 +233,6 @@ int parser::run(packet &pkt)
     event_mgr *evt_mgr = event_mgr::instance();
     Ether_Type ether;
     event_description evt_desc = event_description::Evt_Unknown_Error;
-    int ret;
 
     //
     // deserialize ethernet header
@@ -268,13 +267,6 @@ int parser::run(packet &pkt)
         }
         protocols_avail.set_vlan();
         ether = vh.get_ethertype();
-    }
-
-    //
-    // run ethertype match
-    ret = eth_filter::instance()->run(*this, log_, pkt_dump_);
-    if (ret != 0) {
-        return ret;
     }
 
     //
@@ -378,12 +370,16 @@ void parser::run_rule_filters(packet &p,
                               logger *log,
                               bool pkt_dump)
 {
-    for (auto it : rule_list_->rules_cfg_) {
+    std::vector<rule_config_item>::iterator it;
+    for (it = rule_list_->rules_cfg_.begin();
+         it != rule_list_->rules_cfg_.end(); it ++) {
+        if (it->sig_mask.eth_sig.ethertype)
+            eth_filter::instance()->ethertype_filter(*this, it, log, pkt_dump);
+
         //
         // run port filtering
-        if (it.sig_mask.port_list_sig.port_list) {
+        if (it->sig_mask.port_list_sig.port_list)
             port_filter::instance()->run(*this, it, log, pkt_dump);
-        }
     }
 }
 

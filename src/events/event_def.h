@@ -163,6 +163,7 @@ enum class rule_ids : uint32_t {
     //
     // MQTT Rule Ids
     Rule_Id_MQTT_Inval_Msg_Type = 1601,
+    Rule_Id_MQTT_Version_Unknown = 1602,
 
     //
     // SOME/IP Rule Ids
@@ -344,6 +345,7 @@ enum class event_description : uint32_t {
     //
     // MQTT events
     Evt_MQTT_Inval_Msg_Type = 1501,
+    Evt_MQTT_Version_Unknown = 1502,
 
     //
     // SOMEIP events

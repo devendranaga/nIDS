@@ -5,47 +5,22 @@
 
 namespace firewall {
 
-int eth_filter::run(parser &p, logger *log, bool debug)
-{
-    uint16_t ethertype = 0;
-    rule_config *rules = p.get_rules();
-    std::vector<rule_config_item>::iterator it;
-
-    //
-    // if ethernet header is present get the ethertype
-    if (p.protocols_avail.has_eth())
-        ethertype = p.eh.ethertype;
-
-    //
-    // if there's vlan header, get the ethertype
-    if (p.protocols_avail.has_vlan())
-        ethertype = p.vh.ethertype;
-
-    if (ethertype == 0)
-        return -1;
-
-    for (it = rules->rules_cfg_.begin(); it != rules->rules_cfg_.end(); it ++) {
-        ethertype_filter(it, ethertype, p, log, debug);
-    }
-
-    return 0;
-}
-
-int eth_filter::ethertype_filter(std::vector<rule_config_item>::iterator &it,
-                                 uint16_t ethertype, parser &p, logger *log, bool debug)
+int eth_filter::ethertype_filter(parser &p,
+                                 std::vector<rule_config_item>::iterator &it,
+                                 logger *log, bool debug)
 {
     bool deny_matched = false;
     event_mgr *evt_mgr = event_mgr::instance();
     event evt;
 
     if ((it->sig_mask.eth_sig.ethertype) &&
-        (ethertype = it->eth_rule.ethertype)) {
+        (p.eh.ethertype = it->eth_rule.ethertype)) {
         //
         // if the ruletype is deny, fill the event
         if (it->type == rule_type::Deny) {
             evt.rule_id = it->rule_id;
             evt.evt_type = event_type::Evt_Deny;
-            evt.ethertype = ethertype;
+            evt.ethertype = p.eh.ethertype;
             deny_matched = true;
         }
         it->sig_detected.eth_sig.ethertype = 1;
