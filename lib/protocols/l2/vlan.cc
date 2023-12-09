@@ -20,9 +20,8 @@ int vlan_hdr::serialize(packet &p)
 
 event_description vlan_hdr::deserialize(packet &p, logger *log, bool debug)
 {
-    if (p.remaining_len() < vlan_hdrlen_) {
+    if (p.remaining_len() < vlan_hdrlen_)
         return event_description::Evt_VLAN_Hdrlen_Too_Short;
-    }
 
     pri = (p.buf[p.off] & 0xE0) >> 5;
     dei = !!(p.buf[p.off] & 0x10) >> 4;
