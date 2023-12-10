@@ -1,6 +1,6 @@
 /**
  * @brief - implements event management.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #ifndef __FW_EVENT_MGR_H__

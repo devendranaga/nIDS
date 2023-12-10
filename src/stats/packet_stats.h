@@ -91,7 +91,7 @@ class firewall_pkt_stats {
         void stats_update(Pktstats_Type type,
                           const std::string &ifname);
         void get(const std::string &ifname, firewall_intf_stats &if_stats);
-
+        void get(std::map<std::string, firewall_intf_stats> &stats) { stats = stats_; }
         firewall_pkt_stats(const firewall_pkt_stats &) = delete;
         const firewall_pkt_stats &operator=(const firewall_pkt_stats &) = delete;
         firewall_pkt_stats(const firewall_pkt_stats &&) = delete;

@@ -91,6 +91,10 @@ fw_error_type fw_core::init(int argc, char **argv)
 
     log_->info("event_mgr init ok\n");
 
+    fwctl_serv_ = std::make_shared<fwctl_server>(log_);
+
+    log_->info("create fwctl server ok\n");
+
     return fw_error_type::eNo_Error;
 }
 
