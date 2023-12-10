@@ -81,6 +81,12 @@
         "count": 100,
         "inter_pkt_gap_us": 100
     },
+    "vlan": {
+        "priority": 1,
+        "dei": true,
+        "id": 10,
+        "ethertype": "0x0800"
+    },
     "pcap_replay": {
         "enable": false,
         "filepath": "./pcap_file.pcap",

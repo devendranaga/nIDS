@@ -26,6 +26,7 @@
 #include <perf.h>
 #include <filter.h>
 #include <pcap_intf.h>
+#include <fw_ctl_serv.h>
 
 namespace firewall {
 
@@ -100,6 +101,7 @@ class fw_core {
         std::vector<std::shared_ptr<firewall_intf>> intf_list_;
         event_mgr *evt_mgr_;
         logger *log_;
+        std::shared_ptr<fwctl_server> fwctl_serv_;
 };
 
 }
