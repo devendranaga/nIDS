@@ -1,9 +1,17 @@
+/**
+ * @brief - Implements Firewall message interface definition.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_CTL_MSG_H__
 #define __FW_CTL_MSG_H__
 
 #include <stdint.h>
 
-#define FWCTL_MSG_GET_STATS 0x01
+//
+// List of types
+#define FWCTL_MSGTYPE_GET_STATS 0x01
+#define FWCTL_MSGTYPE_INVAL 0xFF
 #define FWCTL_IFNAME_MAX 20
 
 #define FWCTL_SOCKET_PATH "./nids_fwctl.sock"

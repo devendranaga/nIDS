@@ -122,7 +122,7 @@ void fw_ctl::local_sock_get_stats()
     //
     // prepare the get stats message
     ctl = (fwctl_msg *)msg;
-    ctl->type = FWCTL_MSG_GET_STATS;
+    ctl->type = FWCTL_MSGTYPE_GET_STATS;
 
     msg_len = sizeof(fwctl_msg);
 
@@ -139,7 +139,7 @@ void fw_ctl::local_sock_get_stats()
         return;
     }
 
-    if (ctl->type != FWCTL_MSG_GET_STATS) {
+    if (ctl->type != FWCTL_MSGTYPE_GET_STATS) {
         fprintf(stderr, "recieved message is not stats\n");
         return;
     }
