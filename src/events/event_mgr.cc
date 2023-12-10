@@ -653,7 +653,7 @@ void event_mgr::create_evt(event &evt,
             evt.dst_addr = pkt.ipv4_h.dst_addr;
 
             create_l4_evt(evt, pkt);
-        break;
+sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss        break;
     }
     evt.pkt_len = pkt.pkt_len;
 }
