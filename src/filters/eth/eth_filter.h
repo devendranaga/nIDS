@@ -22,9 +22,9 @@ class eth_filter {
         eth_filter(const eth_filter &&) = delete;
         const eth_filter &&operator=(const eth_filter &&) = delete;
 
-        int ethertype_filter(parser &p,
-                             std::vector<rule_config_item>::iterator &it,
-                             logger *log, bool debug);
+        int run_filter(parser &p,
+                       std::vector<rule_config_item>::iterator &it,
+                       logger *log, bool debug);
     private:
         explicit eth_filter() { }
 };

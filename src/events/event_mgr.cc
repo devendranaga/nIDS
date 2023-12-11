@@ -673,15 +673,17 @@ fw_error_type event_mgr::init(logger *log)
 
     log_->info("evt_mgr::init: create storage thread ok\n");
 
-    //
-    // initialize event file writer
-    ret = evt_file_w_.init(fw_conf->evt_config.event_file_path,
-                           fw_conf->evt_config.event_file_size_bytes);
-    if (ret != fw_error_type::eNo_Error) {
-        return ret;
-    }
+    if (fw_conf->evt_config.log_to_file) {
+        //
+        // initialize event file writer
+        ret = evt_file_w_.init(fw_conf->evt_config.event_file_path,
+                            fw_conf->evt_config.event_file_size_bytes);
+        if (ret != fw_error_type::eNo_Error) {
+            return ret;
+        }
 
-    log_->info("evt_mgr::init: create log file writer ok\n");
+        log_->info("evt_mgr::init: create log file writer ok\n");
+    }
 
     if (fw_conf->evt_config.upload_method == Event_Upload_Method_Type::MQTT) {
         auto r = mqtt_uploader_.init(log_);
@@ -768,12 +770,14 @@ void event_mgr::storage_thread()
             for (q_len = event_list_.size(); q_len > 0; q_len = event_list_.size()) {
                 event evt = event_list_.front();
 
-                if (conf->evt_config.evt_file_format == event_file_format::Json) {
-                    evt_file_w_.write_json(evt);
-                } else if (conf->evt_config.evt_file_format == event_file_format::Binary) {
-                    evt_file_w_.write(evt);
-                } else {
-                    // Discard the event frame.
+                if (conf->evt_config.log_to_file) {
+                    if (conf->evt_config.evt_file_format == event_file_format::Json) {
+                        evt_file_w_.write_json(evt);
+                    } else if (conf->evt_config.evt_file_format == event_file_format::Binary) {
+                        evt_file_w_.write(evt);
+                    } else {
+                        // Discard the event frame.
+                    }
                 }
 
                 //

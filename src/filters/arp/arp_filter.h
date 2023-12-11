@@ -63,6 +63,9 @@ struct arp_filter_config {
     bool check(parser &p);
 };
 
+/**
+ * @brief - implements ARP filter
+ */
 class arp_filter {
     public:
         static arp_filter *instance()
@@ -75,6 +78,10 @@ class arp_filter {
         {
 
         }
+        arp_filter(const arp_filter &) = delete;
+        const arp_filter &operator=(const arp_filter &) = delete;
+        arp_filter(const arp_filter &&) = delete;
+        const arp_filter &&operator=(const arp_filter &&) = delete;
         ~arp_filter() { }
 
         event_description add_arp_frame(parser &p);
@@ -97,3 +104,4 @@ class arp_filter {
 }
 
 #endif
+

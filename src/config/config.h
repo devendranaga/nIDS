@@ -55,6 +55,7 @@ struct firewall_event_info_config {
     event_file_format evt_file_format;
     bool log_to_console;
     bool log_to_syslog;
+    bool log_to_file;
     bool encrypt_log_file;
     std::string encryption_key;
     event_hash_algorithm hash_alg;

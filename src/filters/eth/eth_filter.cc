@@ -5,9 +5,9 @@
 
 namespace firewall {
 
-int eth_filter::ethertype_filter(parser &p,
-                                 std::vector<rule_config_item>::iterator &it,
-                                 logger *log, bool debug)
+int eth_filter::run_filter(parser &p,
+                           std::vector<rule_config_item>::iterator &it,
+                           logger *log, bool debug)
 {
     bool deny_matched = false;
     event_mgr *evt_mgr = event_mgr::instance();

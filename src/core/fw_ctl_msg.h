@@ -14,6 +14,8 @@
 #define FWCTL_MSGTYPE_INVAL 0xFF
 #define FWCTL_IFNAME_MAX 20
 
+//
+// FW control Server socket path
 #define FWCTL_SOCKET_PATH "./nids_fwctl.sock"
 
 struct fwctl_timestamp {

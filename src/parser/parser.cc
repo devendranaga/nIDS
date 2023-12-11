@@ -440,7 +440,7 @@ void parser::run_rule_filters(packet &p,
         //
         // run ethertype filtering
         if (it->sig_mask.eth_sig.ethertype)
-            eth_filter::instance()->ethertype_filter(*this, it, log, pkt_dump);
+            eth_filter::instance()->run_filter(*this, it, log, pkt_dump);
 
         //
         // run port filtering

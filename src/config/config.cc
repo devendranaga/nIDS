@@ -52,6 +52,7 @@ fw_error_type firewall_config::parse(const std::string config_file)
         return fw_error_type::eConfig_Error;
     }
     evt_config.log_to_syslog = root["events"]["log_to_syslog"].asBool();
+    evt_config.log_to_file = root["events"]["log_to_file"].asBool();
     evt_config.encrypt_log_file = root["events"]["encrypt_log_file"].asBool();
     evt_config.encryption_key = root["events"]["encryption_key"].asString();
     evt_config.log_to_console = root["events"]["log_to_console"].asBool();
