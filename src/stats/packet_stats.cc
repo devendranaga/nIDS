@@ -47,6 +47,9 @@ void firewall_pkt_stats::stats_update(Pktstats_Type type,
         case Pktstats_Type::Type_UDP_Rx: {
             stats_[ifname].n_udp_processed ++;
         } break;
+        case Pktstats_Type::Type_ICMP_Rx: {
+            stats_[ifname].n_icmp_processed ++;
+        } break;
         case Pktstats_Type::Type_Deny: {
             stats_[ifname].n_deny ++;
         } break;

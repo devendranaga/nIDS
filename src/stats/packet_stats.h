@@ -33,6 +33,7 @@ struct firewall_intf_stats {
     uint64_t n_ipv6_processed;
     uint64_t n_udp_processed;
     uint64_t n_tcp_processed;
+    uint64_t n_icmp_processed;
     uint64_t n_ipv4_chksum_errors;
     uint64_t n_icmp_chksum_errors;
 
@@ -42,6 +43,13 @@ struct firewall_intf_stats {
                     n_deny(0),
                     n_allowed(0),
                     n_events(0),
+                    n_vlan_processed(0),
+                    n_arp_processed(0),
+                    n_ipv4_processed(0),
+                    n_ipv6_processed(0),
+                    n_udp_processed(0),
+                    n_tcp_processed(0),
+                    n_icmp_processed(0),
                     n_ipv4_chksum_errors(0),
                     n_icmp_chksum_errors(0)
     { }
@@ -57,6 +65,7 @@ enum class Pktstats_Type {
     Type_IPv6_Rx,
     Type_UDP_Rx,
     Type_TCP_Rx,
+    Type_ICMP_Rx,
     Type_Deny,
     Type_Allowed,
     Type_Events,

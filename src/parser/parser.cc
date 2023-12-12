@@ -102,7 +102,18 @@ event_description parser::parse_l4(packet &pkt)
                 protocols_avail.set_udp();
         } break;
         case protocols_types::Protocol_Icmp: {
+            //
+            // set ICMP is present
             present_bits.icmp = 1;
+
+            //
+            // update icmp rx stats
+            stats->stats_update(Pktstats_Type::Type_ICMP_Rx, ifname_);
+
+            evt_desc = icmp_filter::instance()->run_auto_sig_checks(
+                                             *this, log_, pkt_dump_);
+            if (evt_desc != event_description::Evt_Parse_Ok)
+                break;
 
             evt_desc = icmp_h.deserialize(pkt, log_, pkt_dump_);
             if (evt_desc == event_description::Evt_Parse_Ok)
