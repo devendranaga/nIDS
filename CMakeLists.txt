@@ -4,6 +4,7 @@
 project(firewall)
 cmake_minimum_required(VERSION 3.22)
 
+include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/common/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l2/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l3/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/protocols/l4/build.cmake)
@@ -27,6 +28,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/lib/packet/build.cmake)
 
 set(LIB_SOURCES
 	${LIB_SOURCES_PACKET}
+	${LIB_SOURCES_PROTOCOLS_COMMON}
 	${LIB_SOURCES_L2}
 	${LIB_SOURCES_L3}
 	${LIB_SOURCES_L4}

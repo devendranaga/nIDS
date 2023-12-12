@@ -34,10 +34,23 @@ struct udp_hdr {
     uint32_t end_off;
 
     int serialize(packet &p);
+    /**
+     * @brief - deserialize UDP.
+     *
+     * @param [in] p - input packet.
+     * @param [in] log - logger pointer.
+     * @param [in] debug - debug flag.
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     int validate_checksum(packet &p,
                           uint32_t src_ipaddr, uint32_t dst_ipaddr,
                           uint16_t protocol);
+
+    /**
+     * @brief - print the udp packet.
+     *
+     * @param [in] log - logger pointer.
+    */
     void print(logger *log);
 
     private:

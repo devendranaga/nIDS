@@ -132,7 +132,9 @@ class icmp_filter {
         /**
          * @brief - run ICMP filter.
         */
-        event_description run_filter(parser &p, packet &pkt, logger *log, bool debug);
+        event_description run_filter(parser &p,
+                                     std::vector<rule_config_item>::iterator &rule,
+                                     logger *log, bool debug);
     private:
         explicit icmp_filter() { }
         void check_nonzero_len_payloads(parser &p, uint32_t rule_id, rule_type type);

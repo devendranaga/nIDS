@@ -10,30 +10,30 @@
 
 namespace firewall {
 
-event_description icmp_filter::run_filter(parser &p, packet &pkt, logger *log, bool debug)
+event_description icmp_filter::run_filter(parser &p,
+                                          std::vector<rule_config_item>::iterator &rule,
+                                          logger *log, bool debug)
 {
-    rule_config *rules = rule_config::instance();
-    std::vector<rule_config_item>::iterator it;
-    event_description evt_desc;
+    event_description evt_desc = event_description::Evt_Unknown_Error;
+    event_mgr *evt_mgr = event_mgr::instance();
 
     //
     // more fragments or frag_off is present
     // in an ICMP frame. Deny all ICMP frames with fragments by default.
-    if (p.ipv4_h.is_a_frag()) {
-        return event_description::Evt_Icmp_Pkt_Fragmented; 
-    }
+    if (p.ipv4_h.is_a_frag())
+        evt_desc = event_description::Evt_Icmp_Pkt_Fragmented;
 
     //
     // ipv4_h.dst_addr is multicast for ICMP packet
-    if (p.ipv4_h.is_dst_multicast()) {
-        return event_description::Evt_Icmp_Dest_Addr_Multicast_In_IPv4;
-    }
+    if (p.ipv4_h.is_dst_multicast() &&
+        (evt_desc == event_description::Evt_Unknown_Error))
+        evt_desc = event_description::Evt_Icmp_Dest_Addr_Multicast_In_IPv4;
 
     //
     // ipv4_h.dst_addr is brodcast for ICMP packet
-    if (p.ipv4_h.is_dst_broadcast()) {
-        return event_description::Evt_Icmp_Dest_Addr_Broadcast_In_IPv4;
-    }
+    if (p.ipv4_h.is_dst_broadcast() &&
+        (evt_desc == event_description::Evt_Unknown_Error))
+        evt_desc = event_description::Evt_Icmp_Dest_Addr_Broadcast_In_IPv4;
 
     //
     // chance of a smurf attack
@@ -41,25 +41,23 @@ event_description icmp_filter::run_filter(parser &p, packet &pkt, logger *log, b
     // in general, the sender expect us to provide a echo-reply on to
     // the directed broadcast address, in turn flooding the replies on
     // the entire network.
-    if (p.ipv4_h.is_src_directed_broadcast()) {
-        return event_description::Evt_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast;
-    }
+    if (p.ipv4_h.is_src_directed_broadcast() &&
+        (evt_desc == event_description::Evt_Unknown_Error))
+        evt_desc = event_description::Evt_Icmp_Src_IPv4_Addr_Is_Direct_Broadcast;
 
-    evt_desc = p.icmp_h.deserialize(pkt, log, debug);
-    if (evt_desc != event_description::Evt_Parse_Ok) {
-        return evt_desc;
-    }
+    //
+    // deny everything else.. if any of above cases match
+    if (evt_desc != event_description::Evt_Unknown_Error)
+        evt_mgr->store(event_type::Evt_Deny,
+                       evt_desc,
+                       rule->rule_id,
+                       p);
 
     //
     // run rule filter
-    for (it = rules->rules_cfg_.begin(); it != rules->rules_cfg_.end(); it ++) {
-        //
-        // check for non zero payload (echo-req and echo-reply)
-        if (it->sig_mask.icmp_sig.icmp_non_zero_payload &&
-            (it->type == rule_type::Deny)) {
-            check_nonzero_len_payloads(p, it->rule_id, it->type);
-        }
-    }
+    //
+    // check for non zero payload (echo-req and echo-reply)
+    check_nonzero_len_payloads(p, rule->rule_id, rule->type);
 
     // add the ICMP frame for tracking
     manage_icmp(p);

@@ -7,6 +7,7 @@
 #define __FW_ETHER_TYPES_H__
 
 #include <stdint.h>
+#include <string>
 
 namespace firewall {
 
@@ -23,6 +24,8 @@ enum class Ether_Type : uint16_t {
     Ether_Type_MACsec    = 0x88E5,
     Ether_Type_Unknown   = 0xFFFF,
 };
+
+const std::string ethertype_to_str(Ether_Type type);
 
 }
 

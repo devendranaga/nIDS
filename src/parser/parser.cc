@@ -104,8 +104,7 @@ event_description parser::parse_l4(packet &pkt)
         case protocols_types::Protocol_Icmp: {
             present_bits.icmp = 1;
 
-            icmp_filter *icmp_f = icmp_filter::instance();
-            evt_desc = icmp_f->run_filter(*this, pkt, log_, pkt_dump_);
+            evt_desc = icmp_h.deserialize(pkt, log_, pkt_dump_);
             if (evt_desc == event_description::Evt_Parse_Ok)
                 protocols_avail.set_icmp();
         } break;
@@ -446,6 +445,9 @@ void parser::run_rule_filters(packet &p,
         // run port filtering
         if (it->sig_mask.port_list_sig.port_list)
             port_filter::instance()->run(*this, it, log, pkt_dump);
+
+        if (it->sig_mask.icmp_sig.icmp_non_zero_payload)
+            icmp_filter::instance()->run_filter(*this, it, log_, pkt_dump_);
     }
 }
 

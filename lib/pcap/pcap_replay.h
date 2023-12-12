@@ -31,6 +31,8 @@ class pcap_replay {
         void replay();
 
     private:
+        //
+        // underlying raw socket
         std::shared_ptr<raw_socket> raw_;
         std::string replay_filename_;
         uint32_t replay_intvl_;

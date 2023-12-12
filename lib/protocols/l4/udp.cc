@@ -16,9 +16,10 @@ int udp_hdr::serialize(packet &p)
 
 event_description udp_hdr::deserialize(packet &p, logger *log, bool debug)
 {
-    if (p.remaining_len() < udp_hdrlen_) {
+    //
+    // drop shorter udp packets
+    if (p.remaining_len() < udp_hdrlen_)
         return event_description::Evt_Udp_Len_Too_Short;
-    }
 
     start_off = p.off;
 
@@ -29,24 +30,20 @@ event_description udp_hdr::deserialize(packet &p, logger *log, bool debug)
 
     end_off = p.off + p.remaining_len();
 
-    if (src_port == 0) {
+    if (src_port == 0)
         return event_description::Evt_Udp_Src_Port_Invalid;
-    }
 
-    if (dst_port == 0) {
+    if (dst_port == 0)
         return event_description::Evt_Udp_Dst_Port_Invalid;
-    }
 
     //
     // UDP message length and the remaining frame data length are not matching
     // given msg length in the header is bigger than the remaining frame length.
-    if (p.remaining_len() < (length - udp_hdrlen_)) {
+    if (p.remaining_len() < (length - udp_hdrlen_))
         return event_description::Evt_Udp_Hdr_Msg_Len_Too_Big;
-    }
 
-    if (debug) {
+    if (debug)
         print(log);
-    }
 
     return event_description::Evt_Parse_Ok;
 }

@@ -28,6 +28,13 @@
             "ip": "127.0.0.1",
             "port": 1883,
             "topic_name": "/nids/events"
+        },
+        "udp_config": {
+            "ip": "127.0.0.1",
+            "port": 1884
+        },
+        "local_unix_config": {
+            "path": "./fwctl_event_server.sock"
         }
     }
 }
