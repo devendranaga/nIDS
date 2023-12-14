@@ -107,6 +107,8 @@ struct someip_rule_config {
 
 struct port_rule_config {
     std::vector<uint16_t> port_list;
+    uint32_t port_range_min;
+    uint32_t port_range_max;
 
     explicit port_rule_config() { }
     ~port_rule_config() { }
@@ -185,6 +187,7 @@ struct someip_sig_bitmask {
 
 struct port_list_sig_bitmask {
     uint32_t port_list:1;
+    uint32_t port_range:1;
 
     explicit port_list_sig_bitmask() :
                     port_list(0) { }

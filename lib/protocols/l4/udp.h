@@ -1,6 +1,6 @@
 /**
  * @brief - implements udp serialize and deserialize.
- * 
+ *
  * @copyright - 2023-present. All rights reserved. Devendra Naga.
 */
 #ifndef __FW_PROTOCOLS_UDP_H__
@@ -54,6 +54,8 @@ struct udp_hdr {
     void print(logger *log);
 
     private:
+        //
+        // src_port (2) + dst_port (2) + len (2) + checksum (2)
         const uint16_t udp_hdrlen_ = 8;
 };
 

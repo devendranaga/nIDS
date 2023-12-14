@@ -73,6 +73,12 @@
         "rule_id": 10008,
         "rule_type": "allow",
         "port_list": [ 80, 443, 22]
+    },
+    {
+        "rule_name": "allow only these below port ranges",
+        "rule_id": 10009,
+        "rule_type": "allow",
+        "port_range": "4000-4500"
     }
 ]
 

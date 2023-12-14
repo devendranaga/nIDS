@@ -203,15 +203,70 @@ void someip_rule_config::print(logger *log)
 #endif
 }
 
+static int parse_range(const std::string &in,
+                       uint32_t *in_range_min,
+                       uint32_t *in_range_max)
+{
+    char min[20];
+    char max[20];
+    int i = 0;
+    int j = 0;
+    int ret;
+
+    std::memset(min, 0, sizeof(min));
+    std::memset(max, 0, sizeof(max));
+
+    while (in[i] != '-') {
+        min[j] = in[j];
+        i ++;
+        j ++;
+    }
+    min[j] = '\0';
+
+    // skip the -
+    i ++;
+
+    j = 0;
+    while (in[i] != '\0') {
+        max[j] = in[i];
+        i ++;
+        j ++;
+    }
+    max[j] = '\0';
+
+    ret = parse_str_to_uint32(min, *in_range_min);
+    if (ret != 0)
+        return -1;
+
+    ret = parse_str_to_uint32(max, *in_range_max);
+    if (ret != 0)
+        return -1;
+
+    return 0;
+}
+
 void rule_config::parse_port_rule(Json::Value &rule_cfg_data,
                                   rule_config_item &rule)
 {
     auto port_list_str = rule_cfg_data["port_list"];
+    int ret;
+
     if (!port_list_str.isNull()) {
         for (auto it : port_list_str) {
             rule.port_rule.port_list.push_back(it.asUInt());
         }
         rule.sig_mask.port_list_sig.port_list = 1;
+    }
+
+    auto port_range_str = rule_cfg_data["port_range"];
+    if (!port_range_str.isNull()) {
+        ret = parse_range(port_range_str.asString(),
+                          &rule.port_rule.port_range_min,
+                          &rule.port_rule.port_range_max);
+        if (ret != 0)
+            return;
+
+        rule.sig_mask.port_list_sig.port_range = 1;
     }
 }
 
@@ -224,6 +279,7 @@ void port_rule_config::print(logger *log)
         fprintf(stderr, "%d ", it);
     }
     fprintf(stderr, "]\n");
+    log->verbose("\t\t port_range: %d-%d\n", port_range_min, port_range_max);
     log->verbose("\t}\n");
 #endif
 }
@@ -314,6 +370,7 @@ void signature_id_bitmask::print(logger *log)
     log->verbose("\t\t someip.service_id: %d\n", someip_sig.service_id);
     log->verbose("\t\t someip.method_id: %d\n", someip_sig.method_id);
     log->verbose("\t\t port_rule.port_list: %d\n", port_list_sig.port_list);
+    log->verbose("\t\t port_rule.port_range: %d\n", port_list_sig.port_range);
     log->verbose("\t }\n");
 #endif
 }
@@ -366,6 +423,7 @@ void someip_sig_bitmask::init()
 void port_list_sig_bitmask::init()
 {
     port_list = 0;
+    port_range = 0;
 }
 
 }
