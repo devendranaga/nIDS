@@ -394,6 +394,13 @@ enum class event_type {
     Evt_Alert,
 };
 
+enum class Event_Confidence {
+    Low, // 0-40
+    Medium, // 50-80
+    High, // 80 - < 100
+    Full,
+};
+
 }
 
 #endif

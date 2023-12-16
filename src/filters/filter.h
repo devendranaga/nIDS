@@ -6,6 +6,8 @@
 #ifndef __FW_FILTER_H__
 #define __FW_FILTER_H__
 
+#include <config.h>
+#include <tunables.h>
 #include <logger.h>
 #include <rule_parser.h>
 #include <packet.h>

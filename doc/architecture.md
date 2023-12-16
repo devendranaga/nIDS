@@ -17,12 +17,16 @@ Event manager thread queues the frame to a file writer thread or to the network.
 
 So in the system with two NICs we have:
 
+1. 2 interface threads (1 for each NIC)
+2. 2 pcap log threads (1 for each NIC)
+3. 2 parser threads (1 for each NIC)
+
+In general we have global threads:
+
 1. 1 main thread
-2. 2 interface threads (1 for each NIC)
-3. 2 pcap log threads (1 for each NIC)
-4. 2 parser threads (1 for each NIC)
-5. 1 event manager thread
-6. 1 file writer thread
+2. 1 event manager thread
+3. 1 file writer thread
+4. 1 front end interface thread for servicing stats
 
 The interface and network threads scale with number of input interfaces to filter on.
 

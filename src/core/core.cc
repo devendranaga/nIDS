@@ -54,11 +54,15 @@ fw_error_type fw_core::init(int argc, char **argv)
                conf->debug.log_to_syslog,
                conf->debug.log_to_console);
 
+    log_->info("Init log ok\n");
+
     ret = filter::instance()->init();
     if (ret != fw_error_type::eNo_Error) {
         log_->error("failed to init filter\n");
         return ret;
     }
+
+    log_->info("Init filters ok\n");
 
     for (auto it : conf->intf_list) {
         std::shared_ptr<firewall_intf> intf;

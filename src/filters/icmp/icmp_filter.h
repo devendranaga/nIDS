@@ -13,6 +13,7 @@
 #include <event_def.h>
 #include <logger.h>
 #include <time_util.h>
+#include <tunables.h>
 
 namespace firewall {
 
@@ -79,22 +80,6 @@ struct icmp_info {
 };
 
 /**
- * @brief - implements filter configuration.
-*/
-struct icmp_filter_config {
-    uint32_t max_icmp_items;
-    // interval between two echo-req and echo-reply
-    uint32_t intvl_delta_ms;
-    uint32_t max_unique_icmp_id;
-
-    explicit icmp_filter_config()
-    {
-        intvl_delta_ms = 1000;
-    }
-    ~icmp_filter_config() { }
-};
-
-/**
  * @brief - implements filter statistics.
 */
 struct icmp_filter_stats {
@@ -143,7 +128,6 @@ class icmp_filter {
         void manage_icmp(parser &p);
         void list_mgr_thread();
         std::vector<icmp_info> icmp_list_;
-        icmp_filter_config filt_conf_;
         std::shared_ptr<std::thread> list_mgr_thr_;
         std::mutex table_lock_;
         icmp_filter_stats stats_;

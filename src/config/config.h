@@ -76,6 +76,7 @@ struct firewall_debugging {
 */
 struct firewall_config {
     std::vector<firewall_intf_info> intf_list;
+    std::string tunables_config_filename;
     firewall_debugging debug;
     firewall_event_info_config evt_config;
 

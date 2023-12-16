@@ -13,6 +13,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/lib/pcap/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/lib/raw/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/tools/packet_gen/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/core/build.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/src/config/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/events/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/parser/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/src/stats/build.cmake)
@@ -40,7 +41,7 @@ set(LIB_SOURCES
 	${LIB_SOURCES_COMMON})
 
 set(SERVICE_SOURCES
-	./src/config/config.cc
+	${CONFIG_SOURCES}
 	${CORE_SOURCES}
 	${PARSER_SOURCES}
 	${EVENT_MGR_SOURCES}

@@ -34,6 +34,8 @@ fw_error_type firewall_config::parse(const std::string config_file)
         intf_list.emplace_back(ifinfo);
     }
 
+    tunables_config_filename = root["tunables_config"].asString();
+
     //
     // Debugging configuration
     debug.log_to_console = root["debugging"]["log_to_console"].asBool();

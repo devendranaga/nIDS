@@ -1,4 +1,8 @@
 {
+    "ipv4": {
+        "ip_blacklist_interval_ms": 20000,
+        "ip_abuse_count_threshold": 3
+    },
     "icmp": {
         "packet_gap_two_echo_req_ms": 1000,
         "icmp_entry_timeout_ms": 1000

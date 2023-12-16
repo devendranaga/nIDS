@@ -186,7 +186,10 @@ void icmp_filter::manage_icmp(parser &p)
 */
 void icmp_filter::list_mgr_thread()
 {
+    tunables *tunable_config;
     struct timespec tp;
+
+    tunable_config = tunables::instance();
 
     while (1) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -199,7 +202,7 @@ void icmp_filter::list_mgr_thread()
             for (it1 = it->seq_info.begin(); it1 != it->seq_info.end(); ) {
                 double delta = diff_time_ns(&tp, &it1->seq_ts) / 1000000;
                 // over the interval.. free up the memory
-                if (delta >= filt_conf_.intvl_delta_ms) {
+                if (delta >= tunable_config->icmp_t.icmp_entry_timeout_ms) {
                     it->seq_info.erase(it1);
                 } else {
                     it1 ++;

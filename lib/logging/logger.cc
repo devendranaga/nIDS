@@ -82,7 +82,7 @@ void logger::log_msg(const char *fmt,
         log_syslog(logger_msg, msg);
 
     // write to file
-    if (log_to_file_)
+    if (fp_ && log_to_file_)
         fprintf(fp_, "%s", msg);
 
     logger_lock.unlock();
