@@ -24,6 +24,12 @@ struct vlan_hdr {
     uint16_t vid:12;
     uint16_t ethertype;
 
+    /**
+     * @brief - implements VLAN serialization.
+     *
+     * @param [in] p - packet.
+     * @return returns 0 on success.
+    */
     int serialize(packet &p);
     /**
      * @brief - implements VLAN deserialization.
@@ -41,6 +47,11 @@ struct vlan_hdr {
     Ether_Type get_ethertype()
     { return static_cast<Ether_Type>(ethertype); }
 
+    /**
+     * @brief - print vlan header.
+     *
+     * @param [in] log - logger.
+    */
     void print(logger *log);
 
     private:

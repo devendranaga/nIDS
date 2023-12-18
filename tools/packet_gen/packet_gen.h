@@ -17,6 +17,7 @@
 #include <pcap_replay.h>
 #include <eth.h>
 #include <ipv4.h>
+#include <vlan.h>
 
 namespace firewall {
 
@@ -38,6 +39,7 @@ class packet_gen {
         void run_arp_replay();
         void run_ipv4_replay();
         void run_macsec_replay();
+        void run_vlan_replay();
         int make_ipv4_packet(packet &p, int count);
         packet_gen_config *conf_;
         std::shared_ptr<raw_socket> raw_;

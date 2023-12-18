@@ -176,6 +176,48 @@ struct packet_gen_macsec_config {
         bool valid_;
 };
 
+struct packet_gen_vlan_config {
+    bool enable;
+    uint32_t priority;
+    bool dei;
+    uint32_t vid;
+    uint8_t eth_src_mac[6];
+    uint8_t eth_dst_mac[6];
+    uint16_t ethertype;
+    uint32_t count;
+    uint32_t inter_pkt_gap_us;
+
+    explicit packet_gen_vlan_config() :
+                        enable(false),
+                        valid_(false) { }
+    ~packet_gen_vlan_config() { }
+
+    int parse(Json::Value &r);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->info("VLAN_Config: {\n");
+        log->info("enable: %d\n", enable);
+        log->info("priority: %d\n", priority);
+        log->info("dei: %d\n", dei);
+        log->info("vid: %d\n", vid);
+        log->info("eth_src_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                            eth_src_mac[0], eth_src_mac[1], eth_src_mac[2],
+                            eth_src_mac[3], eth_src_mac[4], eth_src_mac[5]);
+        log->info("eth_dst_mac: %02x:%02x:%02x:%02x:%02x:%02x\n",
+                            eth_dst_mac[0], eth_dst_mac[1], eth_dst_mac[2],
+                            eth_dst_mac[3], eth_dst_mac[4], eth_dst_mac[5]);
+        log->info("ethertype: 0x%04x\n", ethertype);
+        log->info("}\n");
+    #endif
+    }
+
+    bool is_Valid() { return valid_; }
+
+    private:
+        bool valid_;
+};
+
 /**
  * @brief - defines packet gen configuration.
 */
@@ -186,6 +228,7 @@ struct packet_gen_config {
     packet_gen_arp_config arp_conf;
     packet_gen_ipv4_config ipv4_conf;
     packet_gen_macsec_config macsec_conf;
+    packet_gen_vlan_config vlan_conf;
 
     static packet_gen_config *instance()
     {
@@ -205,6 +248,9 @@ struct packet_gen_config {
         }
         if (macsec_conf.is_valid()) {
             macsec_conf.print(log);
+        }
+        if (vlan_conf.is_Valid()) {
+            vlan_conf.print(log);
         }
     #endif
     }

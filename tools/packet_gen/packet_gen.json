@@ -82,10 +82,15 @@
         "inter_pkt_gap_us": 100
     },
     "vlan": {
+        "enable": true,
         "priority": 1,
         "dei": true,
         "id": 10,
-        "ethertype": "0x0800"
+        "eth_src_mac": "00:11:22:33:44:55",
+        "eth_dst_mac": "00:11:22:33:44:55",
+        "ethertype": "0x0800",
+        "count": 100,
+        "inter_pkt_gap_us": 100
     },
     "pcap_replay": {
         "enable": false,

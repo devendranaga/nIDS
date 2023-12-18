@@ -97,21 +97,23 @@ void packet_gen::run_arp_replay()
 
 void packet_gen::run()
 {
-    if (conf_->pcap_conf.enable && conf_->pcap_conf.is_valid()) {
+    if (conf_->pcap_conf.enable && conf_->pcap_conf.is_valid())
         run_pcap_replay();
-    }
-    if (conf_->eth_conf.enable && conf_->eth_conf.is_valid()) {
+
+    if (conf_->eth_conf.enable && conf_->eth_conf.is_valid())
         run_eth_replay();
-    }
-    if (conf_->arp_conf.enable && conf_->arp_conf.is_valid()) {
+
+    if (conf_->arp_conf.enable && conf_->arp_conf.is_valid())
         run_arp_replay();
-    }
-    if (conf_->ipv4_conf.enable && conf_->ipv4_conf.is_valid()) {
+
+    if (conf_->ipv4_conf.enable && conf_->ipv4_conf.is_valid())
         run_ipv4_replay();
-    }
-    if (conf_->macsec_conf.enable && conf_->macsec_conf.is_valid()) {
+
+    if (conf_->macsec_conf.enable && conf_->macsec_conf.is_valid())
         run_macsec_replay();
-    }
+
+    if (conf_->vlan_conf.enable && conf_->vlan_conf.is_Valid())
+        run_vlan_replay();
 }
 
 void packet_gen::run_eth_replay()
@@ -212,6 +214,43 @@ void packet_gen::run_ipv4_replay()
 
         std::this_thread::sleep_for(
                 std::chrono::microseconds(conf_->ipv4_conf.inter_pkt_gap_us));
+
+        printf("sent [%d]\n", count + 1);
+    }
+
+    log_->info("Replay complete\n");
+}
+
+void packet_gen::run_vlan_replay()
+{
+    packet p(1500);
+    uint8_t dst[6] = {0};
+    uint32_t count = 0;
+    eth_hdr eh;
+    vlan_hdr vh;
+
+    log_->info("Starting VLAN Replay\n");
+
+    std::memcpy(eh.src_mac,
+                conf_->vlan_conf.eth_src_mac, FW_MACADDR_LEN);
+    std::memcpy(eh.dst_mac,
+                conf_->vlan_conf.eth_dst_mac, FW_MACADDR_LEN);
+    eh.ethertype = static_cast<uint16_t>(Ether_Type::Ether_Type_VLAN);
+    eh.serialize(p);
+
+    vh.pri = conf_->vlan_conf.priority;
+    vh.dei = conf_->vlan_conf.dei;
+    vh.vid = conf_->vlan_conf.vid;
+    vh.ethertype = conf_->vlan_conf.ethertype;
+    vh.serialize(p);
+
+    for (; count < conf_->vlan_conf.count; count ++) {
+        p.buf_len = p.off;
+
+        raw_->send_msg(dst, p.buf, p.buf_len);
+
+        std::this_thread::sleep_for(
+                std::chrono::microseconds(conf_->vlan_conf.inter_pkt_gap_us));
 
         printf("sent [%d]\n", count + 1);
     }

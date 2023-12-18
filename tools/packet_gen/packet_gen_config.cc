@@ -132,10 +132,44 @@ int packet_gen_ipv4_config::parse(Json::Value &r)
     return 0;
 }
 
+int packet_gen_vlan_config::parse(Json::Value &r)
+{
+    int ret;
+
+    enable = r["vlan"]["enable"].asBool();
+    priority = r["vlan"]["priority"].asUInt();
+    dei = r["vlan"]["dei"].asBool();
+    vid = r["vlan"]["id"].asUInt();
+
+    auto eth_src_mac_str = r["vlan"]["eth_src_mac"].asString();
+    ret = parse_str_to_mac(eth_src_mac_str, eth_src_mac);
+    if (ret != 0)
+        return -1;
+
+    auto eth_dst_mac_str = r["vlan"]["eth_dst_mac"].asString();
+    ret = parse_str_to_mac(eth_dst_mac_str, eth_dst_mac);
+    if (ret != 0)
+        return -1;
+
+    auto ethertype_str = r["vlan"]["ethertype"].asString();
+    ret = parse_str_to_uint16_h(ethertype_str, ethertype);
+    if (ret != 0)
+        return -1;
+
+    printf("Ethertype %x\n", ethertype);
+    count = r["vlan"]["count"].asUInt();
+    inter_pkt_gap_us = r["vlan"]["inter_pkt_gap_us"].asUInt();
+
+    valid_ = true;
+
+    return ret;
+}
+
 int packet_gen_macsec_config::parse(Json::Value &r)
 {
     uint32_t ver = 0;
     uint32_t es = 0;
+
     uint32_t sc = 0;
     uint32_t scb = 0;
     uint32_t e = 0;
@@ -258,21 +292,23 @@ int packet_gen_config::parse(const std::string filepath)
 
     ifname = root["ifname"].asString();
 
-    if (!root["eth"].isNull()) {
+    if (!root["eth"].isNull())
         eth_conf.parse(root["eth"]);
-    }
-    if (!root["pcap_replay"].isNull()) {
+
+    if (!root["pcap_replay"].isNull())
         pcap_conf.parse(root["pcap_replay"]);
-    }
-    if (!root["arp"].isNull()) {
+
+    if (!root["arp"].isNull())
         arp_conf.parse(root);
-    }
-    if (!root["ipv4"].isNull()) {
+
+    if (!root["ipv4"].isNull())
         ipv4_conf.parse(root);
-    }
-    if (!root["macsec"].isNull()) {
+
+    if (!root["macsec"].isNull())
         macsec_conf.parse(root);
-    }
+
+    if (!root["vlan"].isNull())
+        vlan_conf.parse(root);
 
     return 0;
 }

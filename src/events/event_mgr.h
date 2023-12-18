@@ -52,6 +52,15 @@ class event_mgr {
          * @param [in] evt - firewall event structure.
         */
         void store(event &evt);
+
+        /**
+         * @brief - get matching rule id for given event.
+         *
+         * This is Applicable only for auto detected events.
+         *
+         * @param [in] evt_desc - event description
+         * @param [out] rule id match with the given event.
+        */
         uint32_t get_matching_rule(event_description evt_desc);
         void store(event_type evt_type,
                    event_description evt_desc, const parser &pkt);
@@ -76,7 +85,18 @@ class event_mgr {
                         event_type evt_type,
                         event_description evt_details,
                         const parser &pkt);
+        /**
+         * @brief - Log event to syslog.
+         *
+         * @param [in] evt - event
+        */
         void log_syslog(event &evt);
+
+        /**
+         * @brief - Log event to console.
+         *
+         * @param [in] evt - event
+        */
         void log_console(event &evt);
         /**
          * @brief - make L4 event string with TCP and UDP ports.
