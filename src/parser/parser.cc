@@ -1,6 +1,6 @@
 /**
  * @brief - implements parser.
- * 
+ *
  * @copyright - 2023-present. All rights reserved. Devendra Naga.
 */
 #include <logger.h>
@@ -210,6 +210,8 @@ event_description parser::parse_app_pkt(packet &pkt, Port_Numbers port)
     event_description evt_desc = event_description::Evt_Unknown_Error;
 
    switch (port) {
+        //
+        // DHCP operates on two ports one server and one client
         case Port_Numbers::Port_Number_DHCP_Server:
         case Port_Numbers::Port_Number_DHCP_Client: {
             present_bits.dhcp = 1;
