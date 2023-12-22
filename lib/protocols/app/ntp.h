@@ -18,12 +18,9 @@ enum class Ntp_Mode {
 };
 
 /**
- * @brief - implements NTP header.
-*/
-struct ntp_hdr {
-    uint32_t leap_indicator:2;
-    uint32_t version:3;
-    uint32_t mode:3;
+ * @brief - defines NTP v3 header.
+ */
+struct ntp_v3_hdr {
     uint8_t peer_clock_stratum;
     uint8_t peer_polling_intvl;
     uint8_t peer_clock_precision;
@@ -34,6 +31,21 @@ struct ntp_hdr {
     uint64_t origin_timestamp;
     uint64_t receive_timestamp;
     uint64_t transmit_timestamp;
+};
+
+/**
+ * @brief - implements NTP header.
+*/
+struct ntp_hdr {
+    uint32_t leap_indicator:2;
+    uint32_t version:3;
+    uint32_t mode:3;
+
+    //
+    // select the below structures based on the verison present above.
+    union {
+        ntp_v3_hdr v3_hdr;
+    } v;
 
     int serialize(packet &p);
     event_description deserialize(packet &p, logger *log, bool debug = false);

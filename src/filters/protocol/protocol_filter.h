@@ -12,9 +12,9 @@ class protocol_filter {
         ~protocol_filter() { }
 
         void init(logger *log);
-        void run(parser &p,
-                 std::vector<rule_config_item>::iterator &it,
-                 logger *log, bool debug);
+        int run(parser &p,
+                std::vector<rule_config_item>::iterator &it,
+                logger *log, bool debug);
 
     private:
         explicit protocol_filter() { }

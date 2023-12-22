@@ -6,6 +6,7 @@
 #ifndef __FW_COMMON_H__
 #define __FW_COMMON_H__
 
+#include <cstdint>
 #include <string>
 
 namespace firewall {

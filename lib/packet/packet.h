@@ -46,6 +46,7 @@ struct packet {
         for (i = 0; i < buf_len; i ++) {
             printf("%02x ", buf[i]);
         }
+        printf("\n");
     }
 };
 

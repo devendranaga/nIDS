@@ -12,7 +12,7 @@
 
 namespace firewall {
 
-pcap_writer::pcap_writer(const std::string &filename)
+pcap_writer::pcap_writer(const std::string &filename) THROWS
 {
     pcap_hdr_t glob_hdr;
 
@@ -112,7 +112,7 @@ pcap_hdr_t pcap_writer::format_default_glob_header()
     return glob_hdr;
 }
 
-pcap_reader::pcap_reader(const std::string &filename)
+pcap_reader::pcap_reader(const std::string &filename) THROWS
 {
     int ret;
 

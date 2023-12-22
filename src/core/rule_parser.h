@@ -127,6 +127,10 @@ struct eth_sig_bitmask {
     ~eth_sig_bitmask() { }
 
     void init();
+    bool active()
+    {
+        return from_src || to_dst || ethertype;
+    }
 };
 
 struct vlan_sig_bitmask {

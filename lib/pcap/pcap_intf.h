@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <string>
 #include <pcap_intf.h>
+#include <lang_hints.h>
 
 namespace firewall {
 
@@ -39,7 +40,7 @@ class pcap_writer {
          *
          * @param [in] filename - pcap filename
          */
-        pcap_writer(const std::string &filename);
+        pcap_writer(const std::string &filename) THROWS;
         ~pcap_writer();
 
         pcaprec_hdr_t format_pcap_pkthdr(size_t pktsize);

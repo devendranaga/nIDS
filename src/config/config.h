@@ -6,6 +6,7 @@
 #ifndef __FW_CONFIG_H__
 #define __FW_CONFIG_H__
 
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <common.h>

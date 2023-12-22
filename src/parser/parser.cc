@@ -445,12 +445,17 @@ void parser::run_rule_filters(packet &p,
                               bool pkt_dump)
 {
     std::vector<rule_config_item>::iterator it;
+    int denied = -1;
+
     for (it = rule_list_->rules_cfg_.begin();
          it != rule_list_->rules_cfg_.end(); it ++) {
         //
-        // run ethertype filtering
-        if (it->sig_mask.eth_sig.ethertype)
-            eth_filter::instance()->run_filter(*this, it, log, pkt_dump);
+        // run eh filtering
+        if (it->sig_mask.eth_sig.active()) {
+            denied = eth_filter::instance()->run_filter(*this, it, log, pkt_dump);
+            if (denied != 0)
+                break;
+        }
 
         //
         // run port filtering

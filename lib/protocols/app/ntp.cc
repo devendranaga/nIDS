@@ -22,16 +22,18 @@ event_description ntp_hdr::deserialize(packet &p, logger *log, bool debug)
     version = (byte_1 & 38) >> 3;
     mode = (byte_1 & 0x07);
 
-    p.deserialize(peer_clock_stratum);
-    p.deserialize(peer_polling_intvl);
-    p.deserialize(peer_clock_precision);
-    p.deserialize(root_delay_intvl_sec);
-    p.deserialize(root_dispersion);
-    p.deserialize(reference_id);
-    p.deserialize(reference_timestamp);
-    p.deserialize(origin_timestamp);
-    p.deserialize(receive_timestamp);
-    p.deserialize(transmit_timestamp);
+    if (version == 3) {
+        p.deserialize(v.v3_hdr.peer_clock_stratum);
+        p.deserialize(v.v3_hdr.peer_polling_intvl);
+        p.deserialize(v.v3_hdr.peer_clock_precision);
+        p.deserialize(v.v3_hdr.root_delay_intvl_sec);
+        p.deserialize(v.v3_hdr.root_dispersion);
+        p.deserialize(v.v3_hdr.reference_id);
+        p.deserialize(v.v3_hdr.reference_timestamp);
+        p.deserialize(v.v3_hdr.origin_timestamp);
+        p.deserialize(v.v3_hdr.receive_timestamp);
+        p.deserialize(v.v3_hdr.transmit_timestamp);
+    }
 
     if (debug) {
         print(log);
@@ -47,16 +49,18 @@ void ntp_hdr::print(logger *log)
     log->verbose("\tleap_indicator: %d\n", leap_indicator);
     log->verbose("\tversion: %d\n", version);
     log->verbose("\tmode: %d\n", mode);
-    log->verbose("\tpeer_clock_stratum: %u\n", peer_clock_stratum);
-    log->verbose("\tpeer_polling_intvl: %u\n", peer_polling_intvl);
-    log->verbose("\tpeer_clock_precision: %u\n", peer_clock_precision);
-    log->verbose("\troot_delay_intvl_sec: %u\n", root_delay_intvl_sec);
-    log->verbose("\troot_dispersion: %u\n", root_dispersion);
-    log->verbose("\treference_id: %u\n", reference_id);
-    log->verbose("\treference_timestamp: %u\n", reference_timestamp);
-    log->verbose("\torigin_timestamp: %u\n", origin_timestamp);
-    log->verbose("\treceive_timesatmp: %u\n", receive_timestamp);
-    log->verbose("\ttransmit_timestamp: %u\n", transmit_timestamp);
+    if (version == 3) {
+        log->verbose("\tpeer_clock_stratum: %u\n", v.v3_hdr.peer_clock_stratum);
+        log->verbose("\tpeer_polling_intvl: %u\n", v.v3_hdr.peer_polling_intvl);
+        log->verbose("\tpeer_clock_precision: %u\n", v.v3_hdr.peer_clock_precision);
+        log->verbose("\troot_delay_intvl_sec: %u\n", v.v3_hdr.root_delay_intvl_sec);
+        log->verbose("\troot_dispersion: %u\n", v.v3_hdr.root_dispersion);
+        log->verbose("\treference_id: %u\n", v.v3_hdr.reference_id);
+        log->verbose("\treference_timestamp: %u\n", v.v3_hdr.reference_timestamp);
+        log->verbose("\torigin_timestamp: %u\n", v.v3_hdr.origin_timestamp);
+        log->verbose("\treceive_timesatmp: %u\n", v.v3_hdr.receive_timestamp);
+        log->verbose("\ttransmit_timestamp: %u\n", v.v3_hdr.transmit_timestamp);
+    }
     log->verbose("}\n");
 #endif
 }
