@@ -1,6 +1,6 @@
 /**
  * @brief - implements vlan serialize and deserialize.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #include <vlan.h>
@@ -12,6 +12,28 @@ namespace firewall {
 static const uint16_t reserved_vlan_ids[] = {
     0, 4095
 };
+
+bool vlan_hdr::has_double_tagged()
+{
+    return next != nullptr;
+}
+
+Ether_Type vlan_hdr::get_ethertype()
+{
+    if (next)
+        return static_cast<Ether_Type>(next->ethertype);
+
+    return static_cast<Ether_Type>(ethertype);
+}
+
+vlan_hdr::vlan_hdr()
+{
+    next = nullptr;
+}
+
+vlan_hdr::~vlan_hdr()
+{
+}
 
 int vlan_hdr::serialize(packet &p)
 {
@@ -34,6 +56,8 @@ int vlan_hdr::serialize(packet &p)
 
 event_description vlan_hdr::deserialize(packet &p, logger *log, bool debug)
 {
+    event_description evt_desc;
+
     //
     // drop the short length vlan header.
     if (p.remaining_len() < vlan_hdrlen_)
@@ -56,7 +80,21 @@ event_description vlan_hdr::deserialize(packet &p, logger *log, bool debug)
     if (debug)
         print(log);
 
-    return event_description::Evt_Parse_Ok;
+    //
+    // possibility of a double tagged VLAN
+    if (static_cast<Ether_Type>(ethertype) == Ether_Type::Ether_Type_VLAN) {
+        next = std::make_shared<vlan_hdr>();
+        if (!next)
+            return event_description::Evt_Out_Of_Memory;
+
+        evt_desc = next->deserialize(p, log, debug);
+    } else {
+        //
+        // rest of the ethertypes are parsed at parser.cc
+        evt_desc = event_description::Evt_Parse_Ok;
+    }
+
+    return evt_desc;
 }
 
 void vlan_hdr::print(logger *log)

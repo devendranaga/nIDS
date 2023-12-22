@@ -7,6 +7,7 @@
 #define __FW_PROTOCOLS_VLAN_H__
 
 #include <stdint.h>
+#include <memory>
 #include <common.h>
 #include <ether_types.h>
 #include <logger.h>
@@ -23,6 +24,9 @@ struct vlan_hdr {
     uint8_t dei:1;
     uint16_t vid:12;
     uint16_t ethertype;
+
+    explicit vlan_hdr();
+    ~vlan_hdr();
 
     /**
      * @brief - implements VLAN serialization.
@@ -44,8 +48,9 @@ struct vlan_hdr {
      *
      * @return returns ethertype.
     */
-    Ether_Type get_ethertype()
-    { return static_cast<Ether_Type>(ethertype); }
+    Ether_Type get_ethertype();
+
+    bool has_double_tagged();
 
     /**
      * @brief - print vlan header.
@@ -53,6 +58,10 @@ struct vlan_hdr {
      * @param [in] log - logger.
     */
     void print(logger *log);
+
+    //
+    // possiblity of a double tagged VLAN
+    std::shared_ptr<vlan_hdr> next;
 
     private:
         uint16_t vlan_hdrlen_ = 4;
