@@ -1,6 +1,6 @@
 /**
  * @brief - implements ipv4 protocol serialize and deserialize.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #ifndef __FW_PROTOCOLS_IPV4_H__
@@ -244,6 +244,12 @@ struct ipv4_hdr {
     uint32_t end_off;
 
     ipv4_options opt;
+
+    //
+    // ip in ip
+    std::shared_ptr<ipv4_hdr> ipip;
+
+    protocols_types get_protocol();
 
     explicit ipv4_hdr() :
                 start_off(0),

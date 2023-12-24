@@ -9,20 +9,22 @@ The following protocols are supported.
 | 3 | ARP | L2 |
 | 4 | VLAN | L2 |
 | 5 | IEEE 802.1AD | L2 |
-| 6 | IPv4 | L3 |
-| 7 | IPv6 | L3 |
-| 8 | TCP | L4 |
-| 9 | UDP | L4 |
-| 10 | ICMP | L4 |
-| 11 | ICMP6 | L4 |
-| 12 | DHCP | APP |
-| 13 | NTP | APP |
-| 14 | TLS | APP (only version matching!) |
-| 15 | MQTT | APP |
-| 16 | IPv6-ESP | L3 / L4 |
-| 17 | IPv6-AH | L3 / L4 |
-| 18 | IPv6-in-IPv6 | L3 / L4 |
-| 19 | IGMP v3 | L4 |
+| 6 | PPPOE | L2 |
+| 7 | IPv4 | L3 |
+| 8 | IPv6 | L3 |
+| 9 | TCP | L4 |
+| 10 | IPIP (Tunnel) | L4 |
+| 11 | UDP | L4 |
+| 12 | ICMP | L4 |
+| 13 | ICMP6 | L4 |
+| 14 | DHCP | APP |
+| 15 | NTP | APP |
+| 16 | TLS | APP (only version matching!) |
+| 17 | MQTT | APP |
+| 18 | IPv6-ESP | L3 / L4 |
+| 19 | IPv6-AH | L3 / L4 |
+| 20 | IPv6-in-IPv6 | L3 / L4 |
+| 21 | IGMP v3 | L4 |
 
 Below are some of the supported Automotive protocols.
 

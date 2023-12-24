@@ -1,6 +1,6 @@
 /**
  * @brief - Implements protocol list.
- * 
+ *
  * @copyright - 2023-present. All rights reserved. Devendra Naga.
 */
 #ifndef __FW_PROTOCOLS_TYPES_H__
@@ -20,12 +20,15 @@ enum class protocols_types {
     Protocol_Tcp = 6,
     Protocol_Udp = 17,
     Protocol_IPv6_Encapsulation = 41,
+    Protocol_GREP = 47,
     // Encapsulated Security Payload
     Protocol_ESP = 50,
     Protocol_AH = 51,
     Protocol_Icmp6 = 58,
     Protocol_Max,
 };
+
+const std::string get_protocol_str(protocols_types protocol);
 
 }
 

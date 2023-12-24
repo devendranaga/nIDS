@@ -147,6 +147,12 @@ event_description parser::parse_l4(packet &pkt)
         case protocols_types::Protocol_ESP: {
             evt_desc = event_description::Evt_Parse_Ok;
         } break;
+        case protocols_types::Protocol_GREP: {
+            present_bits.gre = 1;
+            evt_desc = gre_h.deserialize(pkt, log_, pkt_dump_);
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_gre();
+        } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
         break;
@@ -349,6 +355,22 @@ int parser::run(packet &pkt)
         ether = macsec_h.get_ethertype();
     }
 
+    if (ether == Ether_Type::Ether_Type_PPPOE) {
+        present_bits.pppoe = 1;
+        evt_desc = pppoe_h.deserialize(pkt, log_, pkt_dump_);
+        if (evt_desc != event_description::Evt_Parse_Ok) {
+            evt_mgr->store(event_type::Evt_Deny, evt_desc, *this);
+            return -1;
+        }
+
+        protocols_avail.set_pppoe();
+
+        //
+        // PPPOE has different protocol numbers so get them converted to
+        // ethertype.
+        ether = pppoe_h.get_ethertype();
+    }
+
     //
     // parse the rest of the l2 / l3 frames.
     switch (ether) {
@@ -379,12 +401,6 @@ int parser::run(packet &pkt)
             evt_desc = ieee8021x_h.deserialize(pkt, log_, pkt_dump_);
             if (evt_desc == event_description::Evt_Parse_Ok)
                 protocols_avail.set_eap();
-        } break;
-        case Ether_Type::Ether_Type_PPPOE: {
-            present_bits.pppoe = 1;
-            evt_desc = pppoe_h.deserialize(pkt, log_, pkt_dump_);
-            if (evt_desc == event_description::Evt_Parse_Ok)
-                protocols_avail.set_pppoe();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;

@@ -49,6 +49,8 @@
 #include <eap.h>
 // PPPOE header
 #include <pppoe.h>
+// GRE header
+#include <gre.h>
 // Known exploits
 #include <known_exploits.h>
 
@@ -89,7 +91,8 @@ struct protocol_bits {
                             tls(0),
                             mqtt(0),
                             someip(0),
-                            eap(0)
+                            eap(0),
+                            gre(0)
         { }
         ~protocol_bits() { }
 
@@ -113,6 +116,7 @@ struct protocol_bits {
         void set_someip() { someip = 1; }
         void set_eap() { eap = 1; }
         void set_pppoe() { pppoe = 1; }
+        void set_gre() { gre = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_macsec() const { return macsec == 1; }
         /**
@@ -153,6 +157,7 @@ struct protocol_bits {
         bool has_someip() const { return someip == 1; }
         bool has_eap() const { return eap == 1; }
         bool has_pppoe() const { return pppoe == 1; }
+        bool has_gre() const { return gre == 1; }
 
     private:
         uint32_t eth:1;
@@ -175,6 +180,7 @@ struct protocol_bits {
         uint32_t mqtt:1;
         uint32_t someip:1;
         uint32_t eap:1;
+        uint32_t gre:1;
 };
 
 struct protocol_present_bits {
@@ -201,6 +207,7 @@ struct protocol_present_bits {
 #endif
     uint32_t tls:1;
     uint32_t mqtt:1;
+    uint32_t gre:1;
 
     explicit protocol_present_bits()
     {
@@ -286,6 +293,9 @@ struct parser {
         // PPPOE header
         pppoe_hdr pppoe_h;
 
+        // GRE header
+        gre_hdr gre_h;
+
         // present protocols.. they might have failed parse.
         protocol_present_bits present_bits;
 
@@ -301,11 +311,10 @@ struct parser {
 
         protocols_types get_protocol_type()
         {
-            if (protocols_avail.has_ipv4()) {
-                return static_cast<protocols_types>(ipv4_h.protocol);
-            } else if (protocols_avail.has_ipv6()) {
+            if (protocols_avail.has_ipv4())
+                return ipv4_h.get_protocol();
+            else if (protocols_avail.has_ipv6())
                 return static_cast<protocols_types>(ipv6_h.nh);
-            }
 
             return static_cast<protocols_types>(protocols_types::Protocol_Max);
         }

@@ -667,6 +667,13 @@ const static struct {
         "802.1AD Invalid Header Length",
     },
 
+    {
+        event_description::Evt_Gre_Invalid_Hdr_Len,
+        Event_Confidence::Full,
+        rule_ids::Rule_Id_Gre_Invalid_Hdr_Len,
+        "Gre Invalid Header Length",
+    },
+
     //
     // Rules matched by the Exploit filter
     {

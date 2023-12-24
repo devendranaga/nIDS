@@ -80,10 +80,63 @@ event_description ipv6_hdr::deserialize(packet &p, logger *log, bool debug)
         //
         // set nh to parse in the caller as IPv6_Encap.
         nh = opts->ah_hdr->nh;
+    } else if (static_cast<IPv6_NH_Type>(nh) == IPv6_NH_Type::Hop_By_Hop_Opt) {
+        opts->hh = std::make_shared<ipv6_hop_by_hop_hdr>();
+        if (!opts->hh)
+            return event_description::Evt_Out_Of_Memory;
+
+        evt_desc = opts->hh->deserialize(p, log, debug);
+        if (evt_desc != event_description::Evt_Parse_Ok)
+            return evt_desc;
+
+        //
+        // nh is further used to parse L3 tunnel or an L4 frame.
+        nh = opts->hh->nh;
     }
 
     if (debug) {
         print(log);
+    }
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description ipv6_hop_by_hop_hdr::deserialize(packet &p, logger *log, bool debug)
+{
+    uint8_t type_val;
+    uint8_t action;
+    uint8_t may_change;
+    uint8_t len_val = 0;
+
+    p.deserialize(nh);
+    p.deserialize(len);
+
+    len_val = ((len + 1) * 8) - 2;
+
+    while (p.remaining_len() < len_val) {
+        p.deserialize(type_val);
+
+        action = (type_val & 0xC0) >> 6;
+        may_change = !!(type_val & 0x20);
+        type_val = (type_val & 0x1F);
+
+        switch (type_val) {
+            case static_cast<int>(IPv6_Opt::Router_Alert): {
+                ra = std::make_shared<ipv6_opt_router_alert>();
+                if (!ra)
+                    return event_description::Evt_Out_Of_Memory;
+
+                ra->action = action;
+                ra->may_change = may_change;
+                p.deserialize(ra->len);
+                p.deserialize(ra->router_alert);
+            } break;
+            case static_cast<int>(IPv6_Opt::PadN): {
+                p.off ++;
+            } break;
+            default:
+                return event_description::Evt_Unknown_Error;
+        }
     }
 
     return event_description::Evt_Parse_Ok;

@@ -183,8 +183,12 @@ enum class rule_ids : uint32_t {
     // IEEE 802.1AD Rule Ids
     Rule_Id_8021AD_INVAL_Hdr_Len = 2101,
 
-    Rule_Id_IPSec_AH_Inval_Len,
+    Rule_Id_IPSec_AH_Inval_Len = 2201,
     Rule_Id_IPSec_AH_Zero_ICV_Len,
+
+    //
+    // Gre Rule Ids
+    Rule_Id_Gre_Invalid_Hdr_Len = 2301,
 
     //
     // Known Malware / Virus / Explit Rule Ids
@@ -370,6 +374,10 @@ enum class event_description : uint32_t {
     //
     // IEEE 802.1AD invalid header length
     Evt_8021AD_INVAL_Hdr_Len = 2201,
+
+    //
+    // Gre events
+    Evt_Gre_Invalid_Hdr_Len = 2301,
 
     //
     // Known virus / exploit / worm / malware events

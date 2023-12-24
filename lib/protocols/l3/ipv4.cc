@@ -7,6 +7,14 @@
 
 namespace firewall {
 
+protocols_types ipv4_hdr::get_protocol()
+{
+    if (ipip)
+        return static_cast<protocols_types>(ipip->protocol);
+
+    return static_cast<protocols_types>(protocol);
+}
+
 int ipv4_hdr::serialize(packet &p)
 {
     uint8_t byte;
@@ -238,19 +246,27 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
     // parse options
     if (hdr_len > IPV4_HDR_NO_OPTIONS) {
         evt_desc = opt.deserialize(p, log, hdr_len - IPV4_HDR_NO_OPTIONS, debug);
-        if (evt_desc != event_description::Evt_Parse_Ok) {
+        if (evt_desc != event_description::Evt_Parse_Ok)
             return evt_desc;
-        }
     }
 
-    if (p.remaining_len() < (int32_t)(total_len - hdr_len)) {
+    if (p.remaining_len() < (int32_t)(total_len - hdr_len))
         return event_description::Evt_IPv4_Invalid_Total_Len;
-    }
 
     end_off = p.off;
 
     if (debug)
         print(log);
+
+    if (static_cast<protocols_types>(protocol) == protocols_types::Protocol_IPIP) {
+        ipip = std::make_shared<ipv4_hdr>();
+        if (!ipip)
+            return event_description::Evt_Out_Of_Memory;
+
+        evt_desc = ipip->deserialize(p, log, debug);
+        if (evt_desc != event_description::Evt_Parse_Ok)
+            return evt_desc;
+    }
 
     //
     // validate the checksum

@@ -26,11 +26,23 @@ enum class IPv6_NH_Type {
 
 enum class IPv6_Opt {
     Router_Alert = 0x05,
+    PadN = 0x01,
 };
 
 struct ipv6_opt_router_alert {
+    uint8_t action;
+    uint8_t may_change;
     uint8_t len;
     uint16_t router_alert;
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t\tRouter_Alert: {\n");
+        log->verbose("\t\t\tlen: %d\n", len);
+        log->verbose("\t\t\trouter_alert: %d\n", router_alert);
+        log->verbose("\t\t}\n");
+    #endif
+    }
 };
 
 struct ipv6_hop_by_hop_hdr {
@@ -42,8 +54,14 @@ struct ipv6_hop_by_hop_hdr {
     void print(logger *log)
     {
     #if defined(FW_ENABLE_DEBUG)
-        log->verbose("nh: %d\n", nh);
-        log->verbose("len: %d\n", len);
+        log->verbose("\tHop By Hop: {\n");
+        log->verbose("\t\tnh: %d\n", nh);
+        log->verbose("\t\tlen: %d\n", len);
+
+        if (ra)
+            ra->print(log);
+
+        log->verbose("\t}\n");
     #endif
     }
 };

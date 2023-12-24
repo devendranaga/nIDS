@@ -5,6 +5,7 @@
 */
 #include <cstring>
 #include <icmp.h>
+#include <tunables.h>
 
 namespace firewall {
 
@@ -236,9 +237,8 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             // so if over 48 bytes, generally mean someone is
             // transmitting data via the icmp echo-req and echo-reply
             // messages.
-            if (echo_req->data_len > icmp_max_data_len_) {
+            if (echo_req->data_len > tunables::instance()->icmp_t.max_pkt_len_bytes)
                 return event_description::Evt_Icmp_Covert_Channel_Maybe_Active;
-            }
 
             echo_req->data = (uint8_t *)calloc(1, p.remaining_len());
             if (!echo_req->data)
@@ -272,14 +272,13 @@ event_description icmp_hdr::deserialize(packet &p, logger *log, bool debug)
             // so if over 48 bytes, generally mean someone is
             // transmitting data via the icmp echo-req and echo-reply
             // messages.
-            if (echo_reply->data_len > icmp_max_data_len_) {
+            if (echo_reply->data_len > tunables::instance()->icmp_t.max_pkt_len_bytes)
                 return event_description::Evt_Icmp_Covert_Channel_Maybe_Active;
-            }
 
             echo_reply->data = (uint8_t *)calloc(1, p.remaining_len());
-            if (!echo_reply->data) {
+            if (!echo_reply->data)
                 return event_description::Evt_Unknown_Error;
-            }
+
             std::memcpy(echo_reply->data, &p.buf[p.off], p.remaining_len());
         } break;
         case Icmp_Type::Dest_Unreachable: {

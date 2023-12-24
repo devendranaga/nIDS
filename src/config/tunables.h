@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements Tunable configuration parser.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_SRC_CONFIG_TUNABLES_H__
 #define __FW_SRC_CONFIG_TUNABLES_H__
 
@@ -20,6 +25,7 @@ struct ipv4_tunables {
 #define ICMP_ENTRY_TIMEO_MS 10000
 
 struct icmp_tunables {
+    uint32_t max_pkt_len_bytes;
     uint32_t pkt_gap_two_echo_req_ms;
     uint32_t icmp_entry_timeout_ms;
 
