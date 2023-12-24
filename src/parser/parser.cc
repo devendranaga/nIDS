@@ -380,6 +380,12 @@ int parser::run(packet &pkt)
             if (evt_desc == event_description::Evt_Parse_Ok)
                 protocols_avail.set_eap();
         } break;
+        case Ether_Type::Ether_Type_PPPOE: {
+            present_bits.pppoe = 1;
+            evt_desc = pppoe_h.deserialize(pkt, log_, pkt_dump_);
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_pppoe();
+        } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;
         break;

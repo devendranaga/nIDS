@@ -23,12 +23,19 @@ event_description igmp_hdr::deserialize(packet &p, logger *log, bool debug)
 
             evt_desc = mem_query->deserialize(p, log, debug);
         } break;
-        case Igmp_Type::Membership_Report: {
+        case Igmp_Type::Membership_Report_V3: {
             mem_report = std::make_shared<igmp_membership_report>();
             if (!mem_report)
                 return event_description::Evt_Out_Of_Memory;
 
             evt_desc = mem_report->deserialize(p, log, debug);
+        } break;
+        case Igmp_Type::Leave_Group: {
+            leave_group = std::make_shared<igmp_leave_group>();
+            if (!leave_group)
+                return event_description::Evt_Out_Of_Memory;
+
+            evt_desc = leave_group->deserialize(p, log, debug);
         } break;
         default:
             return event_description::Evt_Igmp_Unsupported_Type;
@@ -77,6 +84,15 @@ igmp_membership_report::deserialize(packet &p,
 
         rec_list_.emplace_back(rec);
     }
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description
+igmp_leave_group::deserialize(packet &p,
+                              logger *log, bool debug)
+{
+    p.deserialize(mcast_addr);
 
     return event_description::Evt_Parse_Ok;
 }

@@ -40,6 +40,13 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
 
             evt_desc = radv->deserialize(p, log, debug);
         } break;
+        case Icmp6_Types::Router_Solicitation: {
+            rsol = std::shared_ptr<icmp6_router_solicitation>();
+            if (!rsol)
+                return event_description::Evt_Out_Of_Memory;
+
+            evt_desc = rsol->deserialize(p, log, debug);
+        } break;
         case Icmp6_Types::Echo_Request: {
             echo_req = std::make_shared<icmp6_echo_req>();
             if (!echo_req)
@@ -91,6 +98,16 @@ event_description icmp6_hdr::deserialize(packet &p, logger *log, bool debug)
                     p.off ++;
                     opt->valid.t_lladdr = 1;
                     evt_desc = opt->t_lladdr.deserialize(p, log, debug);
+                } break;
+                case Icmp6_Option_Types::MTU: {
+                    p.off ++;
+                    opt->valid.mtu = 1;
+                    evt_desc = opt->mtu.deserialize(p, log, debug);
+                } break;
+                case Icmp6_Option_Types::Prefix_Information: {
+                    p.off ++;
+                    opt->valid.prefix_information = 1;
+                    evt_desc = opt->prefix_information.deserialize(p, log, debug);
                 } break;
                 default: // we are not fully parsing the options yet
                 break;
@@ -221,6 +238,13 @@ event_description icmp6_router_advertisement::deserialize(packet &p, logger *log
     return event_description::Evt_Parse_Ok;
 }
 
+event_description icmp6_router_solicitation::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(reserved);
+
+    return event_description::Evt_Parse_Ok;
+}
+
 event_description icmp6_option_prefix_information::deserialize(packet &p, logger *log, bool debug)
 {
     uint8_t byte = 0;
@@ -278,6 +302,15 @@ event_description icmp6_option_target_link_layer_addr::deserialize(packet &p, lo
 {
     p.deserialize(len);
     p.deserialize(lladdr, sizeof(lladdr));
+
+    return event_description::Evt_Parse_Ok;
+}
+
+event_description icmp6_option_mtu::deserialize(packet &p, logger *log, bool debug)
+{
+    p.deserialize(len);
+    p.deserialize(reserved);
+    p.deserialize(mtu);
 
     return event_description::Evt_Parse_Ok;
 }

@@ -12,7 +12,25 @@ namespace firewall {
 
 enum class Igmp_Type {
     Membership_Query = 0x11,
-    Membership_Report = 0x22,
+    Membership_Report_V1 = 0x12,
+    Membership_Report_V2 = 0x16,
+    Membership_Report_V3 = 0x22,
+    Leave_Group = 0x17,
+};
+
+struct igmp_leave_group {
+    uint32_t mcast_addr;
+
+    int serialize(packet &p);
+    event_description deserialize(packet &p, logger *log, bool debug = false);
+    void print(logger *log)
+    {
+    #if defined(FW_ENABLE_DEBUG)
+        log->verbose("\t LeaveGroup: {\n");
+        log->verbose("\t\t mcast_addr: %u\n", mcast_addr);
+        log->verbose("\t }\n");
+    #endif
+    }
 };
 
 struct igmp_membership_query {
@@ -136,13 +154,15 @@ struct igmp_hdr {
 
     std::shared_ptr<igmp_membership_query> mem_query;
     std::shared_ptr<igmp_membership_report> mem_report;
+    std::shared_ptr<igmp_leave_group> leave_group;
 
     explicit igmp_hdr() :
                 type(0),
                 max_resp_time(0),
                 checksum(0),
                 mem_query(nullptr),
-                mem_report(nullptr)
+                mem_report(nullptr),
+                leave_group(nullptr)
     { }
     ~igmp_hdr() { }
 
@@ -177,6 +197,9 @@ struct igmp_hdr {
 
         if (mem_report)
             mem_report->print(log);
+
+        if (leave_group)
+            leave_group->print(log);
 
         log->verbose("}\n");
     #endif

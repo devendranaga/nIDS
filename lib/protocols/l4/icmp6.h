@@ -19,6 +19,7 @@ namespace firewall {
 enum Icmp6_Types {
     Echo_Request = 128,
     Echo_Reply = 129,
+    Router_Solicitation = 133,
     Icmp6_Type_Router_Advertisement = 134,
     Neighbor_Solitication = 135,
     Neighbor_Advertisement = 136,
@@ -29,6 +30,8 @@ enum Icmp6_Types {
 enum class Icmp6_Option_Types {
     Source_Link_Layer_Address = 0x1,
     Target_Link_Layer_Address = 0x2,
+    Prefix_Information = 0x3,
+    MTU = 0x5,
 };
 
 struct icmp6_flags {
@@ -150,6 +153,14 @@ struct icmp6_router_advertisement {
         log->verbose("\t\t\t }\n");
     #endif
     }
+};
+
+struct icmp6_router_solicitation {
+    uint32_t reserved;
+
+    int serialize(packet &p);
+    event_description deserialize(packet &p, logger *log, bool debug = false);
+    void print(logger *log);
 };
 
 struct icmp6_mcast_record {
@@ -360,6 +371,7 @@ struct icmp6_hdr {
     uint8_t code;
     uint16_t checksum;
     std::shared_ptr<icmp6_router_advertisement> radv;
+    std::shared_ptr<icmp6_router_solicitation> rsol;
     std::shared_ptr<icmp6_mcast_listener_report_msg_v2> mcast_listener_v2;
     std::shared_ptr<icmp6_echo_req> echo_req;
     std::shared_ptr<icmp6_echo_reply> echo_reply;

@@ -47,6 +47,8 @@
 #include <some_ip.h>
 // EAP header
 #include <eap.h>
+// PPPOE header
+#include <pppoe.h>
 // Known exploits
 #include <known_exploits.h>
 
@@ -70,6 +72,7 @@ struct protocol_bits {
         explicit protocol_bits() :
                             eth(0),
                             macsec(0),
+                            pppoe(0),
                             ipv4(0),
                             ieee8021ad(0),
                             arp(0),
@@ -109,6 +112,7 @@ struct protocol_bits {
         void set_mqtt() { mqtt = 1; }
         void set_someip() { someip = 1; }
         void set_eap() { eap = 1; }
+        void set_pppoe() { pppoe = 1; }
         bool has_eth() const { return eth == 1; }
         bool has_macsec() const { return macsec == 1; }
         /**
@@ -148,10 +152,12 @@ struct protocol_bits {
         bool has_mqtt() const { return mqtt == 1; }
         bool has_someip() const { return someip == 1; }
         bool has_eap() const { return eap == 1; }
+        bool has_pppoe() const { return pppoe == 1; }
 
     private:
         uint32_t eth:1;
         uint32_t macsec:1;
+        uint32_t pppoe:1;
         uint32_t ipv4:1;
         uint32_t ieee8021ad:1;
         uint32_t arp:1;
@@ -174,6 +180,7 @@ struct protocol_bits {
 struct protocol_present_bits {
     uint32_t eth:1;
     uint32_t vlan:1;
+    uint32_t pppoe:1;
     uint32_t arp:1;
     uint32_t ieee8021ad:1;
     uint32_t macsec:1;
@@ -275,6 +282,9 @@ struct parser {
         mqtt_hdr mqtt_h;
 
         ieee8021x_hdr ieee8021x_h;
+
+        // PPPOE header
+        pppoe_hdr pppoe_h;
 
         // present protocols.. they might have failed parse.
         protocol_present_bits present_bits;
