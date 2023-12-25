@@ -49,12 +49,12 @@ struct ieee8021ad_hdr {
     void print(logger *log)
     {
     #if defined(FW_ENABLE_DEBUG)
-        log->verbose("\t IEEE8021ad_hdr: {\n");
-        log->verbose("\t\t pri: %d\n", pri);
-        log->verbose("\t\t dei: %d\n", dei);
-        log->verbose("\t\t vid: %d\n", vid);
-        log->verbose("\t\t ethertype: 0x%04x\n", ethertype);
-        log->verbose("\t }\n");
+        log->verbose("IEEE8021ad_hdr: {\n");
+        log->verbose("\t pri: %d\n", pri);
+        log->verbose("\t dei: %d\n", dei);
+        log->verbose("\t vid: %d\n", vid);
+        log->verbose("\t ethertype: 0x%04x\n", ethertype);
+        log->verbose("}\n");
     #endif
     }
 

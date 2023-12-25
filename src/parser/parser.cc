@@ -319,7 +319,8 @@ int parser::run(packet &pkt)
 
     //
     // check if its vlan, parse it
-    if (eh.has_ethertype_vlan()) {
+    if (eh.has_ethertype_vlan() ||
+        (ether == Ether_Type::Ether_Type_VLAN)) {
         present_bits.vlan = 1;
         stats->stats_update(Pktstats_Type::Type_VLAN_Rx, ifname_);
 
