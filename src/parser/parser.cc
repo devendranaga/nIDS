@@ -92,6 +92,10 @@ event_description parser::parse_l4(packet &pkt)
         proto = static_cast<protocols_types>(ipv6_encap_h->nh);
     }
 
+//
+// we need to iterate more than one time, if we are parsing tunneled frames
+tun_parse:
+
     switch (proto) {
         case protocols_types::Protocol_Udp: {
             present_bits.udp = 1;
@@ -150,8 +154,17 @@ event_description parser::parse_l4(packet &pkt)
         case protocols_types::Protocol_GREP: {
             present_bits.gre = 1;
             evt_desc = gre_h.deserialize(pkt, log_, pkt_dump_);
-            if (evt_desc == event_description::Evt_Parse_Ok)
+            if (evt_desc == event_description::Evt_Parse_Ok) {
                 protocols_avail.set_gre();
+                proto = get_protocol_type();
+                goto tun_parse;
+            }
+        } break;
+        case protocols_types::Protocol_VRRP: {
+            present_bits.vrrp = 1;
+            evt_desc = vrrp_h.deserialize(pkt, log_, pkt_dump_);
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_vrrp();
         } break;
         default:
             evt_desc = event_description::Evt_Unknown_Error;

@@ -25,6 +25,7 @@ enum class protocols_types {
     Protocol_ESP = 50,
     Protocol_AH = 51,
     Protocol_Icmp6 = 58,
+    Protocol_VRRP = 112,
     Protocol_Max,
 };
 

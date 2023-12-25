@@ -21,6 +21,7 @@ static const struct {
     {protocols_types::Protocol_ESP, "IPsec-ESP"},
     {protocols_types::Protocol_AH, "IPsec-AH"},
     {protocols_types::Protocol_Icmp6, "ICMP6"},
+    {protocols_types::Protocol_VRRP, "VRRP"},
 };
 
 const std::string get_protocol_str(protocols_types protocol)

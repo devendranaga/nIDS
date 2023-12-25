@@ -164,6 +164,7 @@ struct icmp6_router_solicitation {
 };
 
 struct icmp6_mcast_record {
+#define MCAST_REC_TYPE_CHANGED_TO_EXCLUDE 4
     uint8_t rec_type;
     uint8_t aux_data_len;
     uint16_t n_sources;
