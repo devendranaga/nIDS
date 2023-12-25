@@ -27,6 +27,8 @@ namespace firewall {
 #define IPV4_RESERVED_ADDR_END 255
 #define IPV4_BROADCAST_ADDR 0xFFFFFFFF
 
+struct ipv6_hdr;
+
 enum class IPv4_Opt {
     End_Of_Options = 0,
     Nop = 1,
@@ -248,6 +250,10 @@ struct ipv4_hdr {
     //
     // ip in ip
     std::shared_ptr<ipv4_hdr> ipip;
+
+    //
+    // 6 in 4
+    std::shared_ptr<ipv6_hdr> ipv6_in_ipv4;
 
     protocols_types get_protocol();
 

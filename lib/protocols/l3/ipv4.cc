@@ -4,13 +4,21 @@
  * @copyright - 2023-present All rights reserved.
 */
 #include <ipv4.h>
+#include <ipv6.h>
 
 namespace firewall {
 
 protocols_types ipv4_hdr::get_protocol()
 {
+    //
+    // IP in IP tunnel
     if (ipip)
         return static_cast<protocols_types>(ipip->protocol);
+
+    //
+    // 6 in 4 tunnel
+    if (ipv6_in_ipv4)
+        return static_cast<protocols_types>(ipv6_in_ipv4->nh);
 
     return static_cast<protocols_types>(protocol);
 }
@@ -258,12 +266,22 @@ event_description ipv4_hdr::deserialize(packet &p, logger *log, bool debug)
     if (debug)
         print(log);
 
-    if (static_cast<protocols_types>(protocol) == protocols_types::Protocol_IPIP) {
+    if (static_cast<protocols_types>(protocol) ==
+                protocols_types::Protocol_IPIP) {
         ipip = std::make_shared<ipv4_hdr>();
         if (!ipip)
             return event_description::Evt_Out_Of_Memory;
 
         evt_desc = ipip->deserialize(p, log, debug);
+        if (evt_desc != event_description::Evt_Parse_Ok)
+            return evt_desc;
+    } else if (static_cast<protocols_types>(protocol) ==
+                protocols_types::Protocol_IPv6_Encapsulation) {
+        ipv6_in_ipv4 = std::make_shared<ipv6_hdr>();
+        if (!ipv6_in_ipv4)
+            return event_description::Evt_Out_Of_Memory;
+
+        evt_desc = ipv6_in_ipv4->deserialize(p, log, debug);
         if (evt_desc != event_description::Evt_Parse_Ok)
             return evt_desc;
     }

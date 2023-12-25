@@ -311,10 +311,18 @@ struct parser {
 
         protocols_types get_protocol_type()
         {
-            if (protocols_avail.has_ipv4())
+            //
+            // sometimes we get tunneled frames,
+            // in that case we need to find the real protocol type
+            // for now we parsed IPV4 in GRE.
+            if (protocols_avail.has_gre()) {
+                if (gre_h.ipv4_h)
+                    return gre_h.ipv4_h->get_protocol();
+            } else if (protocols_avail.has_ipv4()) {
                 return ipv4_h.get_protocol();
-            else if (protocols_avail.has_ipv6())
+            } else if (protocols_avail.has_ipv6()) {
                 return static_cast<protocols_types>(ipv6_h.nh);
+            }
 
             return static_cast<protocols_types>(protocols_types::Protocol_Max);
         }

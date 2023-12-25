@@ -276,6 +276,8 @@ void packet_gen::run_macsec_replay()
     eh.ethertype = conf_->macsec_conf.ethertype;
 
     eh.serialize(p);
+    //
+    // freed by the destructor of macsec_hdr.
     conf_->macsec_conf.macsec_h.data = (uint8_t *)calloc(1, conf_->macsec_conf.macsec_h.data_len);
     if (!conf_->macsec_conf.macsec_h.data) {
         return;

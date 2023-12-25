@@ -1,6 +1,7 @@
 #ifndef __FW_SRC_FILTER_MQTT_FILTER_H__
 #define __FW_SRC_FILTER_MQTT_FILTER_H__
 
+#include <vector>
 #include <logger.h>
 
 namespace firewall {
@@ -22,12 +23,19 @@ enum class Mqtt_State {
     Disconnect_Req,
 };
 
+enum class Mqtt_Conn_Role {
+    None,
+    Publisher,
+    Subscriber,
+};
+
 struct mqtt_state_info {
     uint32_t sender_ip;
     uint32_t target_ip;
     uint16_t sender_port;
     uint16_t target_port;
     Mqtt_State state;
+    Mqtt_Conn_Role conn_role;
 
     explicit mqtt_state_info() :
                     sender_ip(0),
