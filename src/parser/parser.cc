@@ -239,6 +239,13 @@ event_description parser::parse_app_pkt(packet &pkt, Port_Numbers port)
             if (evt_desc == event_description::Evt_Parse_Ok)
                 protocols_avail.set_dhcp();
         } break;
+        case Port_Numbers::Port_Number_TFTP: {
+            present_bits.tftp = 1;
+
+            evt_desc = tftp_h.deserialize(pkt, log_, pkt_dump_);
+            if (evt_desc == event_description::Evt_Parse_Ok)
+                protocols_avail.set_tftp();
+        } break;
         case Port_Numbers::Port_Number_NTP: {
             present_bits.ntp = 1;
 

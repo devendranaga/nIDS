@@ -34,6 +34,9 @@ struct firewall_intf_stats {
     uint64_t n_udp_processed;
     uint64_t n_tcp_processed;
     uint64_t n_icmp_processed;
+    uint64_t n_icmp6_processed;
+    uint64_t n_macsec_processed;
+    uint64_t n_pppoe_processed;
     uint64_t n_ipv4_chksum_errors;
     uint64_t n_icmp_chksum_errors;
 
@@ -50,6 +53,9 @@ struct firewall_intf_stats {
                     n_udp_processed(0),
                     n_tcp_processed(0),
                     n_icmp_processed(0),
+                    n_icmp6_processed(0),
+                    n_macsec_processed(0),
+                    n_pppoe_processed(0),
                     n_ipv4_chksum_errors(0),
                     n_icmp_chksum_errors(0)
     { }
@@ -66,6 +72,9 @@ enum class Pktstats_Type {
     Type_UDP_Rx,
     Type_TCP_Rx,
     Type_ICMP_Rx,
+    Type_ICMP6_Rx,
+    Type_MACsec_Rx,
+    Type_PPPOE_Rx,
     Type_Deny,
     Type_Allowed,
     Type_Events,
@@ -76,7 +85,7 @@ enum class Pktstats_Type {
 */
 class firewall_pkt_stats {
     public:
-        static firewall_pkt_stats *instance() 
+        static firewall_pkt_stats *instance() noexcept
         {
             static firewall_pkt_stats stats;
             return &stats;
@@ -89,7 +98,7 @@ class firewall_pkt_stats {
          * @param [in] ifname - interface name
         */
         void stats_update(event_description evt_desc,
-                          const std::string &ifname);
+                          const std::string &ifname) noexcept;
 
         /**
          * @brief - update the stats based on the counters.

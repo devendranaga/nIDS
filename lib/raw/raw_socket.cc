@@ -4,6 +4,7 @@
  * @copyright - All rights reserved. Devendra Naga.
 */
 #include <iostream>
+#include <cstring>
 #include <stdexcept>
 #include <stdint.h>
 #include <string.h>
@@ -36,18 +37,18 @@ raw_socket::raw_socket(const std::string devname, uint16_t ethertype):
     struct ifreq req;
 
     // get interface flags for promisc
-    memset(&req, 0, sizeof(struct ifreq));
+    std::memset(&req, 0, sizeof(struct ifreq));
     strcpy(req.ifr_name, devname.c_str());
     ret = ioctl(fd_, SIOCGIFFLAGS, &req);
     ERR_ON_SYSCALL(ret, 0, "failed to SIOCGIFFLAGS");
-    
+
     // set promisc
     req.ifr_flags |= IFF_PROMISC;
     ret = ioctl(fd_, SIOCSIFFLAGS, &req);
     ERR_ON_SYSCALL(ret, 0, "failed to SIOCSIFFLAGS");
 
     // get hardware address for transmit packet
-    memset(&req, 0, sizeof(struct ifreq));
+    std::memset(&req, 0, sizeof(struct ifreq));
     strcpy(req.ifr_name, devname.c_str());
     ret = ioctl(fd_, SIOCGIFHWADDR, &req);
     ERR_ON_SYSCALL(ret, 0, "failed to SIOCGIFHWADDR");
@@ -59,7 +60,7 @@ raw_socket::raw_socket(const std::string devname, uint16_t ethertype):
     devmac_[4] = ((uint8_t *)&req.ifr_hwaddr.sa_data)[4];
     devmac_[5] = ((uint8_t *)&req.ifr_hwaddr.sa_data)[5];
 
-    memset(&req, 0, sizeof(req));
+    std::memset(&req, 0, sizeof(req));
     strcpy(req.ifr_name, devname.c_str());
     ret = ioctl(fd_, SIOCGIFINDEX, &req);
     if (ret < 0) {
@@ -81,7 +82,7 @@ raw_socket::raw_socket(const std::string devname, uint16_t ethertype):
     // the bind is required to receive packets to and from the specific interface
     //
     // without this the packets will be received from every single interface
-    memset(&lladdr, 0, sizeof(lladdr));
+    std::memset(&lladdr, 0, sizeof(lladdr));
     lladdr.sll_ifindex = req.ifr_ifindex;
     lladdr.sll_protocol = htons(ETH_P_ALL);
     lladdr.sll_family = AF_PACKET;
@@ -97,13 +98,13 @@ raw_socket::~raw_socket()
         struct ifreq req;
 
         // get  promisc
-        memset(&req, 0, sizeof(struct ifreq));
+        std::memset(&req, 0, sizeof(struct ifreq));
         strcpy(req.ifr_name, dev_.c_str());
         ret = ioctl(fd_, SIOCGIFFLAGS, &req);
-        if (ret < 0) { 
+        if (ret < 0) {
             return;
         }
-    
+
         // disable promisc
         req.ifr_flags ^= IFF_PROMISC;
         ret = ioctl(fd_, SIOCSIFFLAGS, &req);
@@ -128,7 +129,7 @@ int raw_socket::send_msg(uint8_t *mac, uint16_t ethertype, uint8_t *data, size_t
     char txbuf[1500];
     int txlen = sizeof(*eth);
 
-    memset(txbuf, 0, sizeof(txbuf));
+    std::memset(txbuf, 0, sizeof(txbuf));
 
     eth = (struct ether_header *) txbuf;
     eth->ether_shost[0] = devmac_[0];
@@ -147,7 +148,7 @@ int raw_socket::send_msg(uint8_t *mac, uint16_t ethertype, uint8_t *data, size_t
 
     eth->ether_type = htons(ethertype);
 
-    memset(&lladdr, 0, sizeof(lladdr));
+    std::memset(&lladdr, 0, sizeof(lladdr));
     lladdr.sll_ifindex = ifindex_;
     lladdr.sll_halen = ETH_ALEN;
     lladdr.sll_addr[0] = mac[0];
@@ -233,3 +234,4 @@ int raw_socket::recv_msg(uint8_t *mac, uint8_t *data, size_t data_size) noexcept
 }
 
 }
+

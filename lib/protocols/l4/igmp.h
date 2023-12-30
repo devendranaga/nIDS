@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements IGMP serialize and deserialize.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_LIB_PROTOCOLS_L4_IGMP_H__
 #define __FW_LIB_PROTOCOLS_L4_IGMP_H__
 
@@ -108,6 +113,10 @@ struct igmp_group_record {
         log->verbose("\t\t }\n");
     #endif
     }
+};
+
+struct igmp_membership_report_v2 {
+    int serialize(packet &p);
 };
 
 struct igmp_membership_report {

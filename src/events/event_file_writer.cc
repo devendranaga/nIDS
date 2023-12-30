@@ -1,5 +1,5 @@
 /**
- * @brief - Writes event logs to disk
+ * @brief - Writes event logs to disk.
  *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */

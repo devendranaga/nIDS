@@ -1,6 +1,6 @@
 /**
  * @brief - Implements TCP serialize and deserialize.
- * 
+ *
  * @copyright - 2023-present. Devendra Naga. All rights reserved.
 */
 #ifndef __FW_LIB_PROTOCOLS_L4_TCP_H__
@@ -140,7 +140,14 @@ struct tcp_hdr {
     ~tcp_hdr() { }
 
     int serialize(packet &p);
-    bool has_opts() { return opts != nullptr; }
+
+    /**
+     * @brief - returns if tcp has options.
+     * 
+     * @return true if tcp has options.
+     *         false if tcp does not have options.
+    */
+    bool has_opts() const noexcept { return opts != nullptr; }
     /**
      * @brief - deserialize TCP header.
      *
@@ -157,7 +164,7 @@ struct tcp_hdr {
      *
      * @param [in] log - logger
     */
-    void print(logger *log);
+    void print(logger *log) const noexcept;
 
     private:
         event_description check_flags();

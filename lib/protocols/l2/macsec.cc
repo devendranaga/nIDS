@@ -1,6 +1,6 @@
 /**
  * @brief - implements IEEE 802.1AE MACsec serialize and deserialize.
- * 
+ *
  * @copyright - 2023-present. Devendra Naga. All rights reserved.
 */
 #include <macsec.h>
@@ -28,9 +28,11 @@ int ieee8021ae_hdr::serialize(packet &p)
         p.serialize(sci.port_id);
     }
 
-    if (data) {
+    //
+    // if there is a data available, copy it
+    if (data)
         p.serialize(data, data_len);
-    }
+
     p.serialize(icv, MACSEC_ICV_LEN);
 
     return 0;
@@ -86,9 +88,9 @@ event_description ieee8021ae_hdr::deserialize(packet &p, logger *log, bool debug
     } else {
         data_len = p.remaining_len() - MACSEC_ICV_LEN;
         data = (uint8_t *)calloc(1, data_len);
-        if (!data) {
-            return event_description::Evt_Unknown_Error;
-        }
+        if (!data)
+            return event_description::Evt_Out_Of_Memory;
+
         p.deserialize(data, data_len);
     }
 

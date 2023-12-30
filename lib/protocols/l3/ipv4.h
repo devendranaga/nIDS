@@ -255,7 +255,7 @@ struct ipv4_hdr {
     // 6 in 4
     std::shared_ptr<ipv6_hdr> ipv6_in_ipv4;
 
-    protocols_types get_protocol();
+    protocols_types get_protocol() const noexcept;
 
     explicit ipv4_hdr() :
                 start_off(0),

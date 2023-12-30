@@ -30,6 +30,8 @@ struct ieee8021ad_hdr {
      * @param [in] p - packet
      * @param [in] log - logger
      * @param [in] debug - debug
+     *
+     * @return event_description.
     */
     event_description deserialize(packet &p, logger *log, bool debug);
 
@@ -38,7 +40,7 @@ struct ieee8021ad_hdr {
      *
      * @return return the ethertype.
     */
-    inline Ether_Type get_ethertype()
+    inline Ether_Type get_ethertype() const
     { return static_cast<Ether_Type>(ethertype); }
 
     /**

@@ -1,7 +1,7 @@
 [
     {
         "rule_name": "allow_ipv4",
-        "rule_id": 10000,
+        "rule_id": 100000,
         "rule_type": "allow",
         "from_src": "00:11:22:33:44:55",
         "to_dst": "11:22:33:44:55:66",
@@ -9,7 +9,7 @@
     },
     {
         "rule_name": "allow_vlan",
-        "rule_id": 10001,
+        "rule_id": 100001,
         "rule_type": "deny",
         "ethertype": "0x8100",
         "vlan": {
@@ -19,13 +19,13 @@
     },
     {
         "rule_name": "deny_arps",
-        "rule_id": 10002,
+        "rule_id": 100002,
         "rule_type": "deny",
         "ethertype": "0x0806"
     },
     {
         "rule_name": "deny_ipv4_with_options",
-        "rule_id": 10003,
+        "rule_id": 100003,
         "rule_type": "deny",
         "ipv4": {
             "check_options": true
@@ -33,7 +33,7 @@
     },
     {
         "rule_name": "deny_ipv4_proto_icmp",
-        "rule_id": 10004,
+        "rule_id": 100004,
         "rule_type": "deny",
         "ipv4": {
             "protocol": "icmp"
@@ -41,7 +41,7 @@
     },
     {
         "rule_name": "deny_icmps_with_payload",
-        "rule_id": 10005,
+        "rule_id": 100005,
         "rule_type": "deny",
         "protocol": "icmp",
         "icmp": {
@@ -50,7 +50,7 @@
     },
     {
         "rule_name": "allow someip frames on this port",
-        "rule_id": 10006,
+        "rule_id": 100006,
         "rule_type": "allow",
         "protocol": "udp",
         "udp": {
@@ -61,7 +61,7 @@
     },
     {
         "rule_name": "filter someip frames with service and method id",
-        "rule_id": 10007,
+        "rule_id": 100007,
         "rule_type": "allow",
         "someip": {
             "service_id": "0x1000",
@@ -70,15 +70,28 @@
     },
     {
         "rule_name": "deny all ports except the below ones",
-        "rule_id": 10008,
+        "rule_id": 100008,
         "rule_type": "allow",
         "port_list": [ 80, 443, 22]
     },
     {
         "rule_name": "allow only these below port ranges",
-        "rule_id": 10009,
+        "rule_id": 100009,
         "rule_type": "allow",
         "port_range": "4000-4500"
+    },
+    {
+        "rule_name": "allow only following protocols",
+        "rule_id": 100010,
+        "rule_type": "allow",
+        "protocol_list": [ 1, 11, 17 ]
+    },
+    {
+        "rule_name": "deny double tagged VLANs",
+        "rule_id": 100011,
+        "rule_type": "deny",
+        "ethertype": "0x8100",
+        "ethertype_next": "0x8100"
     }
 ]
 

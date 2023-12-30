@@ -226,6 +226,9 @@ const static struct {
         rule_ids::Rule_Id_IPv4_Total_Len_Smaller_Than_Hdr_Len,
         "IPv4 total length is smaller than header length"
     },
+
+    //
+    // IPsec rules
     {
         event_description::Evt_IPSec_AH_Inval_Len,
         Event_Confidence::Full,
@@ -667,11 +670,28 @@ const static struct {
         "802.1AD Invalid Header Length",
     },
 
+    //
+    // GRE rules
     {
         event_description::Evt_Gre_Invalid_Hdr_Len,
         Event_Confidence::Full,
         rule_ids::Rule_Id_Gre_Invalid_Hdr_Len,
         "Gre Invalid Header Length",
+    },
+
+    //
+    // VRRP rules
+    {
+        event_description::Evt_VRRP_Invalid_Hdr_Len,
+        Event_Confidence::Full,
+        rule_ids::Rule_Id_VRRP_Invalid_Hdr_Len,
+        "VRRP Invalid Header Length",
+    },
+    {
+        event_description::Evt_VRRP_Invalid_V2_Hdr_Len,
+        Event_Confidence::Full,
+        rule_ids::Rule_Id_VRRP_Invalid_V2_Hdr_Len,
+        "VRRP Invalid V2 Header Length",
     },
 
     //

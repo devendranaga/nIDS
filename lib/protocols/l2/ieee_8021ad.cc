@@ -7,6 +7,8 @@
 
 namespace firewall {
 
+//
+// reserved VLANs
 const uint16_t reserved_vlan_ids[] = { 0, 4095 };
 
 event_description

@@ -96,15 +96,17 @@ event_description icmp_dest_unreachable::parse(packet &p, logger *log, bool debu
 {
     event_description evt_desc;
 
-    p.deserialize(reserved);
+    p.deserialize(unused);
+    p.deserialize(length);
+    p.deserialize(next_hop_mtu);
+
     ipv4_h = std::make_shared<ipv4_hdr>();
     if (!ipv4_h)
         return event_description::Evt_Out_Of_Memory;
 
     evt_desc = ipv4_h->deserialize(p, log, debug);
-    if (evt_desc != event_description::Evt_Parse_Ok) {
+    if (evt_desc != event_description::Evt_Parse_Ok)
         return evt_desc;
-    }
 
     std::memcpy(original_datagram, &p.buf[p.off], p.remaining_len());
 
@@ -460,7 +462,9 @@ void icmp_dest_unreachable::print(const std::string str, logger *log)
 {
 #if defined(FW_ENABLE_DEBUG)
     log->verbose("\t %s: {\n", str.c_str());
-    log->verbose("\t\t reserved: %d\n", reserved);
+    log->verbose("\t\t unused: %d\n", unused);
+    log->verbose("\t\t length: %d\n", length);
+    log->verbose("\t\t next_hop_mtu: %d\n", next_hop_mtu);
     if (ipv4_h)
         ipv4_h->print(log);
     log->verbose("\t\t original datagram: "

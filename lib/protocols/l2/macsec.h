@@ -74,7 +74,7 @@ struct ieee8021ae_hdr {
     int serialize(packet &p);
     /**
      * @brief - implements ARP deserialization.
-     * 
+     *
      * @param [in] p packet frame.
      * @return returns event_description type.
     */
@@ -113,13 +113,15 @@ struct ieee8021ae_hdr {
         log->verbose("}\n");
     #endif
     }
-    bool is_an_encrypted_frame() { return tci.e && tci.c; }
-    bool is_an_authenticated_frame() { return (tci.e == 0) && (tci.c == 0); }
+    bool is_an_encrypted_frame() const { return tci.e && tci.c; }
+    bool is_an_authenticated_frame() const { return (tci.e == 0) && (tci.c == 0); }
     Ether_Type get_ethertype()
     {
-        if (is_an_authenticated_frame()) {
+        //
+        // ethertype gets encrypted too unless we see it as
+        // an authenticated frame.
+        if (is_an_authenticated_frame())
             return static_cast<Ether_Type>(ethertype);
-        }
 
         return Ether_Type::Ether_Type_Unknown;
     }

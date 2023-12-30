@@ -1,6 +1,6 @@
 /**
  * @brief - Implements ARP serialize and deserialize.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #ifndef __FW_PROTOCOLS_ARP_H__
@@ -63,7 +63,7 @@ struct arp_hdr {
     int serialize(packet &p);
     /**
      * @brief - implements ARP deserialization.
-     * 
+     *
      * @param [in] p packet frame.
      * @return returns event_description type.
     */

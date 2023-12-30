@@ -1,3 +1,8 @@
+/**
+ * @brief - Implements VRRP serialize and deserialize.
+ *
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #ifndef __FW_LIB_PROTOCOLS_L4_VRRP_H__
 #define __FW_LIB_PROTOCOLS_L4_VRRP_H__
 
@@ -7,6 +12,9 @@
 
 namespace firewall {
 
+/**
+ * @brief - Implements VRRP V2 header.
+ */
 struct vrrp_v2_hdr {
     uint8_t virtual_router_id;
     uint8_t priority;
@@ -17,6 +25,16 @@ struct vrrp_v2_hdr {
     uint32_t ipaddr;
 
     int serialize(packet &p);
+
+    /**
+     * @brief - deserialize VRRP V2 header.
+     *
+     * @param [in] p - packet.
+     * @param [in] log - logger.
+     * @param [in] debug - debug.
+     *
+     * @return event_description.
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log)
     {
@@ -34,6 +52,9 @@ struct vrrp_v2_hdr {
     }
 };
 
+/**
+ * @brief - Describes VRRP header serialization and deserialization.
+*/
 struct vrrp_hdr {
     uint8_t version;
     uint8_t pkt_type;
@@ -43,6 +64,15 @@ struct vrrp_hdr {
     } opt;
 
     int serialize(packet &p);
+    /**
+     * @brief - deserialize VRRP header.
+     *
+     * @param [in] p - packet.
+     * @param [in] log - logger.
+     * @param [in] debug - debug.
+     *
+     * @return event_description.
+    */
     event_description deserialize(packet &p, logger *log, bool debug = false);
     void print(logger *log)
     {
@@ -57,6 +87,10 @@ struct vrrp_hdr {
         log->verbose("}\n");
     #endif
     }
+
+    private:
+        const int min_hdr_len_ = 1;
+        const int min_hdr_len_v2_ = 11;
 };
 
 }

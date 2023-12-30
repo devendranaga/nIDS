@@ -115,6 +115,14 @@ struct port_rule_config {
     void print(logger *log);
 };
 
+struct protocol_rule_config {
+    std::vector<uint16_t> protocol_list;
+
+    explicit protocol_rule_config() { }
+    ~protocol_rule_config() { }
+    void print(logger *log);
+};
+
 struct eth_sig_bitmask {
     uint32_t from_src:1;
     uint32_t to_dst:1;
@@ -200,6 +208,16 @@ struct port_list_sig_bitmask {
     void init();
 };
 
+struct protocol_list_sig_bitmask {
+    uint32_t protocol_list:1;
+
+    explicit protocol_list_sig_bitmask() :
+                    protocol_list(0) { }
+    ~protocol_list_sig_bitmask() { }
+
+    void init();
+};
+
 struct signature_id_bitmask {
     eth_sig_bitmask eth_sig;
     vlan_sig_bitmask vlan_sig;
@@ -208,6 +226,7 @@ struct signature_id_bitmask {
     udp_sig_bitmask udp_sig;
     someip_sig_bitmask someip_sig;
     port_list_sig_bitmask port_list_sig;
+    protocol_list_sig_bitmask protocol_list_sig;
 
     explicit signature_id_bitmask() { }
     ~signature_id_bitmask() { }
@@ -222,6 +241,10 @@ struct signature_id_bitmask {
     void print(logger *log);
 };
 
+/**
+ * @brief - defines an enclosed rule configuration structure holds
+ *          information about each rule item.
+*/
 struct rule_config_item {
     std::string rule_name;
     uint32_t rule_id;
@@ -233,6 +256,7 @@ struct rule_config_item {
     udp_rule_config udp_rule;
     someip_rule_config someip_rule;
     port_rule_config port_rule;
+    protocol_rule_config protocol_rule;
     signature_id_bitmask sig_mask;
     signature_id_bitmask sig_detected;
 
@@ -254,7 +278,10 @@ struct rule_config_item {
 struct rule_config {
     std::vector<rule_config_item> rules_cfg_;
 
-    static rule_config *instance()
+    /**
+     * @brief - get an instance of the rule_config.
+    */
+    static rule_config *instance() noexcept
     {
         static rule_config conf;
 
@@ -282,6 +309,7 @@ struct rule_config {
         void parse_udp_rule(Json::Value &it, rule_config_item &item);
         void parse_someip_rule(Json::Value &it, rule_config_item &item);
         void parse_port_rule(Json::Value &it, rule_config_item &item);
+        void parse_protocol_rule(Json::Value &it, rule_config_item &item);
 };
 
 }
