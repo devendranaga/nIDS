@@ -80,6 +80,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFW_ENABLE_AUTOMOTIVE")
 
 # General C++ flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wformat -Wno-unused-parameter -Wno-unused-function -g -ggdb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2 -DGLIBC_ASSERTIONS -fexceptions -fpie -Wl,-pie -fstack-clash-protection -fstack-protector-all -Wl,-z,defs -Wl,-z,now -Wl,-z,relro")
+
+# Linker flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-print-memory-usage -Wl,-Map=linker-map.map")
 
 add_library(packet_core ${LIB_SOURCES})
 
