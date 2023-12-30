@@ -8,7 +8,7 @@
 namespace firewall {
 
 void firewall_pkt_stats::stats_update(event_description evt_desc,
-                                      const std::string &ifname)
+                                      const std::string &ifname) noexcept
 {
     switch (evt_desc) {
         case event_description::Evt_IPV4_Hdr_Chksum_Invalid: {
@@ -50,6 +50,15 @@ void firewall_pkt_stats::stats_update(Pktstats_Type type,
         case Pktstats_Type::Type_ICMP_Rx: {
             stats_[ifname].n_icmp_processed ++;
         } break;
+        case Pktstats_Type::Type_ICMP6_Rx: {
+            stats_[ifname].n_icmp6_processed ++;
+        } break;
+        case Pktstats_Type::Type_MACsec_Rx: {
+            stats_[ifname].n_macsec_processed ++;
+        } break;
+        case Pktstats_Type::Type_PPPOE_Rx: {
+            stats_[ifname].n_pppoe_processed ++;
+        } break;
         case Pktstats_Type::Type_Deny: {
             stats_[ifname].n_deny ++;
         } break;
@@ -73,3 +82,4 @@ void firewall_pkt_stats::get(const std::string &ifname, firewall_intf_stats &if_
 }
 
 }
+

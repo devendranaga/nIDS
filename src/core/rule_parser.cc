@@ -383,6 +383,7 @@ void signature_id_bitmask::init()
     icmp_sig.init();
     udp_sig.init();
     port_list_sig.init();
+    protocol_list_sig.init();
 }
 
 void eth_sig_bitmask::init()
@@ -424,6 +425,11 @@ void port_list_sig_bitmask::init()
 {
     port_list = 0;
     port_range = 0;
+}
+
+void protocol_list_sig_bitmask::init()
+{
+    protocol_list = 0;
 }
 
 }

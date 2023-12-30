@@ -102,7 +102,9 @@ struct icmp_echo_reply {
 };
 
 struct icmp_dest_unreachable {
-    uint32_t reserved;
+    uint8_t unused;
+    uint8_t length;
+    uint16_t next_hop_mtu;
     std::shared_ptr<ipv4_hdr> ipv4_h; // IPv4 header
     uint8_t original_datagram[8]; // 8 bytes of the datagram of ip->protocol
 

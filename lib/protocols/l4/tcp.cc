@@ -90,7 +90,7 @@ event_description tcp_hdr::deserialize(packet &p, logger *log, bool debug)
     return event_description::Evt_Parse_Ok;
 }
 
-void tcp_hdr::print(logger *log)
+void tcp_hdr::print(logger *log) const noexcept
 {
 #if defined(FW_ENABLE_DEBUG)
     log->verbose("TCP: {\n");

@@ -191,6 +191,11 @@ enum class rule_ids : uint32_t {
     Rule_Id_Gre_Invalid_Hdr_Len = 2301,
 
     //
+    // VRRP Rule Ids
+    Rule_Id_VRRP_Invalid_Hdr_Len = 2401,
+    Rule_Id_VRRP_Invalid_V2_Hdr_Len = 2402,
+
+    //
     // Known Malware / Virus / Explit Rule Ids
     Rule_Id_Known_Exploit_Win32_Blaster = 10001,
 
@@ -378,6 +383,11 @@ enum class event_description : uint32_t {
     //
     // Gre events
     Evt_Gre_Invalid_Hdr_Len = 2301,
+
+    //
+    // VRRP events
+    Evt_VRRP_Invalid_Hdr_Len = 2401,
+    Evt_VRRP_Invalid_V2_Hdr_Len = 2402,
 
     //
     // Known virus / exploit / worm / malware events

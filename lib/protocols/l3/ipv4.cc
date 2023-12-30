@@ -8,7 +8,7 @@
 
 namespace firewall {
 
-protocols_types ipv4_hdr::get_protocol()
+protocols_types ipv4_hdr::get_protocol() const noexcept
 {
     //
     // IP in IP tunnel
