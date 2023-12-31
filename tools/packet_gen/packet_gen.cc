@@ -72,10 +72,10 @@ void packet_gen::run_arp_replay()
     log_->info("starting ARP replay\n");
 
     std::memcpy(eh.src_mac,
-                conf_->arp_conf.arp_h.sender_hw_addr,
+                conf_->eth_conf.src_mac,
                 FW_MACADDR_LEN);
     std::memcpy(eh.dst_mac,
-                conf_->arp_conf.arp_h.target_hw_addr,
+                conf_->eth_conf.dst_mac,
                 FW_MACADDR_LEN);
     eh.ethertype = static_cast<uint16_t>(Ether_Type::Ether_Type_ARP);
 
@@ -181,8 +181,8 @@ int packet_gen::make_ipv4_packet(packet &p, int count)
 
     ipv4_h.ttl = ttl;
     ipv4_h.protocol = conf_->ipv4_conf.protocol;
-    ipv4_h.src_addr = ntohl(conf_->ipv4_conf.src_ipaddr);
-    ipv4_h.dst_addr = ntohl(conf_->ipv4_conf.dest_ipaddr);
+    ipv4_h.src_addr = conf_->ipv4_conf.src_ipaddr;
+    ipv4_h.dst_addr = conf_->ipv4_conf.dest_ipaddr;
     ret = ipv4_h.serialize(p);
     if (ret < 0) {
         log_->error("failed to serialize ipv4 packet\n");

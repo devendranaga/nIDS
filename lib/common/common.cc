@@ -112,7 +112,7 @@ int parse_str_to_ipv4_addr(const std::string &v, uint32_t &ipaddr)
         return -1;
     }
 
-    ipaddr = (ip_4) + (ip_3 << 8) + (ip_2 << 16) + (ip_1 << 24);
+    ipaddr = (ip_4 << 24) + (ip_3 << 16) + (ip_2 << 8) + (ip_1);
     return 0;
 }
 

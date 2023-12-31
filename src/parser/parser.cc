@@ -20,7 +20,7 @@ parser::parser(const std::string ifname,
                         ifname_(ifname),
                         rule_list_(rule_list),
                         log_(log),
-                        pkt_dump_(true)
+                        pkt_dump_(false)
 {
 }
 parser::~parser() { }

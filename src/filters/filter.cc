@@ -25,7 +25,7 @@ fw_error_type filter::init()
 
     log->info("filter: parsed tunables config\n");
 
-    arp_f->init();
+    arp_f->init(log);
     icmp_f->init();
     port_f->init();
 
