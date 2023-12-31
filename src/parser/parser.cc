@@ -126,6 +126,10 @@ tun_parse:
         case protocols_types::Protocol_Icmp6: {
             present_bits.icmp6 = 1;
 
+            //
+            // update icmp6 rx stats
+            stats->stats_update(Pktstats_Type::Type_ICMP6_Rx, ifname_);
+
             evt_desc = icmp6_h.deserialize(pkt, log_, pkt_dump_);
             if (evt_desc == event_description::Evt_Parse_Ok)
                 protocols_avail.set_icmp6();
@@ -167,7 +171,7 @@ tun_parse:
                 protocols_avail.set_vrrp();
         } break;
         default:
-            evt_desc = event_description::Evt_Unknown_Error;
+            evt_desc = event_description::Evt_Unknown_Protocol;
         break;
     }
 
@@ -342,6 +346,9 @@ int parser::run(packet &pkt)
     if (eh.has_ethertype_vlan() ||
         (ether == Ether_Type::Ether_Type_VLAN)) {
         present_bits.vlan = 1;
+
+        //
+        // update VLAN stats
         stats->stats_update(Pktstats_Type::Type_VLAN_Rx, ifname_);
 
         evt_desc = vh.deserialize(pkt, log_, pkt_dump_);
@@ -357,6 +364,10 @@ int parser::run(packet &pkt)
     // Parse macsec frame.
     if (ether == Ether_Type::Ether_Type_MACsec) {
         present_bits.macsec = 1;
+
+        //
+        // update MACsec stats
+        stats->stats_update(Pktstats_Type::Type_MACsec_Rx, ifname_);
 
         evt_desc = macsec_h.deserialize(pkt, log_, pkt_dump_);
         if (evt_desc != event_description::Evt_Parse_Ok) {

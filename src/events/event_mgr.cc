@@ -703,6 +703,15 @@ const static struct {
         "Suspected Win32.Blaster worm"
     },
 
+    //
+    // Unknown Protocol
+    {
+        event_description::Evt_Unknown_Protocol,
+        Event_Confidence::Full,
+        rule_ids::Rule_Id_Unknown_Protocol,
+        "Unknown Protocol"
+    },
+
     {
         event_description::Evt_Unknown_Error,
         //

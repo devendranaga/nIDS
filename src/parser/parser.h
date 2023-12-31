@@ -125,7 +125,18 @@ struct protocol_bits {
         void set_gre() { gre = 1; }
         void set_vrrp() { vrrp = 1; }
         void set_tftp() { tftp = 1; }
+        /**
+         * @brief - Has the packet contain ethernet ?
+         *
+         * @return true on success false on failure.
+        */
         bool has_eth() const { return eth == 1; }
+
+        /**
+         * @brief - Has the packet contain macsec ?
+         *
+         * @return true on success false on failure.
+        */
         bool has_macsec() const { return macsec == 1; }
         /**
          * @brief - Has the parser found an ipv4 packet ?
@@ -195,6 +206,11 @@ struct protocol_bits {
         uint32_t tftp:1;
 };
 
+/**
+ * @brief - defines what has been detected, it could be that the parsing
+ *          might have failed and protocol_bits represent successfully
+ *          parsed packets.
+*/
 struct protocol_present_bits {
     uint32_t eth:1;
     uint32_t vlan:1;

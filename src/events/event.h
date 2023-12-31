@@ -27,6 +27,8 @@ struct event {
     uint16_t ethertype;
     uint32_t src_addr;
     uint32_t dst_addr;
+    uint8_t src_addr6[16];
+    uint8_t dst_addr6[16];
     uint8_t ttl;
     uint32_t protocol;
     uint32_t src_port;
@@ -37,6 +39,9 @@ struct event {
                        evt_details(event_description::Evt_Unknown_Error),
                        rule_id(0),
                        ethertype(0),
+                       src_addr(0),
+                       dst_addr(0),
+                       ttl(0),
                        protocol(0),
                        src_port(0),
                        dst_port(0),
@@ -44,6 +49,8 @@ struct event {
     {
         std::memset(src_mac, 0, sizeof(src_mac));
         std::memset(dst_mac, 0, sizeof(dst_mac));
+        std::memset(src_addr6, 0, sizeof(src_addr6));
+        std::memset(dst_addr6, 0, sizeof(dst_addr6));
     }
     ~event() { }
 };

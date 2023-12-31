@@ -119,6 +119,9 @@ struct igmp_membership_report_v2 {
     int serialize(packet &p);
 };
 
+/**
+ * @brief - Implements Membership Report V3.
+ */
 struct igmp_membership_report {
     uint16_t reserved;
     uint16_t num_groups;
@@ -132,7 +135,7 @@ struct igmp_membership_report {
      * @param [inout] p - packet
      * @param [in] log - logger
      * @param [in] debug - debug print
-     * 
+     *
      * @return returns the event description after parsing the frame.
     */
     event_description deserialize(packet &p, logger *log, bool debug = false);

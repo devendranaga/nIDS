@@ -199,6 +199,8 @@ enum class rule_ids : uint32_t {
     // Known Malware / Virus / Explit Rule Ids
     Rule_Id_Known_Exploit_Win32_Blaster = 10001,
 
+    Rule_Id_Unknown_Protocol = 40001,
+
     Rule_Id_Unknown,
 };
 
@@ -393,6 +395,7 @@ enum class event_description : uint32_t {
     // Known virus / exploit / worm / malware events
     Evt_Known_Exploit_Win32_Blaster = 10000,
     Evt_Unknown_Port,
+    Evt_Unknown_Protocol,
     Evt_Unknown_Error,
 
     //
