@@ -1,7 +1,15 @@
+/**
+ * @brief - Implements ethertype function map.
+ * 
+ * @copyright - 2023-present. Devendra Naga. All rights reserved.
+*/
 #include <ether_types.h>
 
 namespace firewall {
 
+/**
+ * @brief - defines a map of ethertypes to string.
+*/
 const struct {
     Ether_Type ethertype;
     const std::string str;

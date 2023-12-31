@@ -29,6 +29,13 @@ enum class protocols_types {
     Protocol_Max,
 };
 
+/**
+ * @brief - returns a string of protocol type.
+ *
+ * @param [in] protocol - protocol.
+ *
+ * @return returns string version of protocol.
+*/
 const std::string get_protocol_str(protocols_types protocol);
 
 }

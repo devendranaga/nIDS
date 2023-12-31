@@ -36,15 +36,29 @@ enum class event_hash_algorithm {
     SHA256,
 };
 
+/**
+ * @brief - upload method for events.
+ */
 enum class Event_Upload_Method_Type {
     None,
     MQTT,
+    UDP,
+    Local_UNIX,
 };
 
 struct firewall_event_upload_mqtt {
     std::string ipaddr;
     uint32_t port;
     std::string topic_name;
+};
+
+struct firewall_event_udp_config {
+    std::string ipaddr;
+    uint32_t port;
+};
+
+struct firewall_event_local_unix_config {
+    std::string path;
 };
 
 /**
@@ -63,6 +77,8 @@ struct firewall_event_info_config {
     event_encryption_algorithm enc_alg;
     Event_Upload_Method_Type upload_method;
     firewall_event_upload_mqtt mqtt;
+    firewall_event_udp_config udp_config;
+    firewall_event_local_unix_config local_unix_config;
 };
 
 struct firewall_debugging {

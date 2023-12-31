@@ -27,6 +27,13 @@ enum class Ether_Type : uint16_t {
     Ether_Type_Unknown   = 0xFFFF,
 };
 
+/**
+ * @brief - Map ethertype value to string.
+ *
+ * @param [in] type - ethertype.
+ *
+ * @return ethertype string.
+*/
 const std::string ethertype_to_str(Ether_Type type);
 
 }
