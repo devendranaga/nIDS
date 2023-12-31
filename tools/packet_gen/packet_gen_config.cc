@@ -1,8 +1,9 @@
 /**
  * @brief - implements packet_gen configuration.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
+#include <arpa/inet.h>
 #include <fstream>
 #include <packet_gen_config.h>
 

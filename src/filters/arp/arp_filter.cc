@@ -18,40 +18,43 @@ event_description arp_filter::add_arp_frame(parser &p)
         std::unique_lock<std::mutex> lock(lock_);
 
         for (it = arp_table_.begin(); it != arp_table_.end(); it ++) {
-            if (std::memcmp(it->mac, p.arp_h.sender_hw_addr, FW_MACADDR_LEN) == 0) {
+            //
+            // we already have sender's mac in our table.
+            //
+            // the packet could be arp req or reply. sender's mac gets swapped in reply
+            // into target_hw_addr.
+            if ((std::memcmp(it->sender_mac, p.arp_h.sender_hw_addr, FW_MACADDR_LEN) == 0) ||
+                 (std::memcmp(it->sender_mac, p.arp_h.target_hw_addr, FW_MACADDR_LEN) == 0)) {
                 new_arp_entry = false;
                 break;
             }
         }
 
         if (new_arp_entry) {
-            arp_entry arp_e;
+            arp_entry arp_e(p.arp_h.sender_hw_addr,
+                            p.arp_h.target_hw_addr,
+                            p.arp_h.sender_proto_addr,
+                            p.arp_h.target_proto_addr);
 
-            std::memcpy(arp_e.mac, p.arp_h.sender_hw_addr, FW_MACADDR_LEN);
-            arp_e.ipaddr = p.arp_h.sender_proto_addr;
-            arp_e.state = Arp_State::Unknown;
-            clock_gettime(CLOCK_MONOTONIC, &arp_e.last_seen);
-
+            //
+            // if ARP Request is received set it
             if (p.arp_h.operation == static_cast<uint16_t>(Arp_Operation::Request)) {
                 arp_e.state = Arp_State::Req;
             }
             arp_table_.push_back(arp_e);
         } else {
-            struct timespec cur;
-            double delta_nsec;
-
-            clock_gettime(CLOCK_MONOTONIC, &cur);
-            delta_nsec = diff_timespec(&cur, &it->last_seen);
             //
-            // check if the received / sent ARP frame is within the gap
-            // of the interframe space
-            if ((delta_nsec / 1000000.0) <
-                 filter_conf_.inter_frame_gap_from_same_mac_msec) {
-                it->last_seen = cur;
-                return event_description::Evt_ARP_Flood_Maybe_In_Progress;
+            // ARP table entry is updated to resolved.
+            if (p.arp_h.operation == static_cast<uint16_t>(Arp_Operation::Reply)) {
+                std::memcpy(it->target_mac, p.arp_h.sender_hw_addr, FW_MACADDR_LEN);
+                it->target_ipaddr = p.arp_h.sender_proto_addr;
+                it->state = Arp_State::Resp;
+                it->resolved = true;
             }
         }
     }
+
+    print_arp_table(log_);
 
     return event_description::Evt_Parse_Ok;
 }
