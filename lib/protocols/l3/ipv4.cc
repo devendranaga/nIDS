@@ -324,6 +324,12 @@ void ipv4_hdr::print(logger *log)
     log->verbose("\t dst_addr: %u (%s)\n", dst_addr, ipaddr_str.c_str());
     log->verbose("\t options: {\n");
     opt.print(log);
+    if (ipip)
+        ipip->print(log);
+
+    if (ipv6_in_ipv4)
+        ipv6_in_ipv4->print(log);
+
     log->verbose("\t }\n");
     log->verbose("}\n");
 #endif

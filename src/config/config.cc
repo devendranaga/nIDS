@@ -83,6 +83,15 @@ fw_error_type firewall_config::parse(const std::string config_file)
         evt_config.mqtt.ipaddr = root["events"]["mqtt_config"]["ip"].asString();
         evt_config.mqtt.port = root["events"]["mqtt_config"]["port"].asUInt();
         evt_config.mqtt.topic_name = root["events"]["mqtt_config"]["topic_name"].asString();
+    } else if (evt_upload_method == "udp") {
+        evt_config.upload_method = Event_Upload_Method_Type::UDP;
+
+        evt_config.udp_config.ipaddr = root["events"]["udp_config"]["ip"].asString();
+        evt_config.udp_config.port = root["events"]["udp_config"]["port"].asUInt();
+    } else if (evt_upload_method == "local_unix") {
+        evt_config.upload_method = Event_Upload_Method_Type::Local_UNIX;
+
+        evt_config.local_unix_config.path = root["events"]["local_unix_config"]["path"].asString();
     }
 
     return fw_error_type::eNo_Error;

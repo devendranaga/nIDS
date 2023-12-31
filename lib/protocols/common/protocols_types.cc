@@ -8,6 +8,9 @@
 
 namespace firewall {
 
+/**
+ * @brief - Defines a map of protocols to strings.
+*/
 static const struct {
     protocols_types type;
     std::string str;
