@@ -1,4 +1,7 @@
 {
+    "arp": {
+        "interframe_gap_msec": 2
+    },
     "ipv4": {
         "ip_blacklist_interval_ms": 20000,
         "ip_abuse_count_threshold": 3

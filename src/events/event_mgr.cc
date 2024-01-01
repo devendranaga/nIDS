@@ -80,6 +80,12 @@ const static struct {
         "ARP protocol address length invalid"
     },
     {
+        event_description::Evt_ARP_Flood_Maybe_In_Progress,
+        Event_Confidence::Full,
+        rule_ids::Rule_Id_ARP_Flood_Maybe_In_Progress,
+        "ARP Flood may be in progress"
+    },
+    {
         event_description::Evt_ARP_Inval_Operation,
         Event_Confidence::Full,
         rule_ids::Rule_Id_ARP_Inval_Operation,

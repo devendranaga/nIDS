@@ -14,7 +14,7 @@
         "enable": false,
         "spoof_mode": true,
         "hwtype": 1,
-        "protocol_type": "0x088E5",
+        "protocol_type": "0x08000",
         "hw_size": 6,
         "protocol_size": 4,
         "opcode": 1,

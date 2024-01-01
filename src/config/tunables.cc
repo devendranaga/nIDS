@@ -17,6 +17,8 @@ int tunables::parse(const std::string &config)
 
     cfg_data >> root;
 
+    arp_t.interframe_gap_msec = root["arp"]["interframe_gap_msec"].asUInt();
+
     ipv4_t.ip_blacklist_intvl_ms = root["ipv4"]["ip_blacklist_interval_ms"].asUInt();
 
     icmp_t.max_pkt_len_bytes = root["icmp"]["max_pkt_len_bytes"].asUInt();
