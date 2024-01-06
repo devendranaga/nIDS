@@ -51,10 +51,22 @@ event_description arp_filter::add_arp_frame(parser &p)
                 it->state = Arp_State::Resp;
                 it->resolved = true;
             }
+
+            tunables *t_conf = tunables::instance();
+            timespec cur;
+            double delta;
+
+            clock_gettime(CLOCK_MONOTONIC, &cur);
+            delta = diff_time_ns(&cur, &it->last_seen) / 1000000;
+
+            it->last_seen = cur;
+
+            if (delta < t_conf->arp_t.interframe_gap_msec)
+                return event_description::Evt_ARP_Flood_Maybe_In_Progress;
         }
     }
 
-    print_arp_table(log_);
+    //print_arp_table(log_);
 
     return event_description::Evt_Parse_Ok;
 }

@@ -11,7 +11,16 @@
 
 namespace firewall {
 
+#define ARP_INTERFRAME_GAP_MSEC 2000
 #define IP_BLACKLIST_INTVL_MS_DEF 10000
+
+struct arp_tunables {
+    uint32_t interframe_gap_msec;
+
+    explicit arp_tunables() :
+                interframe_gap_msec(ARP_INTERFRAME_GAP_MSEC) { }
+    ~arp_tunables() { }
+};
 
 struct ipv4_tunables {
     uint32_t ip_blacklist_intvl_ms;
@@ -53,6 +62,7 @@ struct mqtt_tunables {
 */
 struct tunables {
     public:
+        arp_tunables arp_t;
         ipv4_tunables ipv4_t;
         icmp_tunables icmp_t;
         mqtt_tunables mqtt_t;

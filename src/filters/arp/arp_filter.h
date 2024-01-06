@@ -12,6 +12,7 @@
 #include <mutex>
 #include <sys/time.h>
 #include <event_def.h>
+#include <tunables.h>
 #include <logger.h>
 
 namespace firewall {
@@ -38,7 +39,15 @@ struct arp_entry {
 
     explicit arp_entry() :
                 resolved(false),
-                state(Arp_State::Unknown) { }
+                state(Arp_State::Unknown)
+    {
+        sender_mac[0] = 0xde;
+        sender_mac[1] = 0xad;
+        sender_mac[2] = 0xbe;
+        sender_mac[3] = 0xef;
+        sender_mac[4] = 0xbe;
+        sender_mac[5] = 0xef;
+    }
     explicit arp_entry(uint8_t *sender_macaddr,
                        uint8_t *target_macaddr,
                        uint32_t sender_ip,
@@ -79,18 +88,6 @@ struct arp_entry {
     }
 };
 
-struct arp_filter_config {
-    // interframe gap between ARP frames from the same mac
-    uint32_t inter_frame_gap_from_same_mac_msec;
-
-    explicit arp_filter_config()
-    {
-        inter_frame_gap_from_same_mac_msec = 2000;
-    }
-
-    bool check(parser &p);
-};
-
 /**
  * @brief - implements ARP filter
  */
@@ -127,7 +124,6 @@ class arp_filter {
     private:
         explicit arp_filter() { }
         std::vector<arp_entry> arp_table_;
-        arp_filter_config filter_conf_;
         std::mutex lock_;
         logger *log_;
 };
