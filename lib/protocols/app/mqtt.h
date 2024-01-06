@@ -17,10 +17,18 @@ enum class Mqtt_Msg_Type {
     Connect = 0x1,
     Connect_Ack = 0x02,
     Publish = 0x03,
+    Pub_Ack = 0x04,
+    Pub_Rec = 0x05,
+    Pub_Rel = 0x06,
+    Pub_Comp = 0x07,
     Subscribe_Req = 0x08,
     Subscribe_Ack = 0x09,
+    Unsubscribe_Req = 0x0A,
+    Unsubscribe_Ack = 0x0B,
     Ping_Req = 0x0C,
     Ping_Response = 0x0D,
+    Disconnect = 0x0E,
+    Authentication = 0x0F,
 };
 
 enum class Mqtt_Requested_QOS {

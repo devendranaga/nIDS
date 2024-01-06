@@ -18,6 +18,9 @@
 
 namespace firewall {
 
+/**
+ * @brief - Defines filter interface.
+ */
 class filter {
     public:
         ~filter() { }
@@ -39,3 +42,4 @@ class filter {
 }
 
 #endif
+

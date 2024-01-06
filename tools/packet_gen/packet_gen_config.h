@@ -1,6 +1,6 @@
 /**
  * @brief - Implements packet generator configuration.
- * 
+ *
  * @copyright - 2023-present All rights reserved. Devendra Naga.
 */
 #ifndef __FW_PACKET_GEN_CONFIG_H__
